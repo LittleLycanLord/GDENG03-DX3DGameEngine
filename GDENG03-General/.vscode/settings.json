@@ -1,0 +1,10 @@
+{
+    "C_Cpp.errorSquiggles": "enabled",
+    "files.associations": {
+        "winapifamily.h": "c",
+        "windef.h": "c",
+        "minwindef.h": "c",
+        "winbase.h": "c",
+        "winnt.h": "c"
+    }
+}
