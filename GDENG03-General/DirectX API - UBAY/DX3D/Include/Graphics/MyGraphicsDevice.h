@@ -11,18 +11,23 @@ namespace DX3D {
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		Microsoft::WRL::ComPtr<ID3D11Device>d3dDevice{};
-		Microsoft::WRL::ComPtr<ID3D11DeviceContext>d3dContext{};
-		Microsoft::WRL::ComPtr<IDXGIDevice>dxgiDevice{};
-		Microsoft::WRL::ComPtr<IDXGIAdapter>dxgiAdapter{};
-		Microsoft::WRL::ComPtr<IDXGIFactory>dxgiFactory{};
+		// Microsoft::WRL::ComPtr<ID3D11Device> d3dDevice{};
+		// Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3dContext{};
+		// Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice{};
+		// Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter{};
+		// Microsoft::WRL::ComPtr<IDXGIFactory> dxgiFactory{};
 	public:
+		Microsoft::WRL::ComPtr<ID3D11Device> d3dDevice{};
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3dContext{};
+		Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice{};
+		Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter{};
+		Microsoft::WRL::ComPtr<IDXGIFactory> dxgiFactory{};
 
 		//* ╔════════════════════════════╗
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		explicit MyGraphicsDevice(const GraphicsDeviceDesc& desc);
+		explicit MyGraphicsDevice(const GraphicsDeviceDescription& description);
 		virtual ~MyGraphicsDevice() override;
 
 		//* ╔═══════════╗
@@ -31,7 +36,7 @@ namespace DX3D {
 	private:
 		GraphicsResourceDesc getGraphicsResourceDesc() const noexcept;
 	public:
-		SwapChainPointer createSwapChain(const SwapChainDesc& desc);
+		SwapChainPointer createSwapChain(const SwapChainDescription& description);
 		DeviceContextPointer createDeviceContext();
 		void executeCommandList(MyDeviceContext& context);
 

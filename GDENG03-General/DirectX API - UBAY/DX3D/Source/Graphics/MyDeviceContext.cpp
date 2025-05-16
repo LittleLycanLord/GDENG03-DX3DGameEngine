@@ -21,6 +21,27 @@ void DX3D::MyDeviceContext::clearAndSetBackBuffer(const MySwapChain& swapChain, 
 	context->OMSetRenderTargets(1, &rtv, nullptr);
 }
 
+void DX3D::MyDeviceContext::setVertexBuffer(MyVertexBuffer* vertexBuffer) {
+	UINT stride = vertexBuffer->size_vertex;
+	UINT offset = 0;
+	context->IASetVertexBuffers(0, 1, &vertexBuffer->buffer, &stride, &offset);
+	context->IASetInputLayout(vertexBuffer->layout);
+}
+
+void DX3D::MyDeviceContext::drawTriangleList(UINT vertexCount, UINT startIndex) {
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->Draw(vertexCount, startIndex);
+}
+
+void DX3D::MyDeviceContext::setViewport(UINT width, UINT height) {
+	D3D11_VIEWPORT viewport{};
+	viewport.Width = static_cast<FLOAT>(width);
+	viewport.Height = static_cast<FLOAT>(height);
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	context->RSSetViewports(1, &viewport);
+}
+
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝

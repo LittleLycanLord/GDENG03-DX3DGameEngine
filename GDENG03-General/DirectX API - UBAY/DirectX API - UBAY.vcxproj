@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -28,6 +28,7 @@
     <ClCompile Include="DX3D\Source\Graphics\MyGraphicsDevice.cpp" />
     <ClCompile Include="DX3D\Source\Graphics\MyGraphicsEngine.cpp" />
     <ClCompile Include="DX3D\Source\Graphics\MySwapChain.cpp" />
+    <ClCompile Include="DX3D\Source\Graphics\MyVertexBuffer.cpp" />
     <ClCompile Include="DX3D\Source\Window\Win32\Win32Window.cpp" />
     <ClCompile Include="Game\main.cpp" />
   </ItemGroup>
@@ -37,11 +38,13 @@
     <ClInclude Include="DX3D\Include\Core\DX3DCore.h" />
     <ClInclude Include="DX3D\Include\Core\MyBase.h" />
     <ClInclude Include="DX3D\Include\Core\MyLogger.h" />
-    <ClInclude Include="DX3D\Include\Core\MyGame.h" />
     <ClInclude Include="DX3D\Include\Game\MyDisplay.h" />
     <ClInclude Include="DX3D\Include\Game\MyGame.h" />
+    <ClInclude Include="DX3D\Include\Graphics\MyVertexBuffer.h" />
     <ClInclude Include="DX3D\Include\Math\MyRect.h" />
+    <ClInclude Include="DX3D\Include\Math\MyVec3.h" />
     <ClInclude Include="DX3D\Include\Math\MyVec4.h" />
+    <ClInclude Include="DX3D\Include\Math\MyVertex.h" />
     <ClInclude Include="DX3D\Include\Window\MyWindow.h" />
     <ClInclude Include="DX3D\Include\Graphics\GraphicsLogUtils.h" />
     <ClInclude Include="DX3D\Include\Graphics\MyDeviceContext.h" />

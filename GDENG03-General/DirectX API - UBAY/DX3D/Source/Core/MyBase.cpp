@@ -5,7 +5,7 @@ using namespace DX3D;
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyBase::MyBase(const BaseDescription& desc) :logger(desc.logger) {
+DX3D::MyBase::MyBase(const BaseDescription& description) :logger(description.logger) {
 }
 
 DX3D::MyBase::~MyBase() {

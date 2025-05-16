@@ -18,7 +18,7 @@ namespace DX3D {
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		explicit MyWindow(const WindowDescription& desc);
+		explicit MyWindow(const WindowDescription& description);
 		virtual ~MyWindow() override;
 
 		//* ╔═══════════╗

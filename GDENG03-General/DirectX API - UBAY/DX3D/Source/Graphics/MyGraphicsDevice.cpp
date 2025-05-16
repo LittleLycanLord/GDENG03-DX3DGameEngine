@@ -10,7 +10,7 @@ using namespace DX3D;
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyGraphicsDevice::MyGraphicsDevice(const GraphicsDeviceDesc& desc) : MyBase(desc.base) {
+DX3D::MyGraphicsDevice::MyGraphicsDevice(const GraphicsDeviceDescription& description) : MyBase(description.base) {
 	D3D_FEATURE_LEVEL featureLevel{};
 	UINT createDeviceFlags{};
 
@@ -40,8 +40,8 @@ DX3D::MyGraphicsDevice::~MyGraphicsDevice() {
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-SwapChainPointer DX3D::MyGraphicsDevice::createSwapChain(const SwapChainDesc& desc) {
-	return std::make_shared<MySwapChain>(desc, getGraphicsResourceDesc());
+SwapChainPointer DX3D::MyGraphicsDevice::createSwapChain(const SwapChainDescription& description) {
+	return std::make_shared<MySwapChain>(description, getGraphicsResourceDesc());
 }
 
 DeviceContextPointer DX3D::MyGraphicsDevice::createDeviceContext() {

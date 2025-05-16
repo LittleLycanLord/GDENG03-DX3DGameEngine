@@ -13,6 +13,7 @@ namespace DX3D {
     class MyGraphicsDevice;
     class MyLogger;
     class MySwapChain;
+    class MyVertexBuffer;
     class MyDisplay;
     class MyDeviceContext;
 

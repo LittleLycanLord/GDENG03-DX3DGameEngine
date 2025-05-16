@@ -1,33 +1,28 @@
-
-
 #pragma once
-#include <Graphics/MyGraphicsResource.h>
+#include <Core/DX3DCore.h>
 
 namespace DX3D {
-	class MySwapChain final : public MyGraphicsResource {
+	class MyVec3 {
 		//* ╔════════════╗
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		Microsoft::WRL::ComPtr<IDXGISwapChain>swapChain{};
-		Microsoft::WRL::ComPtr<ID3D11RenderTargetView>rtv{};
-
-		friend class MyDeviceContext;
 	public:
+		float x{}, y{}, z{};
 
 		//* ╔════════════════════════════╗
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		MySwapChain(const SwapChainDescription& swapChainDescription, const GraphicsResourceDesc& graphicsResourceDescription);
+		MyVec3() = default;
+		MyVec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
 		//* ╔═══════════╗
 		//* ║ Functions ║
 		//* ╚═══════════╝
 	private:
-		void reloadBuffers();
 	public:
-		void present(bool vsync = false);
+
 		//* ╔════════════════════════════════╗
 		//* ║ Virtual / Overridden Functions ║
 		//* ╚════════════════════════════════╝

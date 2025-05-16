@@ -4,8 +4,8 @@
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyDisplay::MyDisplay(const DisplayDesc& desc) : MyWindow(desc.window) {
-	swapChain = desc.graphicsDevice.createSwapChain({handle,size });
+DX3D::MyDisplay::MyDisplay(const DisplayDescription& description) : MyWindow(description.window) {
+	swapChain = description.graphicsDevice.createSwapChain({handle,size });
 }
 //* ╔═══════════╗
 //* ║ Functions ║

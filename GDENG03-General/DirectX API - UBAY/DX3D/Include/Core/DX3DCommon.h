@@ -13,26 +13,26 @@ namespace DX3D {
         MyRectangle size{};
     };
 
-    struct DisplayDesc {
+    struct DisplayDescription {
         WindowDescription window;
         MyGraphicsDevice& graphicsDevice;
     };
 
-    struct GraphicsEngineDesc {
+    struct GraphicsEngineDescription {
         BaseDescription base;
     };
 
-    struct GraphicsDeviceDesc {
+    struct GraphicsDeviceDescription {
         BaseDescription base;
     };
 
-    struct SwapChainDesc {
-        void* winHandle{};
-        MyRectangle winSize{};
+    struct SwapChainDescription {
+        void* windowHandle{};
+        MyRectangle windowSize{};
     };
 
 
-    struct GameDesc {
+    struct GameDescription {
         MyRectangle windowSize{ 1280,720 };
         MyLogger::LogLevel logLevel = MyLogger::LogLevel::Error;
     };

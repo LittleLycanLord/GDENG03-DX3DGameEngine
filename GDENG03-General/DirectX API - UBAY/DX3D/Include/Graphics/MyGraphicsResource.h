@@ -21,9 +21,9 @@ namespace DX3D {
 		//* ╚════════════╝
 	private:
 	protected:
-		std::shared_ptr<const MyGraphicsDevice>graphicsDevice;
-		ID3D11Device&device;
-		IDXGIFactory&factory;
+		std::shared_ptr<const MyGraphicsDevice> graphicsDevice;
+		ID3D11Device& device;
+		IDXGIFactory& factory;
 
 	public:
 
@@ -31,11 +31,11 @@ namespace DX3D {
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		explicit MyGraphicsResource(const GraphicsResourceDesc& desc) :
-			MyBase(desc.base),
-			graphicsDevice(desc.graphicsDevice),
-			device(desc.device),
-			factory(desc.factory) {
+		explicit MyGraphicsResource(const GraphicsResourceDesc& description) :
+			MyBase(description.base),
+			graphicsDevice(description.graphicsDevice),
+			device(description.device),
+			factory(description.factory) {
 		}
 
 		//* ╔═══════════╗

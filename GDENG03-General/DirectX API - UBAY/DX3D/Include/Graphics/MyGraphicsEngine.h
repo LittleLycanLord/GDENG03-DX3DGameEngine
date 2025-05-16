@@ -1,6 +1,8 @@
 #pragma once
 #include <Core/DX3DCore.h>
+#include <Core/DX3DCommon.h>
 #include <Core/MyBase.h>
+#include <Graphics/MyVertexBuffer.h>
 
 namespace DX3D {
 	class MyGraphicsEngine final : public MyBase {
@@ -8,7 +10,7 @@ namespace DX3D {
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		std::shared_ptr<MyGraphicsDevice>graphicsDevice{};
+		std::shared_ptr<MyGraphicsDevice> graphicsDevice{};
 		DeviceContextPointer deviceContext{};
 	public:
 
@@ -16,7 +18,7 @@ namespace DX3D {
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		explicit MyGraphicsEngine(const GraphicsEngineDesc& desc);
+		explicit MyGraphicsEngine(const GraphicsEngineDescription& description);
 		virtual ~MyGraphicsEngine() override;
 
 		//* ╔═══════════╗
@@ -25,6 +27,7 @@ namespace DX3D {
 	private:
 	public:
 		void render(MySwapChain& swapChain);
+		MyVertexBuffer* createVertexBuffer();
 
 		//* ╔════════════════════════════════╗
 		//* ║ Virtual / Overridden Functions ║

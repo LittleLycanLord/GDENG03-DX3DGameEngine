@@ -2,6 +2,7 @@
 
 #pragma once
 #include <Graphics/MyGraphicsResource.h>
+#include <Graphics/MyVertexBuffer.h>
 #include <Math/MyVec4.h>
 
 namespace DX3D {
@@ -10,7 +11,7 @@ namespace DX3D {
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		Microsoft::WRL::ComPtr<ID3D11DeviceContext>context{};
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> context{};
 		friend class MyGraphicsDevice;
 
 	public:
@@ -27,6 +28,9 @@ namespace DX3D {
 	private:
 	public:
 		void clearAndSetBackBuffer(const MySwapChain& swapChain, const MyVec4& color);
+		void setVertexBuffer(MyVertexBuffer* vertexBuffer);
+		void drawTriangleList(UINT vertexCount, UINT startIndex);
+		void setViewport(UINT width, UINT height);
 
 		//* ╔════════════════════════════════╗
 		//* ║ Virtual / Overridden Functions ║

@@ -15,7 +15,7 @@ namespace DX3D {
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        explicit MyBase(const BaseDescription& desc);
+        explicit MyBase(const BaseDescription& description);
         virtual ~MyBase();
 
     protected:

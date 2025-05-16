@@ -1,5 +1,3 @@
-
-
 #include <Graphics/MyGraphicsEngine.h>
 #include <Graphics/MyGraphicsDevice.h>
 #include <Graphics/MyDeviceContext.h>
@@ -10,12 +8,11 @@ using namespace DX3D;
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyGraphicsEngine::MyGraphicsEngine(const GraphicsEngineDesc& desc) : MyBase(desc.base) {
-	graphicsDevice = std::make_shared<MyGraphicsDevice>(GraphicsDeviceDesc{logger });
+DX3D::MyGraphicsEngine::MyGraphicsEngine(const GraphicsEngineDescription& description) : MyBase(description.base) {
+	graphicsDevice = std::make_shared<MyGraphicsDevice>(GraphicsDeviceDescription{ logger });
 
 	auto& device = *graphicsDevice;
 	deviceContext = device.createDeviceContext();
-
 }
 
 DX3D::MyGraphicsEngine::~MyGraphicsEngine() {
@@ -34,6 +31,10 @@ void DX3D::MyGraphicsEngine::render(MySwapChain& swapChain) {
 }
 MyGraphicsDevice& DX3D::MyGraphicsEngine::getGraphicsDevice() noexcept {
 	return *graphicsDevice;
+}
+
+MyVertexBuffer* DX3D::MyGraphicsEngine::createVertexBuffer() {
+	return new MyVertexBuffer();
 }
 
 //* ╔════════════════════════════════╗

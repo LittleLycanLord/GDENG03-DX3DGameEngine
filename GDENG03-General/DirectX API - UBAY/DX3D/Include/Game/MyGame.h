@@ -1,6 +1,7 @@
 #pragma once
 #include <Core/MyBase.h>
 #include <Core/DX3DCore.h> 
+#include <Graphics/MyVertexBuffer.h> 
 
 namespace DX3D {
 	class MyGame : public MyBase {
@@ -10,6 +11,7 @@ namespace DX3D {
 	private:
 		std::unique_ptr<MyLogger>loggerPtr{};
 		std::unique_ptr<MyGraphicsEngine>graphicsEngine{};
+		MyVertexBuffer* vertexBuffer{};
 		std::unique_ptr<MyDisplay>display{};
 		bool isRunning{ true };
 	public:
@@ -18,7 +20,7 @@ namespace DX3D {
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		explicit MyGame(const GameDesc& desc);
+		explicit MyGame(const GameDescription& description);
 		virtual ~MyGame() override;
 
 		//* ╔═══════════╗
@@ -41,5 +43,3 @@ namespace DX3D {
 	public:
 	};
 } // namespace DX3D
-
-

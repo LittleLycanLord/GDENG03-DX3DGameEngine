@@ -3,17 +3,17 @@
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MySwapChain::MySwapChain(const SwapChainDesc& desc, const GraphicsResourceDesc& gDesc) :
-	MyGraphicsResource(gDesc) {
+DX3D::MySwapChain::MySwapChain(const SwapChainDescription& swapChainDescription, const GraphicsResourceDesc& graphicsResourceDescription) :
+	MyGraphicsResource(graphicsResourceDescription) {
 	DXGI_SWAP_CHAIN_DESC dxgiDesc{};
 
-	dxgiDesc.BufferDesc.Width = max(1, desc.winSize.width);
-	dxgiDesc.BufferDesc.Height = max(1, desc.winSize.height);
+	dxgiDesc.BufferDesc.Width = max(1, swapChainDescription.windowSize.width);
+	dxgiDesc.BufferDesc.Height = max(1, swapChainDescription.windowSize.height);
 	dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	dxgiDesc.BufferCount = 2;
 	dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-	dxgiDesc.OutputWindow = static_cast<HWND>(desc.winHandle);
+	dxgiDesc.OutputWindow = static_cast<HWND>(swapChainDescription.windowHandle);
 	dxgiDesc.SampleDesc.Count = 1;
 	dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	dxgiDesc.Windowed = TRUE;

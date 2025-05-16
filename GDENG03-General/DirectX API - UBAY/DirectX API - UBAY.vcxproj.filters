@@ -12,10 +12,10 @@
     <ClCompile Include="DX3D\Source\Window\Win32\Win32Window.cpp" />
     <ClCompile Include="DX3D\Source\Core\MyBase.cpp" />
     <ClCompile Include="DX3D\Source\Core\MyLogger.cpp" />
+    <ClCompile Include="DX3D\Source\Graphics\MyVertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX3D\Include\Core\MyBase.h" />
-    <ClInclude Include="DX3D\Include\Core\MyGame.h" />
     <ClInclude Include="DX3D\Include\Core\DX3DCore.h" />
     <ClInclude Include="DX3D\Include\Core\DX3DCommon.h" />
     <ClInclude Include="DX3D\Include\Core\MyLogger.h" />
@@ -31,5 +31,8 @@
     <ClInclude Include="DX3D\Include\Graphics\MyGraphicsEngine.h" />
     <ClInclude Include="DX3D\Include\Graphics\MyGraphicsResource.h" />
     <ClInclude Include="DX3D\Include\Graphics\MySwapChain.h" />
+    <ClInclude Include="DX3D\Include\Graphics\MyVertexBuffer.h" />
+    <ClInclude Include="DX3D\Include\Math\MyVec3.h" />
+    <ClInclude Include="DX3D\Include\Math\MyVertex.h" />
   </ItemGroup>
 </Project>

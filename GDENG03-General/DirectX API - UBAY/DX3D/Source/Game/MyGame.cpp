@@ -3,17 +3,28 @@
 #include <Graphics/MyGraphicsEngine.h>
 #include <Core/MyLogger.h>
 #include <Game/MyDisplay.h>
+#include <Math/MyVertex.h>
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 
-DX3D::MyGame::MyGame(const GameDesc& desc) :
-	MyBase({ *std::make_unique<MyLogger>(desc.logLevel).release() }),
+DX3D::MyGame::MyGame(const GameDescription& description) :
+	MyBase({ *std::make_unique<MyLogger>(description.logLevel).release() }),
 	loggerPtr(&logger) {
-	graphicsEngine = std::make_unique<MyGraphicsEngine>(GraphicsEngineDesc{logger });
-	display = std::make_unique<MyDisplay>(DisplayDesc{ {logger,desc.windowSize},graphicsEngine->getGraphicsDevice() });
+	graphicsEngine = std::make_unique<MyGraphicsEngine>(GraphicsEngineDescription{ logger });
+	display = std::make_unique<MyDisplay>(DisplayDescription{ {logger,description.windowSize},graphicsEngine->getGraphicsDevice() });
 
+	MyVertex vertices[] = {
+		{ 0.0f, 0.5f, 0.0f },
+		{ 0.5f, -0.5f, 0.0f },
+		{ -0.5f, -0.5f, 0.0f }
+	};
+
+	vertexBuffer = graphicsEngine->createVertexBuffer();
+	UINT size_list = ARRAYSIZE(vertices);
+
+	vertexBuffer->load(vertices, sizeof(MyVertex), size_list, nullptr, 0);
 	DX3DLogInfo("MyGame initialized.");
 }
 
@@ -35,3 +46,4 @@ void DX3D::MyGame::onInternalUpdate() {
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
+

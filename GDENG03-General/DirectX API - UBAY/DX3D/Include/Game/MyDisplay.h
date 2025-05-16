@@ -14,7 +14,7 @@ namespace DX3D {
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		explicit MyDisplay(const DisplayDesc& desc);
+		explicit MyDisplay(const DisplayDescription& description);
 		//* ╔═══════════╗
 		//* ║ Functions ║
 		//* ╚═══════════╝
