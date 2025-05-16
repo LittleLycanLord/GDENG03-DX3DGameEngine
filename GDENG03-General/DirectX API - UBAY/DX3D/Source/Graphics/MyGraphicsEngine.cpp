@@ -7,6 +7,9 @@
 
 using namespace DX3D;
 
+//* ╔════════════════════════════╗
+//* ║ Constructors & Destructors ║
+//* ╚════════════════════════════╝
 DX3D::MyGraphicsEngine::MyGraphicsEngine(const GraphicsEngineDesc& desc) : MyBase(desc.base) {
 	m_graphicsDevice = std::make_shared<MyGraphicsDevice>(GraphicsDeviceDesc{ m_logger });
 
@@ -17,11 +20,9 @@ DX3D::MyGraphicsEngine::MyGraphicsEngine(const GraphicsEngineDesc& desc) : MyBas
 
 DX3D::MyGraphicsEngine::~MyGraphicsEngine() {
 }
-
-MyGraphicsDevice& DX3D::MyGraphicsEngine::getGraphicsDevice() noexcept {
-	return *m_graphicsDevice;
-}
-
+//* ╔═══════════╗
+//* ║ Functions ║
+//* ╚═══════════╝
 void DX3D::MyGraphicsEngine::render(MySwapChain& swapChain) {
 	auto& context = *m_deviceContext;
 	context.clearAndSetBackBuffer(swapChain, { 1,0,0,1 });
@@ -31,3 +32,14 @@ void DX3D::MyGraphicsEngine::render(MySwapChain& swapChain) {
 	device.executeCommandList(context);
 	swapChain.present();
 }
+MyGraphicsDevice& DX3D::MyGraphicsEngine::getGraphicsDevice() noexcept {
+	return *m_graphicsDevice;
+}
+
+//* ╔════════════════════════════════╗
+//* ║ Virtual / Overridden Functions ║
+//* ╚════════════════════════════════╝
+
+//* ╔═══════════════════╗
+//* ║ Getters & Setters ║
+//* ╚═══════════════════╝

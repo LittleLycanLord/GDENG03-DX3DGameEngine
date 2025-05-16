@@ -26,11 +26,11 @@
     <ClInclude Include="DX3D\Include\Math\MyVec4.h" />
     <ClInclude Include="DX3D\Include\Window\MyWindow.h" />
     <ClInclude Include="DX3D\Include\All.h" />
-    <ClInclude Include="DX3D\Source\Graphics\GraphicsLogUtils.h" />
-    <ClInclude Include="DX3D\Source\Graphics\MyDeviceContext.h" />
-    <ClInclude Include="DX3D\Source\Graphics\MyGraphicsDevice.h" />
-    <ClInclude Include="DX3D\Source\Graphics\MyGraphicsEngine.h" />
-    <ClInclude Include="DX3D\Source\Graphics\MyGraphicsResource.h" />
-    <ClInclude Include="DX3D\Source\Graphics\MySwapChain.h" />
+    <ClInclude Include="DX3D\Include\Graphics\GraphicsLogUtils.h" />
+    <ClInclude Include="DX3D\Include\Graphics\MyDeviceContext.h" />
+    <ClInclude Include="DX3D\Include\Graphics\MyGraphicsDevice.h" />
+    <ClInclude Include="DX3D\Include\Graphics\MyGraphicsEngine.h" />
+    <ClInclude Include="DX3D\Include\Graphics\MyGraphicsResource.h" />
+    <ClInclude Include="DX3D\Include\Graphics\MySwapChain.h" />
   </ItemGroup>
 </Project>

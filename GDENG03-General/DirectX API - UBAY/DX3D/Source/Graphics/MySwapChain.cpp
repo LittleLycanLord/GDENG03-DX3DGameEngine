@@ -1,5 +1,8 @@
 #include <Graphics/MySwapChain.h>
 
+//* ╔════════════════════════════╗
+//* ║ Constructors & Destructors ║
+//* ╚════════════════════════════╝
 DX3D::MySwapChain::MySwapChain(const SwapChainDesc& desc, const GraphicsResourceDesc& gDesc) :
 	MyGraphicsResource(gDesc) {
 	DXGI_SWAP_CHAIN_DESC dxgiDesc{};
@@ -21,6 +24,9 @@ DX3D::MySwapChain::MySwapChain(const SwapChainDesc& desc, const GraphicsResource
 	reloadBuffers();
 }
 
+//* ╔═══════════╗
+//* ║ Functions ║
+//* ╚═══════════╝
 void DX3D::MySwapChain::present(bool vsync) {
 	DX3DGraphicsLogThrowOnFail(m_swapChain->Present(vsync, 0),
 		"Present failed.");
@@ -34,3 +40,11 @@ void DX3D::MySwapChain::reloadBuffers() {
 		"CreateRenderTargetView failed.");
 }
 
+
+//* ╔════════════════════════════════╗
+//* ║ Virtual / Overridden Functions ║
+//* ╚════════════════════════════════╝
+
+//* ╔═══════════════════╗
+//* ║ Getters & Setters ║
+//* ╚═══════════════════╝

@@ -7,7 +7,9 @@
 
 using namespace DX3D;
 
-
+//* ╔════════════════════════════╗
+//* ║ Constructors & Destructors ║
+//* ╚════════════════════════════╝
 DX3D::MyGraphicsDevice::MyGraphicsDevice(const GraphicsDeviceDesc& desc) : MyBase(desc.base) {
 	D3D_FEATURE_LEVEL featureLevel{};
 	UINT createDeviceFlags{};
@@ -35,6 +37,9 @@ DX3D::MyGraphicsDevice::MyGraphicsDevice(const GraphicsDeviceDesc& desc) : MyBas
 DX3D::MyGraphicsDevice::~MyGraphicsDevice() {
 }
 
+//* ╔═══════════╗
+//* ║ Functions ║
+//* ╚═══════════╝
 SwapChainPointer DX3D::MyGraphicsDevice::createSwapChain(const SwapChainDesc& desc) {
 	return std::make_shared<MySwapChain>(desc, getGraphicsResourceDesc());
 }
@@ -50,6 +55,13 @@ void DX3D::MyGraphicsDevice::executeCommandList(MyDeviceContext& context) {
 	m_d3dContext->ExecuteCommandList(list.Get(), false);
 }
 
+//* ╔════════════════════════════════╗
+//* ║ Virtual / Overridden Functions ║
+//* ╚════════════════════════════════╝
+
+//* ╔═══════════════════╗
+//* ║ Getters & Setters ║
+//* ╚═══════════════════╝
 GraphicsResourceDesc DX3D::MyGraphicsDevice::getGraphicsResourceDesc() const noexcept {
 	return { {m_logger}, shared_from_this(), *m_d3dDevice.Get(), *m_dxgiFactory.Get() };
 }
