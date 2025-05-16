@@ -1,13 +1,12 @@
-#include "Core/MyGame.h"
-#include "Core/MyWindow.h"
+#include <Game/MyDisplay.h>
+#include <Graphics/MyGraphicsDevice.h>
+
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyGame::MyGame() {
-    windowDisplay = new MyWindow(); // Create a new window display
+DX3D::MyDisplay::MyDisplay(const DisplayDesc& desc) : MyWindow(desc.window) {
+	m_swapChain = desc.graphicsDevice.createSwapChain({ m_handle, m_size });
 }
-DX3D::MyGame::~MyGame() {}
-
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
@@ -19,6 +18,6 @@ DX3D::MyGame::~MyGame() {}
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
-bool DX3D::MyGame::IsRunning() {
-    return this->running;
+DX3D::MySwapChain& DX3D::MyDisplay::getSwapChain() noexcept {
+	return *m_swapChain;
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include <stdexcept>
+#include <memory>
 
 namespace DX3D {
     //* ╔══════════════════════╗
@@ -7,4 +9,13 @@ namespace DX3D {
     class MyBase;
     class MyWindow;
     class MyGame;
+    class MyGraphicsEngine;
+    class MyGraphicsDevice;
+    class MyLogger;
+    class MySwapChain;
+    class MyDisplay;
+    class MyDeviceContext;
+
+    using SwapChainPointer = std::shared_ptr<MySwapChain>;
+    using DeviceContextPointer = std::shared_ptr<MyDeviceContext>;
 }

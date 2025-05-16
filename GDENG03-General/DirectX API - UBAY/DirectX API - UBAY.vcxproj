@@ -20,16 +20,36 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX3D\Source\Core\MyBase.cpp" />
-    <ClCompile Include="DX3D\Source\Core\MyGame\MyGame.cpp" />
-    <ClCompile Include="DX3D\Source\Core\MyGame\MyWin32Game.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="DX3D\Source\Core\MyWindow.cpp" />
+    <ClCompile Include="DX3D\Source\Core\MyLogger.cpp" />
+    <ClCompile Include="DX3D\Source\Game\MyDisplay.cpp" />
+    <ClCompile Include="DX3D\Source\Game\MyGame.cpp" />
+    <ClCompile Include="DX3D\Source\Game\Win32\MyWin32Game.cpp" />
+    <ClCompile Include="DX3D\Source\Graphics\MyDeviceContext.cpp" />
+    <ClCompile Include="DX3D\Source\Graphics\MyGraphicsDevice.cpp" />
+    <ClCompile Include="DX3D\Source\Graphics\MyGraphicsEngine.cpp" />
+    <ClCompile Include="DX3D\Source\Graphics\MySwapChain.cpp" />
+    <ClCompile Include="DX3D\Source\Window\Win32\Win32Window.cpp" />
+    <ClCompile Include="Game\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DX3D\Include\All.h" />
+    <ClInclude Include="DX3D\Include\Core\DX3DCommon.h" />
     <ClInclude Include="DX3D\Include\Core\DX3DCore.h" />
     <ClInclude Include="DX3D\Include\Core\MyBase.h" />
+    <ClInclude Include="DX3D\Include\Core\MyLogger.h" />
     <ClInclude Include="DX3D\Include\Core\MyWindow.h" />
     <ClInclude Include="DX3D\Include\Core\MyGame.h" />
+    <ClInclude Include="DX3D\Include\Game\MyDisplay.h" />
+    <ClInclude Include="DX3D\Include\Game\MyGame.h" />
+    <ClInclude Include="DX3D\Include\Math\MyRect.h" />
+    <ClInclude Include="DX3D\Include\Math\MyVec4.h" />
+    <ClInclude Include="DX3D\Include\Window\MyWindow.h" />
+    <ClInclude Include="DX3D\Source\Graphics\GraphicsLogUtils.h" />
+    <ClInclude Include="DX3D\Source\Graphics\MyDeviceContext.h" />
+    <ClInclude Include="DX3D\Source\Graphics\MyGraphicsDevice.h" />
+    <ClInclude Include="DX3D\Source\Graphics\MyGraphicsEngine.h" />
+    <ClInclude Include="DX3D\Source\Graphics\MyGraphicsResource.h" />
+    <ClInclude Include="DX3D\Source\Graphics\MySwapChain.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -91,7 +111,7 @@
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>Yes</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\DirectX API - UBAY\DX3D\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DirectX API - UBAY\DX3D\Include;$(SolutionDir)\DirectX API - UBAY\DX3D\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,7 +128,7 @@
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>Yes</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\DirectX API - UBAY\DX3D\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DirectX API - UBAY\DX3D\Include;$(SolutionDir)\DirectX API - UBAY\DX3D\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,11 +145,12 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>Yes</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)\DirectX API - UBAY\DX3D\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DirectX API - UBAY\DX3D\Include;$(SolutionDir)\DirectX API - UBAY\DX3D\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,7 +163,7 @@
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>Yes</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\DirectX API - UBAY\DX3D\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DirectX API - UBAY\DX3D\Include;$(SolutionDir)\DirectX API - UBAY\DX3D\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -1,34 +1,37 @@
 #pragma once
-#include <Core/DX3DCommon.h>
 
 namespace DX3D {
-    class MyBase {
+    class MyLogger final {
+    public:
+        enum class LogLevel {
+            Error = 0,
+            Warning,
+            Info
+        };
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-    protected:
-        MyLogger& m_logger;
+        LogLevel m_logLevel = LogLevel::Error;
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        explicit MyBase(const BaseDesc& desc);
-        virtual ~MyBase();
+        explicit MyLogger(LogLevel logLevel = LogLevel::Error);
+        ~MyLogger();
 
-    protected:
-        MyBase(const MyBase&) = delete;
-        MyBase(MyBase&&) = delete;
-        MyBase& operator = (const MyBase&) = delete;
-        MyBase& operator=(MyBase&&) = delete;
-
+        MyLogger(const MyLogger&) = delete;
+        MyLogger(MyLogger&&) = delete;
+        MyLogger& operator = (const MyLogger&) = delete;
+        MyLogger& operator=(MyLogger&&) = delete;
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
+        void log(LogLevel level, const char* message);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
@@ -40,9 +43,21 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        virtual MyLogger& getLogger() noexcept final;
     };
 
 
-} // namespace DX3D
+#define DX3DLogInfo(message)\
+	getLogger().log((MyLogger::LogLevel::Info), message);
 
+#define DX3DLogWarning(message)\
+	getLogger().log((MyLogger::LogLevel::Warning), message);
+
+#define DX3DLogError(message)\
+	getLogger().log((MyLogger::LogLevel::Error), message);
+
+#define DX3DLogErrorAndThrow(message)\
+	{\
+	DX3DLogError(message);\
+	throw std::runtime_error(message);\
+	}
+} // namespace DX3D
