@@ -5,7 +5,7 @@
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 DX3D::MyDisplay::MyDisplay(const DisplayDesc& desc) : MyWindow(desc.window) {
-	m_swapChain = desc.graphicsDevice.createSwapChain({ m_handle, m_size });
+	swapChain = desc.graphicsDevice.createSwapChain({handle,size });
 }
 //* ╔═══════════╗
 //* ║ Functions ║
@@ -19,5 +19,5 @@ DX3D::MyDisplay::MyDisplay(const DisplayDesc& desc) : MyWindow(desc.window) {
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
 DX3D::MySwapChain& DX3D::MyDisplay::getSwapChain() noexcept {
-	return *m_swapChain;
+	return *swapChain;
 }

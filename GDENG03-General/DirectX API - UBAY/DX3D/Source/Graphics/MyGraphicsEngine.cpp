@@ -11,10 +11,10 @@ using namespace DX3D;
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 DX3D::MyGraphicsEngine::MyGraphicsEngine(const GraphicsEngineDesc& desc) : MyBase(desc.base) {
-	m_graphicsDevice = std::make_shared<MyGraphicsDevice>(GraphicsDeviceDesc{ m_logger });
+	graphicsDevice = std::make_shared<MyGraphicsDevice>(GraphicsDeviceDesc{logger });
 
-	auto& device = *m_graphicsDevice;
-	m_deviceContext = device.createDeviceContext();
+	auto& device = *graphicsDevice;
+	deviceContext = device.createDeviceContext();
 
 }
 
@@ -24,16 +24,16 @@ DX3D::MyGraphicsEngine::~MyGraphicsEngine() {
 //* ║ Functions ║
 //* ╚═══════════╝
 void DX3D::MyGraphicsEngine::render(MySwapChain& swapChain) {
-	auto& context = *m_deviceContext;
+	auto& context = *deviceContext;
 	context.clearAndSetBackBuffer(swapChain, { 1,0,0,1 });
 
 
-	auto& device = *m_graphicsDevice;
+	auto& device = *graphicsDevice;
 	device.executeCommandList(context);
 	swapChain.present();
 }
 MyGraphicsDevice& DX3D::MyGraphicsEngine::getGraphicsDevice() noexcept {
-	return *m_graphicsDevice;
+	return *graphicsDevice;
 }
 
 //* ╔════════════════════════════════╗

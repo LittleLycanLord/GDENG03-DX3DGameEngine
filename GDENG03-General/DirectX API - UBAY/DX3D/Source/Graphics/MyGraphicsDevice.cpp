@@ -20,16 +20,16 @@ DX3D::MyGraphicsDevice::MyGraphicsDevice(const GraphicsDeviceDesc& desc) : MyBas
 
 	DX3DGraphicsLogThrowOnFail(D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags,
 		NULL, 0, D3D11_SDK_VERSION,
-		&m_d3dDevice, &featureLevel, &m_d3dContext),
+		&d3dDevice, &featureLevel, &d3dContext),
 		"Direct3D11 initialization failed.");
 
-	DX3DGraphicsLogThrowOnFail(m_d3dDevice->QueryInterface(IID_PPV_ARGS(&m_dxgiDevice)),
+	DX3DGraphicsLogThrowOnFail(d3dDevice->QueryInterface(IID_PPV_ARGS(&dxgiDevice)),
 		"QueryInterface failed to retrieve IDXGIDevice.");
 
-	DX3DGraphicsLogThrowOnFail(m_dxgiDevice->GetParent(IID_PPV_ARGS(&m_dxgiAdapter)),
+	DX3DGraphicsLogThrowOnFail(dxgiDevice->GetParent(IID_PPV_ARGS(&dxgiAdapter)),
 		"GetParent failed to retrieve IDXGIAdapter.");
 
-	DX3DGraphicsLogThrowOnFail(m_dxgiAdapter->GetParent(IID_PPV_ARGS(&m_dxgiFactory)),
+	DX3DGraphicsLogThrowOnFail(dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory)),
 		"GetParent failed to retrieve IDXGIFactory.");
 
 }
@@ -50,9 +50,9 @@ DeviceContextPointer DX3D::MyGraphicsDevice::createDeviceContext() {
 
 void DX3D::MyGraphicsDevice::executeCommandList(MyDeviceContext& context) {
 	Microsoft::WRL::ComPtr<ID3D11CommandList> list{};
-	DX3DGraphicsLogThrowOnFail(context.m_context->FinishCommandList(false, &list),
+	DX3DGraphicsLogThrowOnFail(context.context->FinishCommandList(false, &list),
 		"FinishCommandList failed.");
-	m_d3dContext->ExecuteCommandList(list.Get(), false);
+	d3dContext->ExecuteCommandList(list.Get(), false);
 }
 
 //* ╔════════════════════════════════╗
@@ -63,5 +63,5 @@ void DX3D::MyGraphicsDevice::executeCommandList(MyDeviceContext& context) {
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
 GraphicsResourceDesc DX3D::MyGraphicsDevice::getGraphicsResourceDesc() const noexcept {
-	return { {m_logger}, shared_from_this(), *m_d3dDevice.Get(), *m_dxgiFactory.Get() };
+	return { {logger}, shared_from_this(), *d3dDevice.Get(), *dxgiFactory.Get() };
 }

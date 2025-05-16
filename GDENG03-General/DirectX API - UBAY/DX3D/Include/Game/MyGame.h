@@ -8,10 +8,10 @@ namespace DX3D {
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		std::unique_ptr<MyLogger> m_loggerPtr{};
-		std::unique_ptr<MyGraphicsEngine> m_graphicsEngine{};
-		std::unique_ptr<MyDisplay> m_display{};
-		bool m_isRunning{ true };
+		std::unique_ptr<MyLogger>loggerPtr{};
+		std::unique_ptr<MyGraphicsEngine>graphicsEngine{};
+		std::unique_ptr<MyDisplay>display{};
+		bool isRunning{ true };
 	public:
 
 		//* ╔════════════════════════════╗

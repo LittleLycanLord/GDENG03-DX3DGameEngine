@@ -10,9 +10,9 @@
 
 DX3D::MyGame::MyGame(const GameDesc& desc) :
 	MyBase({ *std::make_unique<MyLogger>(desc.logLevel).release() }),
-	m_loggerPtr(&m_logger) {
-	m_graphicsEngine = std::make_unique<MyGraphicsEngine>(GraphicsEngineDesc{ m_logger });
-	m_display = std::make_unique<MyDisplay>(DisplayDesc{ {m_logger,desc.windowSize},m_graphicsEngine->getGraphicsDevice() });
+	loggerPtr(&logger) {
+	graphicsEngine = std::make_unique<MyGraphicsEngine>(GraphicsEngineDesc{logger });
+	display = std::make_unique<MyDisplay>(DisplayDesc{ {logger,desc.windowSize},graphicsEngine->getGraphicsDevice() });
 
 	DX3DLogInfo("MyGame initialized.");
 }
@@ -25,7 +25,7 @@ DX3D::MyGame::~MyGame() {
 //* ║ Functions ║
 //* ╚═══════════╝
 void DX3D::MyGame::onInternalUpdate() {
-	m_graphicsEngine->render(m_display->getSwapChain());
+	graphicsEngine->render(display->getSwapChain());
 }
 
 //* ╔════════════════════════════════╗

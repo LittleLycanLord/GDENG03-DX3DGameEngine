@@ -8,14 +8,14 @@ namespace DX3D {
         //* ╚════════════╝
     private:
     protected:
-        MyLogger& m_logger;
+        MyLogger&logger;
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        explicit MyBase(const BaseDesc& desc);
+        explicit MyBase(const BaseDescription& desc);
         virtual ~MyBase();
 
     protected:

@@ -10,15 +10,15 @@ namespace DX3D {
 
 	private:
 	protected:
-		void* m_handle{};
-		MyRect m_size{};
+		void* handle{};
+		MyRectangle size{};
 	public:
 
 		//* ╔════════════════════════════╗
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		explicit MyWindow(const WindowDesc& desc);
+		explicit MyWindow(const WindowDescription& desc);
 		virtual ~MyWindow() override;
 
 		//* ╔═══════════╗

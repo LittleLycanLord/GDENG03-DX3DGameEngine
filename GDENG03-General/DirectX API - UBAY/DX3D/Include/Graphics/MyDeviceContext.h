@@ -10,7 +10,7 @@ namespace DX3D {
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context{};
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext>context{};
 		friend class MyGraphicsDevice;
 
 	public:

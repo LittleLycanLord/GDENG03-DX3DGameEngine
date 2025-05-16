@@ -4,36 +4,36 @@
 #include <Math/MyRect.h>
 
 namespace DX3D {
-    struct BaseDesc {
+    struct BaseDescription {
         MyLogger& logger;
     };
 
-    struct WindowDesc {
-        BaseDesc base;
-        MyRect size{};
+    struct WindowDescription {
+        BaseDescription base;
+        MyRectangle size{};
     };
 
     struct DisplayDesc {
-        WindowDesc window;
+        WindowDescription window;
         MyGraphicsDevice& graphicsDevice;
     };
 
     struct GraphicsEngineDesc {
-        BaseDesc base;
+        BaseDescription base;
     };
 
     struct GraphicsDeviceDesc {
-        BaseDesc base;
+        BaseDescription base;
     };
 
     struct SwapChainDesc {
         void* winHandle{};
-        MyRect winSize{};
+        MyRectangle winSize{};
     };
 
 
     struct GameDesc {
-        MyRect windowSize{ 1280,720 };
+        MyRectangle windowSize{ 1280,720 };
         MyLogger::LogLevel logLevel = MyLogger::LogLevel::Error;
     };
 }

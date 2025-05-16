@@ -37,7 +37,6 @@
     <ClInclude Include="DX3D\Include\Core\DX3DCore.h" />
     <ClInclude Include="DX3D\Include\Core\MyBase.h" />
     <ClInclude Include="DX3D\Include\Core\MyLogger.h" />
-    <ClInclude Include="DX3D\Include\Core\MyWindow.h" />
     <ClInclude Include="DX3D\Include\Core\MyGame.h" />
     <ClInclude Include="DX3D\Include\Game\MyDisplay.h" />
     <ClInclude Include="DX3D\Include\Game\MyGame.h" />

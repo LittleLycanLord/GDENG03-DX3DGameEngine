@@ -4,7 +4,7 @@
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyLogger::MyLogger(LogLevel logLevel) : m_logLevel(logLevel) {
+DX3D::MyLogger::MyLogger(LogLevel logLevel) :logLevel(logLevel) {
     std::clog << "Conrad Ubay | GDENG03 - DirectX11 3D Game Engine" << "\n";
     std::clog << "--------------------------------------" << "\n";
 }
@@ -25,7 +25,7 @@ void DX3D::MyLogger::log(LogLevel level, const char* message) {
         }
         };
 
-    if (level > m_logLevel) return;
+    if (level >logLevel) return;
     std::clog << "[DX3D " << logLevelToString(level) << "]: " << message << "\n";
 }
 

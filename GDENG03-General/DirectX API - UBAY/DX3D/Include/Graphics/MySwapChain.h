@@ -9,8 +9,8 @@ namespace DX3D {
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapChain{};
-		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_rtv{};
+		Microsoft::WRL::ComPtr<IDXGISwapChain>swapChain{};
+		Microsoft::WRL::ComPtr<ID3D11RenderTargetView>rtv{};
 
 		friend class MyDeviceContext;
 	public:

@@ -5,7 +5,7 @@ using namespace DX3D;
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyBase::MyBase(const BaseDesc& desc) : m_logger(desc.logger) {
+DX3D::MyBase::MyBase(const BaseDescription& desc) :logger(desc.logger) {
 }
 
 DX3D::MyBase::~MyBase() {
@@ -23,5 +23,5 @@ DX3D::MyBase::~MyBase() {
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
 MyLogger& DX3D::MyBase::getLogger() noexcept {
-	return m_logger;
+	return logger;
 }

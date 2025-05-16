@@ -7,7 +7,7 @@ namespace DX3D {
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		SwapChainPointer m_swapChain{};
+		SwapChainPointer swapChain{};
 	public:
 
 		//* ╔════════════════════════════╗

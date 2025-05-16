@@ -2,7 +2,7 @@
 #include <Core/DX3DCore.h>
 
 namespace DX3D {
-	class MyRect {
+	class MyRectangle {
 		//* ╔════════════╗
 		//* ║ Attributes ║
 		//* ╚════════════╝
@@ -14,9 +14,9 @@ namespace DX3D {
 		//* ║ Constructors & Destructors ║
 		//* ╚════════════════════════════╝
 	public:
-		MyRect() = default;
-		MyRect(int width, int height) : left(0), top(0), width(width), height(height) {}
-		MyRect(int left, int top, int width, int height) : left(left), top(top), width(width), height(height) {}
+		MyRectangle() = default;
+		MyRectangle(int width, int height) : left(0), top(0), width(width), height(height) {}
+		MyRectangle(int left, int top, int width, int height) : left(left), top(top), width(width), height(height) {}
 
 		//* ╔═══════════╗
 		//* ║ Functions ║

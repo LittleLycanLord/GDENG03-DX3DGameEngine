@@ -12,7 +12,7 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        LogLevel m_logLevel = LogLevel::Error;
+        LogLevel logLevel = LogLevel::Error;
     public:
 
         //* ╔════════════════════════════╗

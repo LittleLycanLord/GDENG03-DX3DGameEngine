@@ -8,8 +8,8 @@ namespace DX3D {
 		//* ║ Attributes ║
 		//* ╚════════════╝
 	private:
-		std::shared_ptr<MyGraphicsDevice> m_graphicsDevice{};
-		DeviceContextPointer m_deviceContext{};
+		std::shared_ptr<MyGraphicsDevice>graphicsDevice{};
+		DeviceContextPointer deviceContext{};
 	public:
 
 		//* ╔════════════════════════════╗
