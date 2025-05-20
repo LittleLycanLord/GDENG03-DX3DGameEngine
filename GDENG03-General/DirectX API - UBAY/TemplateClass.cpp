@@ -1,9 +1,12 @@
 #include "TemplateClass.hpp"
+
+using namespace DX3D;
+
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::TemplateClass::TemplateClass() {}
-DX3D::TemplateClass::~TemplateClass() {}
+TemplateClass::TemplateClass() {}
+TemplateClass::~TemplateClass() {}
 
 //* ╔═══════════╗
 //* ║ Functions ║

@@ -1,14 +1,17 @@
 #include "Graphics/MyGraphicsEngine.hpp"
+
+using namespace DX3D;
+
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyGraphicsEngine::MyGraphicsEngine() {}
-DX3D::MyGraphicsEngine::~MyGraphicsEngine() {}
+MyGraphicsEngine::MyGraphicsEngine() {}
+MyGraphicsEngine::~MyGraphicsEngine() {}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-bool DX3D::MyGraphicsEngine::Initialize() {
+bool MyGraphicsEngine::Initialize() {
     D3D_DRIVER_TYPE driverTypes[] = {
         D3D_DRIVER_TYPE_HARDWARE,
         D3D_DRIVER_TYPE_WARP,
@@ -38,12 +41,37 @@ bool DX3D::MyGraphicsEngine::Initialize() {
 
         driverTypeIndex++;
     }
+
+    this->D3DDevice->QueryInterface(
+        __uuidof(IDXGIDevice),
+        (void**)&this->DXGIDevice
+    );
+    this->DXGIDevice->GetParent(
+        __uuidof(IDXGIAdapter),
+        (void**)&this->DXGIAdapter
+    );
+    this->DXGIAdapter->GetParent(
+        __uuidof(IDXGIFactory),
+        (void**)&this->DXGIFactory
+    );
+
     return SUCCEEDED(result);
 }
-bool DX3D::MyGraphicsEngine::Release() {
+bool MyGraphicsEngine::Release() {
+    this->DXGIDevice->Release();
+    this->DXGIAdapter->Release();
+    this->DXGIFactory->Release();
     this->D3DDevice->Release();
     this->D3DDeviceContext->Release();
     return true;
+}
+MySwapChain* MyGraphicsEngine::CreateSwapChain(HWND windowHandle, UINT width, UINT height) {
+    MySwapChain* swapChain = new MySwapChain();
+    if (swapChain->Initialize(windowHandle, width, height)) {
+        return swapChain;
+    }
+    delete swapChain;
+    return nullptr;
 }
 
 //* ╔════════════════════════════════╗

@@ -1,10 +1,12 @@
 #include "Window/MyAppWindow.hpp"
 
+using namespace DX3D;
+
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyAppWindow::MyAppWindow() {}
-DX3D::MyAppWindow::~MyAppWindow() {}
+MyAppWindow::MyAppWindow() {}
+MyAppWindow::~MyAppWindow() {}
 
 //* ╔═════════════════════════════════╗
 //* ║ Magical Shit I Don't Understand ║
@@ -17,12 +19,19 @@ DX3D::MyAppWindow::~MyAppWindow() {}
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
-void DX3D::MyAppWindow::OnCreate() {
+void MyAppWindow::OnCreate() {
     MyWindow::OnCreate();
     MyGraphicsEngine::GetInstance()->Initialize();
+    RECT windowRectangle = this->GetWindowRect();
+    swapChain = MyGraphicsEngine::GetInstance()->CreateSwapChain(this->windowHandle, windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
 }
-void DX3D::MyAppWindow::OnUpdate() {}
-void DX3D::MyAppWindow::OnDestroy() {
-    MyWindow::OnDestroy();
+void MyAppWindow::OnUpdate() {}
+void MyAppWindow::OnDestroy() {
     MyGraphicsEngine::GetInstance()->Release();
+    if (this->swapChain) {
+        this->swapChain->Release();
+        delete this->swapChain;
+        this->swapChain = nullptr;
+    }
+    MyWindow::OnDestroy();
 }

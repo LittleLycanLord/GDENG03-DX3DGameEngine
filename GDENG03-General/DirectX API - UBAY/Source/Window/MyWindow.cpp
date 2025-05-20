@@ -1,24 +1,31 @@
 #include "Window/MyWindow.hpp"
+using namespace DX3D;
+
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-DX3D::MyWindow::MyWindow() {}
-DX3D::MyWindow::~MyWindow() {}
+MyWindow::MyWindow() {}
+MyWindow::~MyWindow() {}
 
 //* ╔═════════════════════════════════╗
 //* ║ Magical Shit I Don't Understand ║
 //* ╚═════════════════════════════════╝
 
-DX3D::MyWindow* windowProcedurePointer = nullptr;
 LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParameters, LPARAM lParameters) {
     switch (message) {
-    case WM_CREATE:
-        windowProcedurePointer->OnCreate();
-        break;
-    case WM_DESTROY:
-        windowProcedurePointer->OnDestroy();
-        ::PostQuitMessage(0);
-        break;
+    case WM_CREATE: {
+            MyWindow* windowInstance = (MyWindow*)((LPCREATESTRUCT)lParameters)->lpCreateParams;
+            SetWindowLongPtr(windowHandle, GWLP_USERDATA, (LONG_PTR)windowInstance);
+            windowInstance->SetWindowHandle(windowHandle);
+            windowInstance->OnCreate();
+            break;
+        }
+    case WM_DESTROY: {
+            MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
+            windowInstance->OnDestroy();
+            ::PostQuitMessage(0);
+            break;
+        }
     default:
         return DefWindowProc(windowHandle, message, wParameters, lParameters);
     }
@@ -28,7 +35,7 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-bool DX3D::MyWindow::Initialize() {
+bool MyWindow::Initialize() {
     WNDCLASSEX windowClass;
     windowClass.cbClsExtra = NULL;
     windowClass.cbSize = sizeof(WNDCLASSEX);
@@ -46,13 +53,10 @@ bool DX3D::MyWindow::Initialize() {
     if (!::RegisterClassEx(&windowClass))
         return false;
 
-    if (!windowProcedurePointer)
-        windowProcedurePointer = this;
-
     windowHandle = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"Conrad Ubay | DirectX 3D Engine Window",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
         1280, 720, NULL, NULL,
-        NULL, NULL);
+        NULL, this);
 
     if (!windowHandle)
         return false;
@@ -63,18 +67,18 @@ bool DX3D::MyWindow::Initialize() {
     this->running = true;
     return true;
 }
-bool DX3D::MyWindow::Broadcast() {
+bool MyWindow::Broadcast() {
     MSG message;
     while (::PeekMessage(&message, NULL, 0, 0, PM_REMOVE) > 0) {
         ::TranslateMessage(&message);
         ::DispatchMessage(&message);
     }
-    OnUpdate();
+    this->OnUpdate();
     Sleep(0);
     return true;
 }
 
-bool DX3D::MyWindow::Release() {
+bool MyWindow::Release() {
     if (!::DestroyWindow(windowHandle))
         return false;
     return true;
@@ -83,10 +87,10 @@ bool DX3D::MyWindow::Release() {
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
-void DX3D::MyWindow::OnCreate() {
-    
+void MyWindow::OnCreate() {
+
 }
 
-void DX3D::MyWindow::OnDestroy() {
+void MyWindow::OnDestroy() {
     this->running = false;
 }

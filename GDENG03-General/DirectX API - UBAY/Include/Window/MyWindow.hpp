@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <WinUser.h>
 
 namespace DX3D {
     class MyWindow {
@@ -7,9 +8,9 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        bool running{false};
+        bool running{ false };
     protected:
-        HWND windowHandle{NULL};
+        HWND windowHandle{ nullptr };
     public:
 
         //* ╔════════════════════════════╗
@@ -42,6 +43,12 @@ namespace DX3D {
         //* ╚═══════════════════╝
     public:
         bool IsRunning() const { return running; }
+        RECT GetWindowRect() const {
+            RECT rect;
+            GetClientRect(windowHandle, &rect);
+            return rect;
+        }
+        void SetWindowHandle(HWND windowHandle) { this->windowHandle = windowHandle; }
     };
 } // namespace DX3D
 

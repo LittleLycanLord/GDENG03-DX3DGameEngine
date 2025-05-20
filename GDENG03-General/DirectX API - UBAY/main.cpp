@@ -1,8 +1,10 @@
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Window/MyAppWindow.hpp"
 
+using namespace DX3D;
+
 int main() {
-    DX3D::MyAppWindow appWindow;
+    MyAppWindow appWindow;
     if (!appWindow.Initialize()) {
         return -1;
     }

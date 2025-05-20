@@ -1,40 +1,38 @@
 #pragma once
-#include <Window/MyWindow.hpp>
+#include <d3d11.h>
+#include <Windows.h>
 #include "Graphics/MyGraphicsEngine.hpp"
-#include "Graphics/MySwapChain.hpp"
 
 namespace DX3D {
-    class MyAppWindow : public MyWindow {
+    class MySwapChain {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MySwapChain* swapChain{ nullptr };
-    protected:
-        HWND windowHandle{ NULL };
+        IDXGISwapChain* DXGISwapChain{ nullptr };
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyAppWindow();
-        ~MyAppWindow();
+        MySwapChain();
+        ~MySwapChain();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
+        bool Initialize(HWND windowHandle, UINT width, UINT height);
+        bool Release();
+
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate() override;
-        virtual void OnUpdate() override;
-        virtual void OnDestroy() override;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║
