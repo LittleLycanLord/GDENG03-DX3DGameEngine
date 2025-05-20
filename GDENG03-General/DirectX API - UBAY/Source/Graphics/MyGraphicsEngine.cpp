@@ -42,6 +42,8 @@ bool MyGraphicsEngine::Initialize() {
         driverTypeIndex++;
     }
 
+    immediateDeviceContext = new MyDeviceContext(this->D3DDeviceContext);
+
     this->D3DDevice->QueryInterface(
         __uuidof(IDXGIDevice),
         (void**)&this->DXGIDevice
@@ -65,13 +67,9 @@ bool MyGraphicsEngine::Release() {
     this->D3DDeviceContext->Release();
     return true;
 }
-MySwapChain* MyGraphicsEngine::CreateSwapChain(HWND windowHandle, UINT width, UINT height) {
+MySwapChain* MyGraphicsEngine::CreateSwapChain() {
     MySwapChain* swapChain = new MySwapChain();
-    if (swapChain->Initialize(windowHandle, width, height)) {
-        return swapChain;
-    }
-    delete swapChain;
-    return nullptr;
+    return swapChain;
 }
 
 //* ╔════════════════════════════════╗

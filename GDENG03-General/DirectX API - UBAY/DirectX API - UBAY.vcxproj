@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Source\Graphics\MyDeviceContext.cpp" />
     <ClCompile Include="Source\Graphics\MyGraphicsEngine.cpp" />
     <ClCompile Include="Source\Graphics\MySwapChain.cpp" />
     <ClCompile Include="Source\Window\MyAppWindow.cpp" />
@@ -143,8 +144,11 @@
     <ClCompile Include="TemplateClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Graphics\MyDeviceContext.hpp" />
     <ClInclude Include="Include\Graphics\MyGraphicsEngine.hpp" />
     <ClInclude Include="Include\Graphics\MySwapChain.hpp" />
+    <ClInclude Include="Include\Math\Vec3.hpp" />
+    <ClInclude Include="Include\Math\Vec4.hpp" />
     <ClInclude Include="Include\Window\MyAppWindow.hpp" />
     <ClInclude Include="Include\Window\MyWindow.hpp" />
     <ClInclude Include="TemplateClass.hpp" />

@@ -1,44 +1,30 @@
 #pragma once
-#include <d3d11.h>
-#include "Graphics/MySwapChain.hpp"
-#include "Graphics/MyDeviceContext.hpp"
 
 namespace DX3D {
-    class MyGraphicsEngine {
+    class Vec3 {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        ID3D11Device* D3DDevice{ nullptr };
-        MyDeviceContext* immediateDeviceContext{ nullptr };
-        ID3D11DeviceContext* D3DDeviceContext{ nullptr };
-        IDXGIDevice* DXGIDevice{ nullptr };
-        IDXGIAdapter* DXGIAdapter{ nullptr };
-        IDXGIFactory* DXGIFactory{ nullptr };
-        D3D_FEATURE_LEVEL featureLevel{ D3D_FEATURE_LEVEL_11_0 };
-
-        friend class MySwapChain;
     public:
-        static MyGraphicsEngine* GetInstance() {
-            static MyGraphicsEngine graphicsEngine;
-            return &graphicsEngine;
-        }
+        float x{ 0.0f };
+        float y{ 0.0f };
+        float z{ 0.0f };
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyGraphicsEngine();
-        ~MyGraphicsEngine();
+        Vec3(){};
+        Vec3(float x, float y, float z) : x(x), y(y), z(z) {};
+        ~Vec3() {};
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        bool Initialize();
-        bool Release();
-        MySwapChain* CreateSwapChain();
+
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -49,7 +35,6 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyDeviceContext* GetImmedieateDeviceContext() const { return this->immediateDeviceContext; }
     };
 } // namespace DX3D
 

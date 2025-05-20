@@ -1,4 +1,6 @@
 #include "Window/MyWindow.hpp"
+#include "Graphics/MyGraphicsEngine.hpp"
+
 using namespace DX3D;
 
 //* ╔════════════════════════════╗
@@ -69,11 +71,13 @@ bool MyWindow::Initialize() {
 }
 bool MyWindow::Broadcast() {
     MSG message;
+    
+    this->OnUpdate();
+
     while (::PeekMessage(&message, NULL, 0, 0, PM_REMOVE) > 0) {
         ::TranslateMessage(&message);
         ::DispatchMessage(&message);
     }
-    this->OnUpdate();
     Sleep(0);
     return true;
 }
@@ -88,6 +92,10 @@ bool MyWindow::Release() {
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
 void MyWindow::OnCreate() {
+
+}
+
+void MyWindow::OnUpdate() {
 
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <Window/MyWindow.hpp>
 #include "Graphics/MyGraphicsEngine.hpp"
+#include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MySwapChain.hpp"
 
 namespace DX3D {
@@ -10,9 +11,6 @@ namespace DX3D {
         //* ╚════════════╝
     private:
         MySwapChain* swapChain{ nullptr };
-    protected:
-        HWND windowHandle{ NULL };
-    public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║

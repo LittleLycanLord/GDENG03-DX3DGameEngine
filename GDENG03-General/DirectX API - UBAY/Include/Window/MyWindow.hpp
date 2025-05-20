@@ -35,7 +35,7 @@ namespace DX3D {
     protected:
     public:
         virtual void OnCreate();
-        virtual void OnUpdate() = 0;
+        virtual void OnUpdate();
         virtual void OnDestroy();
 
         //* ╔═══════════════════╗

@@ -4,12 +4,15 @@
 #include "Graphics/MyGraphicsEngine.hpp"
 
 namespace DX3D {
+    class MyDeviceContext;
     class MySwapChain {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        IDXGISwapChain* DXGISwapChain{ nullptr };
+        IDXGISwapChain* DXGISwapChain;
+        ID3D11RenderTargetView* D3D11RenderTargetView{ nullptr };
+        friend class MyDeviceContext;
     public:
 
         //* ╔════════════════════════════╗
@@ -25,6 +28,7 @@ namespace DX3D {
     private:
     public:
         bool Initialize(HWND windowHandle, UINT width, UINT height);
+        bool Present(bool vsync);
         bool Release();
 
 

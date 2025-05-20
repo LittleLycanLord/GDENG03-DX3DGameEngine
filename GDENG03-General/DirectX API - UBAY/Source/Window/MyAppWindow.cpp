@@ -1,4 +1,5 @@
 #include "Window/MyAppWindow.hpp"
+#include "Math/Vec4.hpp"
 
 using namespace DX3D;
 
@@ -23,9 +24,15 @@ void MyAppWindow::OnCreate() {
     MyWindow::OnCreate();
     MyGraphicsEngine::GetInstance()->Initialize();
     RECT windowRectangle = this->GetWindowRect();
-    swapChain = MyGraphicsEngine::GetInstance()->CreateSwapChain(this->windowHandle, windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
+    swapChain = MyGraphicsEngine::GetInstance()->CreateSwapChain();
+    swapChain->Initialize(this->windowHandle, windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
 }
-void MyAppWindow::OnUpdate() {}
+void MyAppWindow::OnUpdate() {
+    MyWindow::OnUpdate();
+    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    if (this->swapChain)
+        this->swapChain->Present(false);
+}
 void MyAppWindow::OnDestroy() {
     MyGraphicsEngine::GetInstance()->Release();
     if (this->swapChain) {

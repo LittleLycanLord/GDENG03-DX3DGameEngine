@@ -1,44 +1,32 @@
 #pragma once
 #include <d3d11.h>
-#include "Graphics/MySwapChain.hpp"
-#include "Graphics/MyDeviceContext.hpp"
+#include "Math/Vec4.hpp"
 
 namespace DX3D {
-    class MyGraphicsEngine {
+    class MySwapChain;
+    class MyDeviceContext {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        ID3D11Device* D3DDevice{ nullptr };
-        MyDeviceContext* immediateDeviceContext{ nullptr };
         ID3D11DeviceContext* D3DDeviceContext{ nullptr };
-        IDXGIDevice* DXGIDevice{ nullptr };
-        IDXGIAdapter* DXGIAdapter{ nullptr };
-        IDXGIFactory* DXGIFactory{ nullptr };
-        D3D_FEATURE_LEVEL featureLevel{ D3D_FEATURE_LEVEL_11_0 };
-
-        friend class MySwapChain;
     public:
-        static MyGraphicsEngine* GetInstance() {
-            static MyGraphicsEngine graphicsEngine;
-            return &graphicsEngine;
-        }
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyGraphicsEngine();
-        ~MyGraphicsEngine();
+        MyDeviceContext(ID3D11DeviceContext* D3DDeviceContext);
+        ~MyDeviceContext();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        bool Initialize();
+        bool ClearRenderTargetColor(MySwapChain* swapChain, Vec4 color);
         bool Release();
-        MySwapChain* CreateSwapChain();
+
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -49,7 +37,6 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyDeviceContext* GetImmedieateDeviceContext() const { return this->immediateDeviceContext; }
     };
 } // namespace DX3D
 
