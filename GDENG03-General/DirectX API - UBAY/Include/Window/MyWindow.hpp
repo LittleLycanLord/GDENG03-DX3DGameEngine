@@ -24,7 +24,7 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        bool Init();
+        bool Initialize();
         bool Broadcast();
         bool Release();
 
@@ -33,7 +33,7 @@ namespace DX3D {
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate() = 0;
+        virtual void OnCreate();
         virtual void OnUpdate() = 0;
         virtual void OnDestroy();
 

@@ -1,8 +1,9 @@
+#include "Graphics/MyGraphicsEngine.hpp"
 #include "Window/MyAppWindow.hpp"
 
 int main() {
     DX3D::MyAppWindow appWindow;
-    if (!appWindow.Init()) {
+    if (!appWindow.Initialize()) {
         return -1;
     }
     while (appWindow.IsRunning()) {
@@ -10,3 +11,5 @@ int main() {
     }
     return 0;
 }
+
+    

@@ -1,43 +1,47 @@
 #pragma once
-#include <Window/MyWindow.hpp>
-#include "Graphics/MyGraphicsEngine.hpp"
+#include <d3d11.h>
 
 namespace DX3D {
-    class MyAppWindow : public MyWindow {
+    class MyGraphicsEngine {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-    protected:
-        HWND windowHandle{NULL};
+        ID3D11Device* D3DDevice{ nullptr };
+        D3D_FEATURE_LEVEL featureLevel{ D3D_FEATURE_LEVEL_11_0 };
+        ID3D11DeviceContext* D3DDeviceContext{ nullptr };
     public:
+        static MyGraphicsEngine* GetInstance() {
+            static MyGraphicsEngine graphicsEngine;
+            return &graphicsEngine;
+        }
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyAppWindow();
-        ~MyAppWindow();
+        MyGraphicsEngine();
+        ~MyGraphicsEngine();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
+        bool Initialize();
+        bool Release();
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate() override;
-        virtual void OnUpdate() override;
-        virtual void OnDestroy() override;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
+        
     };
 } // namespace DX3D
 

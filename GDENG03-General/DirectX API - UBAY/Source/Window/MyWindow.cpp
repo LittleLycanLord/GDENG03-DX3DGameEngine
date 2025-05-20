@@ -28,7 +28,7 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-bool DX3D::MyWindow::Init() {
+bool DX3D::MyWindow::Initialize() {
     WNDCLASSEX windowClass;
     windowClass.cbClsExtra = NULL;
     windowClass.cbSize = sizeof(WNDCLASSEX);
@@ -83,6 +83,10 @@ bool DX3D::MyWindow::Release() {
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
+void DX3D::MyWindow::OnCreate() {
+    
+}
+
 void DX3D::MyWindow::OnDestroy() {
     this->running = false;
 }
