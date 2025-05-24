@@ -1,41 +1,34 @@
 #pragma once
 #include <d3d11.h>
-#include "Math/MyVec4.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
+#include "Graphics/MyDeviceContext.hpp"
 
 namespace DX3D {
-    class MySwapChain;
-    class MyVertexBuffer;
-    class MyVertexShader;
-    class MyPixelShader; // Forward declaration of MyPixelShader
-    class MyDeviceContext {
+    class MyPixelShader {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        ID3D11DeviceContext* D3DDeviceContext{ nullptr };
+        ID3D11PixelShader* D3DPixelShader{ nullptr };
+
         friend class MyGraphicsEngine;
+        friend class MyDeviceContext;
     public:
+
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyDeviceContext(ID3D11DeviceContext* D3DDeviceContext);
-        ~MyDeviceContext();
+        MyPixelShader();
+        ~MyPixelShader();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
+        bool Initialize(const void* shaderByteCode, size_t shaderSize);
     public:
-        bool ClearRenderTargetColor(MySwapChain* swapChain, MyVec4 color);
-        void SetVertexBuffer(MyVertexBuffer* vertexBuffer);
-        void SetViewPortSize(UINT width, UINT height);
-        void SetVertexShader(MyVertexShader* vertexShader);
-        void SetPixelShader(MyPixelShader* pixelShader); // Newly added line
-        void DrawTriangle(UINT vertexCount, UINT startVertexIndex);
         bool Release();
-
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -46,7 +39,6 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-
     };
 } // namespace DX3D
 
