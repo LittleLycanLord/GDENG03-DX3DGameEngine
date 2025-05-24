@@ -1,7 +1,10 @@
 #include "Graphics/MySwapChain.hpp"
 #include <iostream>
+#include <comdef.h>
 
 using namespace DX3D;
+
+extern bool LOG_INFO_SWAPCHAIN;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
@@ -29,18 +32,43 @@ bool MySwapChain::Initialize(HWND windowHandle, UINT width, UINT height) {
     description.SampleDesc.Quality = 0;
     description.Windowed = TRUE;
 
+    if (!windowHandle) {
+        std::cout << "[ERROR] : windowHandle is null in MySwapChain::Initialize" << std::endl;
+        return false;
+    }
+    if (!D3DDevice) {
+        std::cout << "[ERROR] : D3DDevice is null in MySwapChain::Initialize" << std::endl;
+        return false;
+    }
+    if (!MyGraphicsEngine::GetInstance()->DXGIFactory) {
+        std::cout << "[ERROR] : DXGIFactory is null in MySwapChain::Initialize" << std::endl;
+        return false;
+    }
+
     HRESULT result = MyGraphicsEngine::GetInstance()->DXGIFactory->CreateSwapChain(
         D3DDevice,
         &description,
         &this->DXGISwapChain
     );
 
-    if (FAILED(result))
+    if (FAILED(result)) {
+        std::cout << "[ERROR] : CreateSwapChain failed. HRESULT: 0x" << std::hex << result << std::endl;
+        _com_error err(result);
+        std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
         return false;
+    }
 
+    if (LOG_INFO_SWAPCHAIN)
+        std::cout << "[INFO] : SwapChain created successfully" << std::endl;
 
     ID3D11Texture2D* backBuffer = nullptr;
-    this->DXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+    HRESULT getBufferResult = this->DXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+    if (FAILED(getBufferResult) || !backBuffer) {
+        std::cout << "[ERROR] : GetBuffer failed in MySwapChain::Initialize. HRESULT: 0x" << std::hex << getBufferResult << std::endl;
+        _com_error err(getBufferResult);
+        std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
+        return false;
+    }
 
     result = D3DDevice->CreateRenderTargetView(
         backBuffer,
@@ -49,17 +77,24 @@ bool MySwapChain::Initialize(HWND windowHandle, UINT width, UINT height) {
     );
     backBuffer->Release();
 
-    if (FAILED(result))
+    if (FAILED(result)) {
+        std::cout << "[ERROR] : CreateRenderTargetView failed. HRESULT: 0x" << std::hex << result << std::endl;
+        _com_error err(result);
+        std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
         return false;
-
+    }
 
     return SUCCEEDED(result);
 }
+
 bool MySwapChain::Present(bool vsync) {
     if (this->DXGISwapChain)
         this->DXGISwapChain->Present(vsync, 0);
+    else
+        std::cout << "[ERROR] : DXGISwapChain is null in MySwapChain::Present" << std::endl;
     return true;
 }
+
 bool MySwapChain::Release() {
     if (DXGISwapChain) {
         this->DXGISwapChain->Release();

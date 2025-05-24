@@ -3,6 +3,11 @@
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MySwapChain.hpp"
+#include "Graphics/MyVertexBuffer.hpp"
+#include "Graphics/Shaders/MyVertexShader.hpp"
+#include "Graphics/Shaders/MyPixelShader.hpp"
+#include "Math/MyVec3.hpp"
+#include "Math/MyVertex.hpp"
 
 namespace DX3D {
     class MyAppWindow : public MyWindow {
@@ -11,6 +16,9 @@ namespace DX3D {
         //* ╚════════════╝
     private:
         MySwapChain* swapChain{ nullptr };
+        MyVertexBuffer* vertexBuffer{ nullptr };
+        MyVertexShader* vertexShader{ nullptr };
+        MyPixelShader* pixelShader{ nullptr }; // Add this line
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║

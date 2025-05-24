@@ -1,31 +1,34 @@
 #pragma once
+#include <d3d11.h>
+#include "Graphics/MyGraphicsEngine.hpp"
+#include "Graphics/MyDeviceContext.hpp"
 
 namespace DX3D {
-    class Vec4 {
+    class MyVertexShader {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        ID3D11VertexShader* D3DVertexShader{ nullptr };
+
+        friend class MyGraphicsEngine;
+        friend class MyDeviceContext;
     public:
-        float w{ 0.0f };
-        float x{ 0.0f };
-        float y{ 0.0f };
-        float z{ 0.0f };
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        Vec4() {};
-        Vec4(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {};
-        ~Vec4() {};
+        MyVertexShader();
+        ~MyVertexShader();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
+        bool Initialize(const void* shaderByteCode, size_t shaderSize);
     public:
-
+        bool Release();
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
