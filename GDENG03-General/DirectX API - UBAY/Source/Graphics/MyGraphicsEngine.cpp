@@ -5,7 +5,8 @@
 using namespace DX3D;
 
 extern bool LOG_INFO_GRAPHICS_ENGINE;
-extern bool LOG_INFO_SHADER;
+extern bool LOG_INFO_VERTEXSHADER;
+extern bool LOG_INFO_PIXELSHADER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
@@ -116,11 +117,18 @@ MySwapChain* MyGraphicsEngine::CreateSwapChain() {
 }
 
 MyVertexBuffer* MyGraphicsEngine::CreateVertexBuffer() {
-    MyVertexBuffer* vb = new MyVertexBuffer();
-    if (!vb) {
+    MyVertexBuffer* vertexBuffer = new MyVertexBuffer();
+    if (!vertexBuffer) {
         std::cout << "[ERROR] : Failed to allocate MyVertexBuffer in MyGraphicsEngine::CreateVertexBuffer" << std::endl;
     }
-    return vb;
+    return vertexBuffer;
+}
+MyConstantBuffer* MyGraphicsEngine::CreateConstantBuffer() {
+    MyConstantBuffer* constantBuffer = new MyConstantBuffer();
+    if (!constantBuffer) {
+        std::cout << "[ERROR] : Failed to allocate MyConstantBuffer in MyGraphicsEngine::CreateConstantBuffer" << std::endl;
+    }
+    return constantBuffer;
 }
 
 MyVertexShader* MyGraphicsEngine::CreateVertexShader(const void* shaderByteCode, size_t shaderSize) {
@@ -177,7 +185,7 @@ bool MyGraphicsEngine::CompileVertexShader(const wchar_t* fileName, const char* 
         return false;
     }
 
-    if (LOG_INFO_SHADER)
+    if (LOG_INFO_VERTEXSHADER)
         std::wcout << L"[INFO] : Vertex shader compiled successfully: " << fileName << std::endl;
 
     *shaderByteCode = this->temporaryBlob->GetBufferPointer();
@@ -210,7 +218,7 @@ bool MyGraphicsEngine::CompilePixelShader(const wchar_t* fileName, const char* e
         return false;
     }
 
-    if (LOG_INFO_SHADER)
+    if (LOG_INFO_PIXELSHADER)
         std::wcout << L"[INFO] : Pixel shader compiled successfully: " << fileName << std::endl;
 
     *shaderByteCode = this->temporaryBlob->GetBufferPointer();

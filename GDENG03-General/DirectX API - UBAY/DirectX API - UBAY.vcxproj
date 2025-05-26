@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Source\Graphics\MyConstantBuffer.cpp" />
     <ClCompile Include="Source\Graphics\MyDeviceContext.cpp" />
     <ClCompile Include="Source\Graphics\MyGraphicsEngine.cpp" />
     <ClCompile Include="Source\Graphics\MySwapChain.cpp" />
@@ -147,12 +148,14 @@
     <ClCompile Include="TemplateClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Graphics\MyConstantBuffer.hpp" />
     <ClInclude Include="Include\Graphics\MyDeviceContext.hpp" />
     <ClInclude Include="Include\Graphics\MyGraphicsEngine.hpp" />
     <ClInclude Include="Include\Graphics\MySwapChain.hpp" />
     <ClInclude Include="Include\Graphics\MyVertexBuffer.hpp" />
     <ClInclude Include="Include\Graphics\Shaders\MyPixelShader.hpp" />
     <ClInclude Include="Include\Graphics\Shaders\MyVertexShader.hpp" />
+    <ClInclude Include="Include\Math\MyConstant.hpp" />
     <ClInclude Include="Include\Math\MyVec3.hpp" />
     <ClInclude Include="Include\Math\MyVec4.hpp" />
     <ClInclude Include="Include\Math\MyVertex.hpp" />

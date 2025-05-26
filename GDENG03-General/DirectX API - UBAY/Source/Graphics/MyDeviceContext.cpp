@@ -40,7 +40,7 @@ bool MyDeviceContext::ClearRenderTargetColor(MySwapChain* swapChain, MyVec4 colo
 }
 
 void MyDeviceContext::SetVertexBuffer(MyVertexBuffer* vertexBuffer) {
-    if (!vertexBuffer || !vertexBuffer->vertexBuffer || !vertexBuffer->inputLayout) {
+    if (!vertexBuffer || !vertexBuffer->D3DVertexBuffer || !vertexBuffer->D3DInputLayout) {
         std::cout << "[ERROR] : vertexBuffer, vertexBuffer->vertexBuffer, or inputLayout is null in MyDeviceContext::SetVertexBuffer" << std::endl;
         return;
     }
@@ -53,11 +53,11 @@ void MyDeviceContext::SetVertexBuffer(MyVertexBuffer* vertexBuffer) {
     this->D3DDeviceContext->IASetVertexBuffers(
         0,
         1,
-        &vertexBuffer->vertexBuffer,
+        &vertexBuffer->D3DVertexBuffer,
         &stride,
         &offset
     );
-    this->D3DDeviceContext->IASetInputLayout(vertexBuffer->inputLayout);
+    this->D3DDeviceContext->IASetInputLayout(vertexBuffer->D3DInputLayout);
 }
 
 void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
@@ -106,7 +106,20 @@ void MyDeviceContext::SetPixelShader(MyPixelShader* pixelShader) {
         0
     );
 }
-
+void MyDeviceContext::SetConstantBuffer(MyVertexShader* vertexShader, MyConstantBuffer* constantBuffer) {
+    this->D3DDeviceContext->VSSetConstantBuffers(
+        0,
+        1,
+        &constantBuffer->D3DConstantBuffer
+    );
+}
+void MyDeviceContext::SetConstantBuffer(MyPixelShader* pixelShader, MyConstantBuffer* constantBuffer) {
+    this->D3DDeviceContext->PSSetConstantBuffers(
+        0,
+        1,
+        &constantBuffer->D3DConstantBuffer
+    );
+}
 void MyDeviceContext::DrawTriangle(UINT vertexCount, UINT startVertexIndex) {
     if (!this->D3DDeviceContext) {
         std::cout << "[ERROR] : D3DDeviceContext is null in MyDeviceContext::DrawTriangle" << std::endl;
@@ -123,7 +136,8 @@ bool MyDeviceContext::Release() {
         this->D3DDeviceContext->Release();
         this->D3DDeviceContext = nullptr;
         delete this;
-    } else {
+    }
+    else {
         std::cout << "[ERROR] : D3DDeviceContext is already null in MyDeviceContext::Release" << std::endl;
     }
     return true;

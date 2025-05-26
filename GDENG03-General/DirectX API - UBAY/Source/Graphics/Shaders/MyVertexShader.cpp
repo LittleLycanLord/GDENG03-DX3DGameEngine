@@ -4,6 +4,8 @@
 
 using namespace DX3D;
 
+extern bool LOG_INFO_VERTEXSHADER;
+
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
@@ -26,12 +28,16 @@ bool MyVertexShader::Initialize(const void* shaderByteCode, size_t shaderSize) {
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
         return false;
     }
+    if (LOG_INFO_VERTEXSHADER)
+        std::cout << "[INFO] : Vertex shader created successfully" << std::endl;
     return true;
 }
 bool MyVertexShader::Release() {
     if (this->D3DVertexShader) {
         this->D3DVertexShader->Release();
         this->D3DVertexShader = nullptr;
+        if (LOG_INFO_VERTEXSHADER)
+            std::cout << "[INFO] : Vertex shader released" << std::endl;
     }
     else {
         std::cout << "[ERROR] : D3DVertexShader is already null in MyVertexShader::Release" << std::endl;

@@ -1,12 +1,15 @@
 #pragma once
-#include <Window/MyWindow.hpp>
+#include <Windows.h>
+#include "Window/MyWindow.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MySwapChain.hpp"
 #include "Graphics/MyVertexBuffer.hpp"
+#include "Graphics/MyConstantBuffer.hpp"
 #include "Graphics/Shaders/MyVertexShader.hpp"
 #include "Graphics/Shaders/MyPixelShader.hpp"
 #include "Math/MyVec3.hpp"
+#include "Math/MyConstant.hpp"
 #include "Math/MyVertex.hpp"
 
 namespace DX3D {
@@ -17,8 +20,13 @@ namespace DX3D {
     private:
         MySwapChain* swapChain{ nullptr };
         MyVertexBuffer* vertexBuffer{ nullptr };
+        MyConstantBuffer* constantBuffer{ nullptr };
         MyVertexShader* vertexShader{ nullptr };
-        MyPixelShader* pixelShader{ nullptr }; // Add this line
+        MyPixelShader* pixelShader{ nullptr };
+
+        unsigned long oldTime = 0;
+        float deltaTime = 0;
+        float angle = 0;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║

@@ -4,6 +4,8 @@
 
 using namespace DX3D;
 
+extern bool LOG_INFO_PIXELSHADER;
+
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
@@ -26,12 +28,16 @@ bool MyPixelShader::Initialize(const void* shaderByteCode, size_t shaderSize) {
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
         return false;
     }
+    if (LOG_INFO_PIXELSHADER)
+        std::cout << "[INFO] : Pixel shader created successfully" << std::endl;
     return true;
 }
 bool MyPixelShader::Release() {
     if (this->D3DPixelShader) {
         this->D3DPixelShader->Release();
         this->D3DPixelShader = nullptr;
+        if (LOG_INFO_PIXELSHADER)
+            std::cout << "[INFO] : Pixel shader released" << std::endl;
     }
     else {
         std::cout << "[ERROR] : D3DPixelShader is already null in MyPixelShader::Release" << std::endl;

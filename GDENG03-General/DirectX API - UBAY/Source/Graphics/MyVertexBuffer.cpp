@@ -1,24 +1,15 @@
 #include "Graphics/MyVertexBuffer.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
-#include <iostream>
-#include <comdef.h>
 
 using namespace DX3D;
 
 extern bool LOG_INFO_VERTEXBUFFER;
 
-//* ╔════════════════════════════╗
-//* ║ Constructors & Destructors ║
-//* ╚════════════════════════════╝
 MyVertexBuffer::MyVertexBuffer() {}
 MyVertexBuffer::~MyVertexBuffer() {}
 
-//* ╔═══════════╗
-//* ║ Functions ║
-//* ╚═══════════╝
 bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize) {
-    if (this->inputLayout) this->inputLayout->Release();
-    if (this->vertexBuffer) this->vertexBuffer->Release();
+    if (this->D3DInputLayout) this->D3DInputLayout->Release();
+    if (this->D3DVertexBuffer) this->D3DVertexBuffer->Release();
 
     ID3D11Device* D3DDevice = MyGraphicsEngine::GetInstance()->D3DDevice;
 
@@ -43,7 +34,7 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
     HRESULT result = D3DDevice->CreateBuffer(
         &bufferDescription,
         &vertexData,
-        &this->vertexBuffer
+        &this->D3DVertexBuffer
     );
 
     if (FAILED(result)) {
@@ -54,12 +45,10 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
     }
 
     D3D11_INPUT_ELEMENT_DESC layout[] = {
-        { "POSITION",   0,      DXGI_FORMAT_R32G32B32_FLOAT,    0,      0,  D3D11_INPUT_PER_VERTEX_DATA,    0 },
-        { "COLOR",      0,      DXGI_FORMAT_R32G32B32_FLOAT,    0,      12, D3D11_INPUT_PER_VERTEX_DATA,    0 },
-        // { "TEXCOORD",   0,      DXGI_FORMAT_R32G32_FLOAT,       0,      24, D3D11_INPUT_PER_VERTEX_DATA,    0 },
-        // { "NORMAL",     0,      DXGI_FORMAT_R32G32B32_FLOAT,    0,      32, D3D11_INPUT_PER_VERTEX_DATA,    0 },
-        // { "TANGENT",    0,      DXGI_FORMAT_R32G32B32_FLOAT,    0,      44, D3D11_INPUT_PER_VERTEX_DATA,    0 },
-        // { "BINORMAL",   0,      DXGI_FORMAT_R32G32B32_FLOAT,    0,      56, D3D11_INPUT_PER_VERTEX_DATA,    0 }
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },   // float3 position (offset 0)
+        { "POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },   // float3 nextPosition (offset 12)
+        { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },   // float3 color (offset 24)
+        { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },   // float3 nextColor (offset 36)
     };
 
     result = D3DDevice->CreateInputLayout(
@@ -67,7 +56,7 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
         ARRAYSIZE(layout),
         shaderByteCode,
         shaderByteCodeSize,
-        &this->inputLayout
+        &this->D3DInputLayout
     );
 
     if (FAILED(result)) {
@@ -83,11 +72,8 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
     return SUCCEEDED(result);
 }
 bool MyVertexBuffer::Release() {
-    if (this->inputLayout) this->inputLayout->Release();
-    if (this->vertexBuffer) this->vertexBuffer->Release();
+    if (this->D3DInputLayout) this->D3DInputLayout->Release();
+    if (this->D3DVertexBuffer) this->D3DVertexBuffer->Release();
     return true;
 }
 
-//* ╔════════════════════════════════╗
-//* ║ Virtual / Overridden Functions ║
-//* ╚════════════════════════════════╝
