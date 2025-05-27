@@ -1,13 +1,20 @@
 #include "Window/MyWindow.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
+#include <iostream>
 
 using namespace DX3D;
+
+extern bool LOG_INFO_WINDOW;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyWindow::MyWindow() {}
-MyWindow::~MyWindow() {}
+MyWindow::MyWindow() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow constructed" << std::endl;
+}
+MyWindow::~MyWindow() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow destructed" << std::endl;
+}
 
 //* ╔═════════════════════════════════╗
 //* ║ Magical Shit I Don't Understand ║
@@ -38,6 +45,7 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
 //* ║ Functions ║
 //* ╚═══════════╝
 bool MyWindow::Initialize() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::Initialize called" << std::endl;
     WNDCLASSEX windowClass;
     windowClass.cbClsExtra = NULL;
     windowClass.cbSize = sizeof(WNDCLASSEX);
@@ -52,28 +60,34 @@ bool MyWindow::Initialize() {
     windowClass.style = NULL;
     windowClass.lpfnWndProc = WindowProcedure;
 
-    if (!::RegisterClassEx(&windowClass))
+    if (!::RegisterClassEx(&windowClass)) {
+        if (LOG_INFO_WINDOW) std::cout << "[ERROR] : RegisterClassEx failed" << std::endl;
         return false;
+    }
 
     windowHandle = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"Conrad Ubay | DirectX 3D Engine Window",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
         1280, 720, NULL, NULL,
         NULL, this);
 
-    if (!windowHandle)
+    if (!windowHandle) {
+        if (LOG_INFO_WINDOW) std::cout << "[ERROR] : CreateWindowEx failed" << std::endl;
         return false;
+    }
 
     ::ShowWindow(windowHandle, SW_SHOW);
     ::UpdateWindow(windowHandle);
 
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Window created and shown" << std::endl;
     this->running = true;
     return true;
 }
 bool MyWindow::Broadcast() {
-    MSG message;
-    
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::Broadcast called" << std::endl;
+
     this->OnUpdate();
 
+    MSG message;
     while (::PeekMessage(&message, NULL, 0, 0, PM_REMOVE) > 0) {
         ::TranslateMessage(&message);
         ::DispatchMessage(&message);
@@ -83,8 +97,12 @@ bool MyWindow::Broadcast() {
 }
 
 bool MyWindow::Release() {
-    if (!::DestroyWindow(windowHandle))
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::Release called" << std::endl;
+    if (!::DestroyWindow(windowHandle)) {
+        if (LOG_INFO_WINDOW) std::cout << "[ERROR] : DestroyWindow failed" << std::endl;
         return false;
+    }
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Window destroyed" << std::endl;
     return true;
 }
 
@@ -92,13 +110,14 @@ bool MyWindow::Release() {
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
 void MyWindow::OnCreate() {
-
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnCreate called" << std::endl;
 }
 
 void MyWindow::OnUpdate() {
-
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnUpdate called" << std::endl;
 }
 
 void MyWindow::OnDestroy() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnDestroy called" << std::endl;
     this->running = false;
 }

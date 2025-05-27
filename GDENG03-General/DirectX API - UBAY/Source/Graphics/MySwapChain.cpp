@@ -9,13 +9,19 @@ extern bool LOG_INFO_SWAPCHAIN;
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MySwapChain::MySwapChain() {}
-MySwapChain::~MySwapChain() {}
+MySwapChain::MySwapChain() {
+    if (LOG_INFO_SWAPCHAIN) std::cout << "[INFO] : MySwapChain constructed" << std::endl;
+}
+MySwapChain::~MySwapChain() {
+    if (LOG_INFO_SWAPCHAIN) std::cout << "[INFO] : MySwapChain destructed" << std::endl;
+}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
 bool MySwapChain::Initialize(HWND windowHandle, UINT width, UINT height) {
+    if (LOG_INFO_SWAPCHAIN) std::cout << "[INFO] : MySwapChain::Initialize called" << std::endl;
+
     ID3D11Device* D3DDevice = MyGraphicsEngine::GetInstance()->D3DDevice;
 
     DXGI_SWAP_CHAIN_DESC description;
@@ -88,6 +94,8 @@ bool MySwapChain::Initialize(HWND windowHandle, UINT width, UINT height) {
 }
 
 bool MySwapChain::Present(bool vsync) {
+    if (LOG_INFO_SWAPCHAIN) std::cout << "[INFO] : MySwapChain::Present called" << std::endl;
+
     if (this->DXGISwapChain)
         this->DXGISwapChain->Present(vsync, 0);
     else
@@ -96,6 +104,8 @@ bool MySwapChain::Present(bool vsync) {
 }
 
 bool MySwapChain::Release() {
+    if (LOG_INFO_SWAPCHAIN) std::cout << "[INFO] : MySwapChain::Release called" << std::endl;
+
     if (DXGISwapChain) {
         this->DXGISwapChain->Release();
         this->DXGISwapChain = nullptr;

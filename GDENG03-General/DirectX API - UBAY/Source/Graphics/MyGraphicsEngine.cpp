@@ -11,13 +11,19 @@ extern bool LOG_INFO_PIXELSHADER;
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyGraphicsEngine::MyGraphicsEngine() {}
-MyGraphicsEngine::~MyGraphicsEngine() {}
+MyGraphicsEngine::MyGraphicsEngine() {
+    if (LOG_INFO_GRAPHICS_ENGINE) std::cout << "[INFO] : MyGraphicsEngine constructed" << std::endl;
+}
+MyGraphicsEngine::~MyGraphicsEngine() {
+    if (LOG_INFO_GRAPHICS_ENGINE) std::cout << "[INFO] : MyGraphicsEngine destructed" << std::endl;
+}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
 bool MyGraphicsEngine::Initialize() {
+    if (LOG_INFO_GRAPHICS_ENGINE) std::cout << "[INFO] : MyGraphicsEngine::Initialize called" << std::endl;
+
     D3D_DRIVER_TYPE driverTypes[] = {
         D3D_DRIVER_TYPE_HARDWARE,
         D3D_DRIVER_TYPE_WARP,
@@ -95,6 +101,8 @@ bool MyGraphicsEngine::Initialize() {
 }
 
 bool MyGraphicsEngine::Release() {
+    if (LOG_INFO_GRAPHICS_ENGINE) std::cout << "[INFO] : MyGraphicsEngine::Release called" << std::endl;
+
     if (this->DXGIDevice) this->DXGIDevice->Release();
     else std::cout << "[ERROR] : DXGIDevice is already null in MyGraphicsEngine::Release" << std::endl;
     if (this->DXGIAdapter) this->DXGIAdapter->Release();

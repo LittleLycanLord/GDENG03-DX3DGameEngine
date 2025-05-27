@@ -11,13 +11,17 @@ extern bool LOG_INFO_DEVICECONTEXT;
 //* ╚════════════════════════════╝
 MyDeviceContext::MyDeviceContext(ID3D11DeviceContext* D3DDeviceContext) {
     this->D3DDeviceContext = D3DDeviceContext;
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext constructed" << std::endl;
 }
-MyDeviceContext::~MyDeviceContext() {}
+MyDeviceContext::~MyDeviceContext() {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext destructed" << std::endl;
+}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
 bool MyDeviceContext::ClearRenderTargetColor(MySwapChain* swapChain, MyVec4 color) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::ClearRenderTargetColor called" << std::endl;
     if (!swapChain || !swapChain->D3D11RenderTargetView) {
         std::cout << "[ERROR] : swapChain or D3D11RenderTargetView is null in MyDeviceContext::ClearRenderTargetColor" << std::endl;
         return false;
@@ -40,6 +44,7 @@ bool MyDeviceContext::ClearRenderTargetColor(MySwapChain* swapChain, MyVec4 colo
 }
 
 void MyDeviceContext::SetVertexBuffer(MyVertexBuffer* vertexBuffer) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::SetVertexBuffer called" << std::endl;
     if (!vertexBuffer || !vertexBuffer->D3DVertexBuffer || !vertexBuffer->D3DInputLayout) {
         std::cout << "[ERROR] : vertexBuffer, vertexBuffer->vertexBuffer, or inputLayout is null in MyDeviceContext::SetVertexBuffer" << std::endl;
         return;
@@ -61,6 +66,7 @@ void MyDeviceContext::SetVertexBuffer(MyVertexBuffer* vertexBuffer) {
 }
 
 void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::SetViewPortSize called" << std::endl;
     if (!this->D3DDeviceContext) {
         std::cout << "[ERROR] : D3DDeviceContext is null in MyDeviceContext::SetViewPortSize" << std::endl;
         return;
@@ -76,6 +82,7 @@ void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
 }
 
 void MyDeviceContext::SetVertexShader(MyVertexShader* vertexShader) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::SetVertexShader called" << std::endl;
     if (!vertexShader || !vertexShader->D3DVertexShader) {
         std::cout << "[ERROR] : vertexShader or D3DVertexShader is null in MyDeviceContext::SetVertexShader" << std::endl;
         return;
@@ -92,6 +99,7 @@ void MyDeviceContext::SetVertexShader(MyVertexShader* vertexShader) {
 }
 
 void MyDeviceContext::SetPixelShader(MyPixelShader* pixelShader) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::SetPixelShader called" << std::endl;
     if (!pixelShader || !pixelShader->D3DPixelShader) {
         std::cout << "[ERROR] : pixelShader or D3DPixelShader is null in MyDeviceContext::SetPixelShader" << std::endl;
         return;
@@ -121,17 +129,17 @@ void MyDeviceContext::SetConstantBuffer(MyPixelShader* pixelShader, MyConstantBu
     );
 }
 void MyDeviceContext::DrawTriangle(UINT vertexCount, UINT startVertexIndex) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::DrawTriangle called with vertexCount=" << vertexCount << ", startVertexIndex=" << startVertexIndex << std::endl;
     if (!this->D3DDeviceContext) {
         std::cout << "[ERROR] : D3DDeviceContext is null in MyDeviceContext::DrawTriangle" << std::endl;
         return;
     }
-    if (LOG_INFO_DEVICECONTEXT)
-        std::cout << "[INFO] : MyDeviceContext::DrawTriangle called with vertexCount=" << vertexCount << ", startVertexIndex=" << startVertexIndex << std::endl;
     this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     this->D3DDeviceContext->Draw(vertexCount, startVertexIndex);
 }
 
 bool MyDeviceContext::Release() {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::Release called" << std::endl;
     if (this->D3DDeviceContext) {
         this->D3DDeviceContext->Release();
         this->D3DDeviceContext = nullptr;

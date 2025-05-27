@@ -4,10 +4,16 @@ using namespace DX3D;
 
 extern bool LOG_INFO_VERTEXBUFFER;
 
-MyVertexBuffer::MyVertexBuffer() {}
-MyVertexBuffer::~MyVertexBuffer() {}
+MyVertexBuffer::MyVertexBuffer() {
+    if (LOG_INFO_VERTEXBUFFER) std::cout << "[INFO] : MyVertexBuffer constructed" << std::endl;
+}
+MyVertexBuffer::~MyVertexBuffer() {
+    if (LOG_INFO_VERTEXBUFFER) std::cout << "[INFO] : MyVertexBuffer destructed" << std::endl;
+}
 
 bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize) {
+    if (LOG_INFO_VERTEXBUFFER) std::cout << "[INFO] : MyVertexBuffer::Load called" << std::endl;
+
     if (this->D3DInputLayout) this->D3DInputLayout->Release();
     if (this->D3DVertexBuffer) this->D3DVertexBuffer->Release();
 
@@ -72,6 +78,8 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
     return SUCCEEDED(result);
 }
 bool MyVertexBuffer::Release() {
+    if (LOG_INFO_VERTEXBUFFER) std::cout << "[INFO] : MyVertexBuffer::Release called" << std::endl;
+
     if (this->D3DInputLayout) this->D3DInputLayout->Release();
     if (this->D3DVertexBuffer) this->D3DVertexBuffer->Release();
     return true;

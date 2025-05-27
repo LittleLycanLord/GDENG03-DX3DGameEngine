@@ -1,6 +1,7 @@
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Window/MyAppWindow.hpp"
 #include <string>
+#include <iostream>
 
 // Logging toggles
 bool LOG_INFO_WINDOW = false;
@@ -19,13 +20,16 @@ extern const std::wstring PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/ColorShifting
 using namespace DX3D;
 
 int main() {
+    std::cout << "[INFO] : Application started" << std::endl;
     MyAppWindow appWindow;
     if (!appWindow.Initialize()) {
+        std::cout << "[ERROR] : Failed to initialize application window" << std::endl;
         return -1;
     }
     while (appWindow.IsRunning()) {
         appWindow.Broadcast();
     }
+    std::cout << "[INFO] : Application exiting" << std::endl;
     return 0;
 }
 

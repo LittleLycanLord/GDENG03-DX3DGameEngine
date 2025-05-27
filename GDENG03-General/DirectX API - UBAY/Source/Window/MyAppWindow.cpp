@@ -26,6 +26,8 @@ MyAppWindow::~MyAppWindow() {}
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
 void MyAppWindow::OnCreate() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnCreate called" << std::endl;
+
     MyWindow::OnCreate();
     MyGraphicsEngine::GetInstance()->Initialize();
     RECT windowRectangle = this->GetWindowRect();
@@ -245,6 +247,8 @@ void MyAppWindow::OnCreate() {
 }
 
 void MyAppWindow::OnUpdate() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnUpdate called" << std::endl;
+
     MyWindow::OnUpdate();
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : OnUpdate called" << std::endl;
     MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVec4(0.0f, 0.3f, 0.4f, 1.0f));
@@ -285,6 +289,8 @@ void MyAppWindow::OnUpdate() {
 }
 
 void MyAppWindow::OnDestroy() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnDestroy called" << std::endl;
+
     MyWindow::OnDestroy();
     if (this->vertexBuffer) {
         this->vertexBuffer->Release();
