@@ -21,6 +21,27 @@ MyAppWindow::~MyAppWindow() {}
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
+void MyAppWindow::UpdateDeltaTime() {
+    this->oldTime = this->newTime;
+    this->newTime = ::GetTickCount();
+    this->deltaTime = this->oldTime ? (this->newTime - this->oldTime) / 1000.0f : 0.0f;
+}
+void MyAppWindow::UpdateObjects() {
+    // Set constant buffer
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Setting constant buffer" << std::endl;
+    MyConstant constantData;
+    this->angle += 1.57f * this->deltaTime;
+    constantData.angle = this->angle;
+    // constantData.world.Translate(MyVec3(0.0f, 0.0f, 0.0f));
+    // constantData.view.SetIdentity();
+    // constantData.projection.SetOrthographicLeftHand(
+    //     (this->GetWindowRect().right - this->GetWindowRect().left) / 40.0f,
+    //     (this->GetWindowRect().bottom - this->GetWindowRect().top) / 40.0f,
+    //     -4.0f,
+    //     4.0
+    // );
+    this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext(), &constantData);
+}
 
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
@@ -256,18 +277,9 @@ void MyAppWindow::OnUpdate() {
     RECT windowRectangle = this->GetWindowRect();
     MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetViewPortSize(windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
 
-    // Set constant buffer
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Setting constant buffer" << std::endl;
-    unsigned long newTime = 0;
-    if (this->oldTime)
-        newTime = ::GetTickCount() - this->oldTime;
-    this->deltaTime = newTime / 1000.0f;
-    this->oldTime = ::GetTickCount();
-    this->angle += 1.57f * this->deltaTime;
 
-    MyConstant constantData;
-    constantData.angle = this->angle;
-    this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext(), &constantData);
+    this->UpdateObjects();
+
     MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetConstantBuffer(this->vertexShader, this->constantBuffer);
     MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetConstantBuffer(this->pixelShader, this->constantBuffer);
 
@@ -286,6 +298,8 @@ void MyAppWindow::OnUpdate() {
         if (LOG_INFO_WINDOW) std::cout << "[INFO] : Presenting swap chain" << std::endl;
         this->swapChain->Present(true);
     }
+
+    this->UpdateDeltaTime();
 }
 
 void MyAppWindow::OnDestroy() {

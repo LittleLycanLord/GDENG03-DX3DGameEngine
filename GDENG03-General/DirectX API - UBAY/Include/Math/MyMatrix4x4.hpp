@@ -1,58 +1,62 @@
 #pragma once
-#include <Windows.h>
-#include "Window/MyWindow.hpp"
-#include "Math/MyMatrix4x4.hpp"
 #include "Math/MyVec3.hpp"
-#include "Math/MyConstant.hpp"
-#include "Math/MyVertex.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
-#include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MySwapChain.hpp"
-#include "Graphics/MyVertexBuffer.hpp"
-#include "Graphics/MyConstantBuffer.hpp"
-#include "Graphics/Shaders/MyVertexShader.hpp"
-#include "Graphics/Shaders/MyPixelShader.hpp"
+#include "memory"
 
 namespace DX3D {
-    class MyAppWindow : public MyWindow {
+    class MyMatrix4x4 {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MySwapChain* swapChain{ nullptr };
-        MyVertexBuffer* vertexBuffer{ nullptr };
-        MyConstantBuffer* constantBuffer{ nullptr };
-        MyVertexShader* vertexShader{ nullptr };
-        MyPixelShader* pixelShader{ nullptr };
-
-        unsigned long oldTime = 0;
-        unsigned long newTime = 0;
-        float deltaTime = 0;
-        float angle = 0;
+    public:
+        float matrix[4][4];
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyAppWindow();
-        ~MyAppWindow();
+        MyMatrix4x4() { this->SetIdentity(); }
+        ~MyMatrix4x4() {}
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
-        void UpdateDeltaTime();
-        void UpdateObjects();
     public:
+        void SetIdentity() {
+            memset(matrix, 0, sizeof(float) * 16);
+            matrix[0][0] = 1;
+            matrix[1][1] = 1;
+            matrix[2][2] = 1;
+            matrix[3][3] = 1;
+        }
+
+        void Translate(const MyVec3& translation) {
+            this->SetIdentity();
+            matrix[3][0] = translation.x;
+            matrix[3][1] = translation.y;
+            matrix[3][2] = translation.z;
+        }
+        void Scale(const MyVec3& scale) {
+            this->SetIdentity();
+            matrix[0][0] = scale.x;
+            matrix[1][1] = scale.y;
+            matrix[2][2] = scale.z;
+        }
+        void SetOrthographicLeftHand(float width, float height, float nearPlane, float farPlane) {
+            this->SetIdentity();
+            matrix[0][0] = 2.0f / width;
+            matrix[1][1] = 2.0f / height;
+            matrix[2][2] = 1.0f / (farPlane - nearPlane);
+            matrix[3][3] = -(nearPlane / (farPlane - nearPlane));
+        }
+
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate() override;
-        virtual void OnUpdate() override;
-        virtual void OnDestroy() override;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║

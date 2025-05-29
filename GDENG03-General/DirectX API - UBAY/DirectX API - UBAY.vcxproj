@@ -145,7 +145,6 @@
     <ClCompile Include="Source\Graphics\Shaders\MyVertexShader.cpp" />
     <ClCompile Include="Source\Window\MyAppWindow.cpp" />
     <ClCompile Include="Source\Window\MyWindow.cpp" />
-    <ClCompile Include="TemplateClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Graphics\MyConstantBuffer.hpp" />
@@ -156,12 +155,12 @@
     <ClInclude Include="Include\Graphics\Shaders\MyPixelShader.hpp" />
     <ClInclude Include="Include\Graphics\Shaders\MyVertexShader.hpp" />
     <ClInclude Include="Include\Math\MyConstant.hpp" />
+    <ClInclude Include="Include\Math\MyMatrix4x4.hpp" />
     <ClInclude Include="Include\Math\MyVec3.hpp" />
     <ClInclude Include="Include\Math\MyVec4.hpp" />
     <ClInclude Include="Include\Math\MyVertex.hpp" />
     <ClInclude Include="Include\Window\MyAppWindow.hpp" />
     <ClInclude Include="Include\Window\MyWindow.hpp" />
-    <ClInclude Include="TemplateClass.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
