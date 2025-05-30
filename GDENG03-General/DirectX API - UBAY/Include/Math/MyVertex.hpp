@@ -39,7 +39,7 @@ namespace DX3D {
     //     MyVertex(const MyVec3& position, const MyVec3& nextPosition, const MyVec3& color) : position(position), nextPosition(nextPosition), color(color) {}
     // };
 
-    //* Animated Vertex : Moving
+    //* Animated Vertex : Color Shifting
     struct MyVertex {
         MyVec3 position;
         MyVec3 nextPosition;

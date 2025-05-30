@@ -1,61 +1,36 @@
 #pragma once
-#include <Windows.h>
 #include <vector>
-#include "Window/MyWindow.hpp"
-#include "Math/MyMatrix4x4.hpp"
-#include "Math/MyVec3.hpp"
-#include "Math/MyConstant.hpp"
 #include "Math/MyVertex.hpp"
-#include "Core/Primitives/MyTriangle.hpp"
-#include "Core/Primitives/MyQuad.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
-#include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MySwapChain.hpp"
-#include "Graphics/MyVertexBuffer.hpp"
-#include "Graphics/MyConstantBuffer.hpp"
-#include "Graphics/Shaders/MyVertexShader.hpp"
-#include "Graphics/Shaders/MyPixelShader.hpp"
 
 namespace DX3D {
-    class MyAppWindow : public MyWindow {
+    class MyTriangle {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MySwapChain* swapChain{ nullptr };
-        MyVertexBuffer* vertexBuffer{ nullptr };
-        MyConstantBuffer* constantBuffer{ nullptr };
-        MyVertexShader* vertexShader{ nullptr };
-        MyPixelShader* pixelShader{ nullptr };
-
-        unsigned long oldTime = 0;
-        unsigned long newTime = 0;
-        float deltaTime = 0;
-        float angle = 0;
+        std::vector<MyVertex> vertices;
+    public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyAppWindow();
-        ~MyAppWindow();
+        MyTriangle();
+        MyTriangle(const MyVertex& vertexA, const MyVertex& vertexB, const MyVertex& vertexC);
+        ~MyTriangle();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
-        void UpdateDeltaTime();
-        void UpdateObjects();
     public:
+        std::vector<MyVertex> GetVertices() { return this->vertices; }
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate() override;
-        virtual void OnUpdate() override;
-        virtual void OnDestroy() override;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║

@@ -173,46 +173,92 @@ void MyAppWindow::OnCreate() {
     //     ), // Bottom-right
     // };
 
-    //* Animated Color Changing Rectangle
-    MyVertex vertices[] = {
+    //* Three Quads
+    float offset = 0.3f;
+    MyTriangle triangleA(
         MyVertex(
-            -0.5f,  0.5f, 0.0f,    // position (x, y, z)
-            -0.11f, 0.78f, 0.0f,   // nextPosition (x, y, z)
-             0.0f,  1.0f, 0.0f,    // color (r, g, b)
-             1.0f,  0.0f, 0.0f     // nextColor (r, g, b)
+            -0.1f - offset, 0.1f - offset, 0.0f,    // position (x, y, z)
+            -0.1f - offset, 0.1f - offset, 0.0f,    // position (x, y, z)
+            1.0f, 0.0f, 0.0f,     // nextColor (r, g, b)
+            0.0f, 1.0f, 0.0f   // color (r, g, b)
         ), // Top-left
         MyVertex(
-             0.5f,  0.5f, 0.0f,    // position
-             0.88f, 0.77f, 0.0f,   // nextPosition
-             1.0f,  1.0f, 0.0f,    // color
-             0.0f,  1.0f, 0.0f     // nextColor
+            0.1f - offset, 0.1f - offset, 0.0f,    // position
+            0.1f - offset, 0.1f - offset, 0.0f,    // position
+            0.0f, 1.0f, 0.0f,     // nextColor
+            1.0f, 1.0f, 0.0f    // color
         ), // Top-right
         MyVertex(
-            -0.5f, -0.5f, 0.0f,    // position
-            -0.32f,-0.11f, 0.0f,   // nextPosition
-             1.0f,  0.0f, 0.0f,    // color
-             0.0f,  0.0f, 1.0f     // nextColor
+            -0.1f - offset, -0.1f - offset, 0.0f,    // position
+            -0.1f - offset, -0.1f - offset, 0.0f,    // position
+            0.0f, 0.0f, 1.0f,    // nextColor
+            1.0f, 0.0f, 0.0f   // color
+        ) // Bottom-left
+    );
+    MyTriangle triangleB(
+        MyVertex(
+            -0.1f - offset, -0.1f - offset, 0.0f,    // position
+            -0.1f - offset, -0.1f - offset, 0.0f,    // position
+            0.0f, 0.0f, 1.0f,     // nextColor
+            1.0f, 0.0f, 0.0f    // color
         ), // Bottom-left
+        MyVertex(
+            0.1f - offset, 0.1f - offset, 0.0f,    // position
+            0.1f - offset, 0.1f - offset, 0.0f,    // position
+            0.0f, 1.0f, 0.0f,     // nextColor
+            1.0f, 1.0f, 0.0f    // color
+        ), // Top-right
+        MyVertex(
+            0.1f - offset, -0.1f - offset, 0.0f,    // position
+            0.1f - offset, -0.1f - offset, 0.0f,    // position
+            1.0f, 1.0f, 0.0f,     // nextColor
+            0.0f, 0.0f, 1.0f // color
+        ) // Bottom-right
+    );
+    MyQuad quadA(triangleA, triangleB);
 
-        MyVertex(
-            -0.5f, -0.5f, 0.0f,    // position
-            -0.32f,-0.11f, 0.0f,   // nextPosition
-             1.0f,  0.0f, 0.0f,    // color
-             0.0f,  0.0f, 1.0f     // nextColor
-        ), // Bottom-left
-        MyVertex(
-             0.5f,  0.5f, 0.0f,    // position
-             0.88f, 0.77f, 0.0f,   // nextPosition
-             1.0f,  1.0f, 0.0f,    // color
-             0.0f,  1.0f, 0.0f     // nextColor
-        ), // Top-right
-        MyVertex(
-             0.5f, -0.5f, 0.0f,    // position
-             0.75f, -0.73f, 0.0f,  // nextPosition
-             0.0f,  0.0f, 1.0f,    // color
-             1.0f,  1.0f, 0.0f     // nextColor
-        ), // Bottom-right
-    };
+    MyQuad quadB;
+
+    MyVertex topLeft(
+        -0.1f + offset, 0.1f + offset, 0.0f,    // position (x, y, z)
+        -0.1f + offset, 0.1f + offset, 0.0f,    // position (x, y, z)
+        0.0f, 0.0f, 1.0f,     // nextColor
+        0.0f, 1.0f, 0.0f    // color (r, g, b)
+    );
+    MyVertex topRight(
+        0.1f + offset, 0.1f + offset, 0.0f,    // position
+        0.1f + offset, 0.1f + offset, 0.0f,    // position
+        1.0f, 0.0f, 0.0f,    // nextColor (r, g, b)
+        1.0f, 1.0f, 0.0f    // color
+    );
+    MyVertex bottomRight(
+        0.1f + offset, -0.1f + offset, 0.0f,    // position
+        0.1f + offset, -0.1f + offset, 0.0f,    // position
+        0.0f, 1.0f, 0.0f,     // nextColor
+        0.0f, 0.0f, 1.0f    // color
+    );
+    MyVertex bottomLeft(
+        -0.1f + offset, -0.1f + offset, 0.0f,    // position
+        -0.1f + offset, -0.1f + offset, 0.0f,    // position
+        1.0f, 1.0f, 0.0f,     // nextColor
+        1.0f, 0.0f, 0.0f    // color
+    );
+    MyQuad quadC(topLeft, topRight, bottomRight, bottomLeft);
+
+    MyVertex vertices[100];
+    int i = 0;
+    for (MyVertex vertex : quadA.GetVertices()) {
+        vertices[i] = vertex;
+        i++;
+    }
+    for (MyVertex vertex : quadB.GetVertices()) {
+        vertices[i] = vertex;
+        i++;
+    }
+    for (MyVertex vertex : quadC.GetVertices()) {
+        vertices[i] = vertex;
+        i++;
+    }
 
     vertexBuffer = MyGraphicsEngine::GetInstance()->CreateVertexBuffer();
     if (!vertexBuffer) {

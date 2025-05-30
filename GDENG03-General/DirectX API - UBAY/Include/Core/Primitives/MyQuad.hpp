@@ -1,61 +1,46 @@
 #pragma once
-#include <Windows.h>
 #include <vector>
-#include "Window/MyWindow.hpp"
-#include "Math/MyMatrix4x4.hpp"
-#include "Math/MyVec3.hpp"
-#include "Math/MyConstant.hpp"
-#include "Math/MyVertex.hpp"
 #include "Core/Primitives/MyTriangle.hpp"
-#include "Core/Primitives/MyQuad.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
-#include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MySwapChain.hpp"
-#include "Graphics/MyVertexBuffer.hpp"
-#include "Graphics/MyConstantBuffer.hpp"
-#include "Graphics/Shaders/MyVertexShader.hpp"
-#include "Graphics/Shaders/MyPixelShader.hpp"
 
 namespace DX3D {
-    class MyAppWindow : public MyWindow {
+    class MyQuad {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MySwapChain* swapChain{ nullptr };
-        MyVertexBuffer* vertexBuffer{ nullptr };
-        MyConstantBuffer* constantBuffer{ nullptr };
-        MyVertexShader* vertexShader{ nullptr };
-        MyPixelShader* pixelShader{ nullptr };
-
-        unsigned long oldTime = 0;
-        unsigned long newTime = 0;
-        float deltaTime = 0;
-        float angle = 0;
+        MyTriangle triangleA;
+        MyTriangle triangleB;
+    public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyAppWindow();
-        ~MyAppWindow();
+        MyQuad();
+        MyQuad(const MyVertex& topLeft, const MyVertex& topRight, const MyVertex& bottomRight, const MyVertex& bottomLeft);
+        MyQuad(const MyTriangle& triangleA, const MyTriangle& triangleB);
+        ~MyQuad();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
-        void UpdateDeltaTime();
-        void UpdateObjects();
     public:
+        std::vector<MyVertex> GetVertices() {
+            std::vector<MyVertex> vertices;
+            for (MyVertex vertex : this->triangleA.GetVertices())
+                vertices.push_back(vertex);
+            for (MyVertex vertex : this->triangleB.GetVertices())
+                vertices.push_back(vertex);
+            return vertices;
+        }
+
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate() override;
-        virtual void OnUpdate() override;
-        virtual void OnDestroy() override;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║
