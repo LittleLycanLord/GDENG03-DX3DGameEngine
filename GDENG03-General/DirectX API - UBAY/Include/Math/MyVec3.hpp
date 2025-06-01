@@ -25,9 +25,9 @@ namespace DX3D {
     public:
         static MyVec3 Lerp(const MyVec3& start, const MyVec3& end, float delta) {
             MyVec3 returnVector;
-            returnVector.x = start.x * (1.0f - delta) + end.x * (1.0f - delta);
-            returnVector.y = start.y * (1.0f - delta) + end.y * (1.0f - delta);
-            returnVector.z = start.z * (1.0f - delta) + end.z * (1.0f - delta);
+            returnVector.x = start.x * (1.0f - delta) + end.x * (delta);
+            returnVector.y = start.y * (1.0f - delta) + end.y * (delta);
+            returnVector.z = start.z * (1.0f - delta) + end.z * (delta);
             return returnVector;
         }
 

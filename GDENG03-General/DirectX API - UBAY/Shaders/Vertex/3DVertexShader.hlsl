@@ -4,7 +4,7 @@ struct VS_INPUT {
     float3 color : COLOR;
     float3 nextColor : COLOR1;
 };
-struct VS_ANIMATED_OUTPUT {
+struct VS_3D_OUTPUT {
     float4 position : SV_POSITION;
     float3 color : COLOR;
     float3 nextColor : COLOR1;
@@ -13,12 +13,12 @@ cbuffer MyConstant: register(b0) {
     row_major float4x4 world;
     row_major float4x4 view;
     row_major float4x4 projection;
-    float angle;
+    float time;
 };
-VS_ANIMATED_OUTPUT main(VS_INPUT input) {
-    VS_ANIMATED_OUTPUT output;
+VS_3D_OUTPUT main(VS_INPUT input) {
+    VS_3D_OUTPUT output;
     //WORLD SPACE
-    output.position = mul(input.position, world);
+    output.position = mul(float4(input.position, 1.0f), world);
     //VIEW SPACE
     output.position = mul(output.position, view);
     //SCREEN SPACE

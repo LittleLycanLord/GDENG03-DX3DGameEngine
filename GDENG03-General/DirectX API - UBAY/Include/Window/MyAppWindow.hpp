@@ -31,7 +31,9 @@ namespace DX3D {
         unsigned long oldTime = 0;
         unsigned long newTime = 0;
         float deltaTime = 0;
-        float angle = 0;
+        float experimentalDelta = 0;
+
+        MyConstant constantData;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║

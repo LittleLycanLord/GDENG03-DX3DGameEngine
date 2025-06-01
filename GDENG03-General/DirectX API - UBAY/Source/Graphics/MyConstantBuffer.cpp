@@ -62,10 +62,8 @@ bool MyConstantBuffer::Load(void* buffer, UINT bufferSize) {
     return SUCCEEDED(result);
 }
 void MyConstantBuffer::Update(MyDeviceContext* deviceContext, void* buffer) {
-    if (LOG_INFO_CONSTANTBUFFER) std::cout << "[INFO] : MyConstantBuffer::Update called" << std::endl;
-
     if (LOG_INFO_CONSTANTBUFFER)
-        std::cout << "[INFO] : Updating constant buffer" << std::endl;
+        std::cout << "[INFO] : Updating constant buffer..." << std::endl;
     deviceContext->D3DDeviceContext->UpdateSubresource(
         this->D3DConstantBuffer,
         NULL,
