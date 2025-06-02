@@ -33,7 +33,7 @@
     <ClCompile Include="Source\Graphics\MyDeviceContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\MyVertexBuffer.cpp">
+    <ClCompile Include="Source\Graphics\Buffers\MyVertexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\Shaders\MyPixelShader.cpp">
@@ -42,13 +42,16 @@
     <ClCompile Include="Source\Graphics\Shaders\MyVertexShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\MyConstantBuffer.cpp">
+    <ClCompile Include="Source\Graphics\Buffers\MyConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Primitives\MyQuad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Primitives\MyTriangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Buffers\MyIndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,7 +71,7 @@
     <ClInclude Include="Include\Graphics\MyDeviceContext.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Graphics\MyVertexBuffer.hpp">
+    <ClInclude Include="Include\Graphics\Buffers\MyVertexBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Math\MyVec3.hpp">
@@ -86,7 +89,7 @@
     <ClInclude Include="Include\Graphics\Shaders\MyVertexShader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Graphics\MyConstantBuffer.hpp">
+    <ClInclude Include="Include\Graphics\Buffers\MyConstantBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Math\MyConstant.hpp">
@@ -99,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Primitives\MyTriangle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\Buffers\MyIndexBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

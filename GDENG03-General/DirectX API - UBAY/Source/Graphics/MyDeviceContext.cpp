@@ -1,5 +1,4 @@
 #include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MySwapChain.hpp"
 #include <iostream>
 
 using namespace DX3D;
@@ -65,6 +64,23 @@ void MyDeviceContext::SetVertexBuffer(MyVertexBuffer* vertexBuffer) {
     this->D3DDeviceContext->IASetInputLayout(vertexBuffer->D3DInputLayout);
 }
 
+void MyDeviceContext::SetIndexBuffer(MyIndexBuffer* indexBuffer) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::SetIndexBuffer called" << std::endl;
+    if (!indexBuffer || !indexBuffer->D3DIndexBuffer) {
+        std::cout << "[ERROR] : indexBuffer, indexBuffer->D3DIndexBuffer, is null in MyDeviceContext::SetIndexBuffer" << std::endl;
+        return;
+    }
+    if (!this->D3DDeviceContext) {
+        std::cout << "[ERROR] : D3DDeviceContext is null in MyDeviceContext::SetIndexBuffer" << std::endl;
+        return;
+    }
+    this->D3DDeviceContext->IASetIndexBuffer(
+        indexBuffer->D3DIndexBuffer,
+        DXGI_FORMAT_R32_UINT, // Assuming 32-bit indices
+        0
+    );
+}
+
 void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
     if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::SetViewPortSize called" << std::endl;
     if (!this->D3DDeviceContext) {
@@ -128,14 +144,24 @@ void MyDeviceContext::SetConstantBuffer(MyPixelShader* pixelShader, MyConstantBu
         &constantBuffer->D3DConstantBuffer
     );
 }
-void MyDeviceContext::DrawTriangle(UINT vertexCount, UINT startVertexIndex) {
-    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::DrawTriangle called with vertexCount=" << vertexCount << ", startVertexIndex=" << startVertexIndex << std::endl;
+void MyDeviceContext::DrawTriangles(UINT vertexCount, UINT startVertexIndex) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::DrawTriangles called with vertexCount=" << vertexCount << ", startVertexIndex=" << startVertexIndex << std::endl;
     if (!this->D3DDeviceContext) {
-        std::cout << "[ERROR] : D3DDeviceContext is null in MyDeviceContext::DrawTriangle" << std::endl;
+        std::cout << "[ERROR] : D3DDeviceContext is null in MyDeviceContext::DrawTriangles" << std::endl;
         return;
     }
     this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     this->D3DDeviceContext->Draw(vertexCount, startVertexIndex);
+}
+
+void MyDeviceContext::DrawIndexedTriangles(UINT indexCount, UINT startVertexIndex, UINT startIndexLocation) {
+    if (LOG_INFO_DEVICECONTEXT) std::cout << "[INFO] : MyDeviceContext::DrawIndexedTriangles called with indexCount=" << indexCount << ", startVertexIndex=" << startVertexIndex << ", startIndexLocation=" << startIndexLocation << std::endl;
+    if (!this->D3DDeviceContext) {
+        std::cout << "[ERROR] : D3DDeviceContext is null in MyDeviceContext::DrawIndexedTriangles" << std::endl;
+        return;
+    }
+    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    this->D3DDeviceContext->DrawIndexed(indexCount, startIndexLocation, startVertexIndex);
 }
 
 bool MyDeviceContext::Release() {

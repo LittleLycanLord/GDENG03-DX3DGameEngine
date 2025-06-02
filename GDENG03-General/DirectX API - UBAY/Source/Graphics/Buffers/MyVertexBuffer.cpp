@@ -1,4 +1,4 @@
-#include "Graphics/MyVertexBuffer.hpp"
+#include "Graphics/Buffers/MyVertexBuffer.hpp"
 
 using namespace DX3D;
 
@@ -24,14 +24,14 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
         return false;
     }
 
-    D3D11_BUFFER_DESC bufferDescription;
+    D3D11_BUFFER_DESC bufferDescription = {};
     bufferDescription.Usage = D3D11_USAGE_DEFAULT;
     bufferDescription.ByteWidth = vertexSize * vertexCount;
     bufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufferDescription.CPUAccessFlags = 0;
     bufferDescription.MiscFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA vertexData;
+    D3D11_SUBRESOURCE_DATA vertexData = {};
     vertexData.pSysMem = vertexList;
 
     this->vertexSize = vertexSize;
@@ -51,10 +51,14 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
     }
 
     D3D11_INPUT_ELEMENT_DESC layout[] = {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },   // float3 position (offset 0)
-        { "POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },   // float3 nextPosition (offset 12)
-        { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },   // float3 color (offset 24)
-        { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },   // float3 nextColor (offset 36)
+        // { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
+        // { "POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 nextPosition (offset 12)
+        // { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 color (offset 24)
+        // { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 nextColor (offset 36)
+
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
+        { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },  // float3 nextPosition (offset 12)
+        { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 color (offset 24)
     };
 
     result = D3DDevice->CreateInputLayout(

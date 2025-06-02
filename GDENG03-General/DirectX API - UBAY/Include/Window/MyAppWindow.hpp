@@ -11,8 +11,9 @@
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MySwapChain.hpp"
-#include "Graphics/MyVertexBuffer.hpp"
-#include "Graphics/MyConstantBuffer.hpp"
+#include "Graphics/Buffers/MyVertexBuffer.hpp"
+#include "Graphics/Buffers/MyConstantBuffer.hpp"
+#include "Graphics/Buffers/MyIndexBuffer.hpp"
 #include "Graphics/Shaders/MyVertexShader.hpp"
 #include "Graphics/Shaders/MyPixelShader.hpp"
 
@@ -25,6 +26,7 @@ namespace DX3D {
         MySwapChain* swapChain{ nullptr };
         MyVertexBuffer* vertexBuffer{ nullptr };
         MyConstantBuffer* constantBuffer{ nullptr };
+        MyIndexBuffer* indexBuffer{ nullptr };
         MyVertexShader* vertexShader{ nullptr };
         MyPixelShader* pixelShader{ nullptr };
 

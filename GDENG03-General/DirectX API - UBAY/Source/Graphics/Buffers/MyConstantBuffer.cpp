@@ -1,4 +1,4 @@
-#include "Graphics/MyConstantBuffer.hpp"
+#include "Graphics/Buffers/MyConstantBuffer.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include <iostream>
 #include <comdef.h>
@@ -33,14 +33,14 @@ bool MyConstantBuffer::Load(void* buffer, UINT bufferSize) {
         return false;
     }
 
-    D3D11_BUFFER_DESC bufferDescription;
+    D3D11_BUFFER_DESC bufferDescription = {};
     bufferDescription.Usage = D3D11_USAGE_DEFAULT;
     bufferDescription.ByteWidth = bufferSize;
     bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bufferDescription.CPUAccessFlags = 0;
     bufferDescription.MiscFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA constantData;
+    D3D11_SUBRESOURCE_DATA constantData = {};
     constantData.pSysMem = buffer;
 
     HRESULT result = D3DDevice->CreateBuffer(

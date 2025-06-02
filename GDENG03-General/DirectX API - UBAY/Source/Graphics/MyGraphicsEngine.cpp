@@ -138,6 +138,13 @@ MyConstantBuffer* MyGraphicsEngine::CreateConstantBuffer() {
     }
     return constantBuffer;
 }
+MyIndexBuffer* MyGraphicsEngine::CreateIndexBuffer() {
+    MyIndexBuffer* indexBuffer = new MyIndexBuffer();
+    if (!indexBuffer) {
+        std::cout << "[ERROR] : Failed to allocate MyIndexBuffer in MyGraphicsEngine::CreateIndexBuffer" << std::endl;
+    }
+    return indexBuffer;
+}
 
 MyVertexShader* MyGraphicsEngine::CreateVertexShader(const void* shaderByteCode, size_t shaderSize) {
     MyVertexShader* vertexShader = new MyVertexShader();

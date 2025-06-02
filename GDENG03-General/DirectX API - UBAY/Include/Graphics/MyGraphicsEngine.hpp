@@ -3,8 +3,9 @@
 #include <d3dcompiler.h>
 #include "Graphics/MySwapChain.hpp"
 #include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MyVertexBuffer.hpp"
-#include "Graphics/MyConstantBuffer.hpp"
+#include "Graphics/Buffers/MyVertexBuffer.hpp"
+#include "Graphics/Buffers/MyConstantBuffer.hpp"
+#include "Graphics/Buffers/MyIndexBuffer.hpp"
 #include "Graphics/Shaders/MyVertexShader.hpp"
 #include "Graphics/Shaders/MyPixelShader.hpp"
 
@@ -31,6 +32,7 @@ namespace DX3D {
         friend class MySwapChain;
         friend class MyVertexBuffer;
         friend class MyConstantBuffer;
+        friend class MyIndexBuffer;
         friend class MyVertexShader;
         friend class MyPixelShader;
     public:
@@ -56,6 +58,7 @@ namespace DX3D {
         MySwapChain* CreateSwapChain();
         MyVertexBuffer* CreateVertexBuffer();
         MyConstantBuffer* CreateConstantBuffer();
+        MyIndexBuffer* CreateIndexBuffer();
         MyVertexShader* CreateVertexShader(const void* shaderByteCode, size_t shaderSize);
         MyPixelShader* CreatePixelShader(const void* shaderByteCode, size_t shaderSize);
         bool CompileVertexShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize);

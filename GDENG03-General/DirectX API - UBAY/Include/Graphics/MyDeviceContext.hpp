@@ -2,11 +2,13 @@
 #include <d3d11.h>
 #include "Math/MyVec4.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
-#include "Graphics/MyConstantBuffer.hpp"
+#include "Graphics/MySwapChain.hpp"
+#include "Graphics/Buffers/MyConstantBuffer.hpp"
 
 namespace DX3D {
     class MySwapChain;
     class MyVertexBuffer;
+    class MyIndexBuffer;
     class MyVertexShader;
     class MyPixelShader; // Forward declaration of MyPixelShader
     class MyDeviceContext {
@@ -32,13 +34,15 @@ namespace DX3D {
     public:
         bool ClearRenderTargetColor(MySwapChain* swapChain, MyVec4 color);
         void SetVertexBuffer(MyVertexBuffer* vertexBuffer);
+        void SetIndexBuffer(MyIndexBuffer* indexBuffer);
         void SetViewPortSize(UINT width, UINT height);
         void SetVertexShader(MyVertexShader* vertexShader);
         void SetPixelShader(MyPixelShader* pixelShader);
         void SetConstantBuffer(MyVertexShader* vertexShader, MyConstantBuffer* constantBuffer);
         void SetConstantBuffer(MyPixelShader* pixelShader, MyConstantBuffer* constantBuffer);
 
-        void DrawTriangle(UINT vertexCount, UINT startVertexIndex);
+        void DrawTriangles(UINT vertexCount, UINT startVertexIndex);
+        void DrawIndexedTriangles(UINT indexCount, UINT startVertexIndex, UINT startIndexLocation) ;
         bool Release();
 
         //* ╔════════════════════════════════╗

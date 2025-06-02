@@ -33,19 +33,24 @@ void MyAppWindow::UpdateObjects() {
     float speedMultiplier = 1.0f;
     this->experimentalDelta += this->deltaTime * speedMultiplier;
 
-    //* Test Translate
+    // //* Test Translate
     // if (this->experimentalDelta > 1.0f)
     //     this->experimentalDelta = 0.0f;
     // this->constantData.world.Translate(MyVec3::Lerp(MyVec3(-2.0f, -2.0f, 0.0f), MyVec3(2.0f, 2.0f, 0.0f), this->experimentalDelta));
 
-    //* Test Scale
+    // //* Test Scale
     // this->constantData.world.Scale(MyVec3::Lerp(MyVec3(0.5f, 0.5f, 0.0f), MyVec3(2.0f, 2.0f, 0.0f), (sin(experimentalDelta) + 1.0f) / 2.0f));
 
-    //* Transformation Matrix : T -> R -> S (Note: Matrix multiplication is not commutative)
-    this->constantData.world.SetIdentity();
-    this->constantData.world *= MyMatrix4x4::Scaling(MyVec3::Lerp(MyVec3(0.5f, 0.5f, 0.0f), MyVec3(2.0f, 2.0f, 0.0f), (sin(experimentalDelta) + 1.0f) / 2.0f));
-    // this->constantData.world *= MyMatrix4x4::Rotating();
-    this->constantData.world *= MyMatrix4x4::Translation(MyVec3::Lerp(MyVec3(-2.0f, -2.0f, 0.0f), MyVec3(2.0f, 2.0f, 0.0f), this->experimentalDelta * 0.1f));
+    // //* Transformation Matrix : T -> R -> S (Note: Matrix multiplication is not commutative)
+    // this->constantData.world.SetIdentity();
+    // this->constantData.world *= MyMatrix4x4::Scaling(MyVec3::Lerp(MyVec3(0.5f, 0.5f, 0.0f), MyVec3(2.0f, 2.0f, 0.0f), (sin(experimentalDelta) + 1.0f) / 2.0f));
+    // // this->constantData.world *= MyMatrix4x4::Rotating();
+    // this->constantData.world *= MyMatrix4x4::Translation(MyVec3::Lerp(MyVec3(-2.0f, -2.0f, 0.0f), MyVec3(2.0f, 2.0f, 0.0f), this->experimentalDelta * 0.1f));
+
+    this->constantData.world.Scale(MyVec3(1.0f, 1.0f, 1.0f));
+    this->constantData.world *= MyMatrix4x4::RotationZ(this->experimentalDelta * 0.55f);
+    this->constantData.world *= MyMatrix4x4::RotationY(this->experimentalDelta * 0.55f);
+    this->constantData.world *= MyMatrix4x4::RotationX(this->experimentalDelta * 0.55f);
 
     // this->constantData.view.SetIdentity();
     // this->constantData.projection.SetOrthographicLeftHand(
@@ -186,98 +191,170 @@ void MyAppWindow::OnCreate() {
     //     ), // Bottom-right
     // };
 
-    //* Three Quads
-    float offset = 0.3f;
-    MyTriangle triangleA(
-        MyVertex(
-            MyVec3(-0.1f - offset, 0.1f - offset, 0.0f),  // position (x, y, z)
-            MyVec3(-0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition (x, y, z)
-            MyVec3(1.0f, 0.0f, 0.0f),                     // color (r, g, b)
-            MyVec3(0.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
-        ), // Top-left
-        MyVertex(
-            MyVec3(0.1f - offset, 0.1f - offset, 0.0f),  // position
-            MyVec3(0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition
-            MyVec3(0.0f, 1.0f, 0.0f),                    // color
-            MyVec3(1.0f, 1.0f, 0.0f)                     // nextColor
-        ), // Top-right
-        MyVertex(
-            MyVec3(-0.1f - offset, -0.1f - offset, 0.0f), // position
-            MyVec3(-0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
-            MyVec3(0.0f, 0.0f, 1.0f),                     // color
-            MyVec3(1.0f, 0.0f, 0.0f)                      // nextColor
-        ) // Bottom-left
-    );
-    MyTriangle triangleB(
-        MyVertex(
-            MyVec3(-0.1f - offset, -0.1f - offset, 0.0f), // position
-            MyVec3(-0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
-            MyVec3(0.0f, 0.0f, 1.0f),                     // color
-            MyVec3(1.0f, 0.0f, 0.0f)                      // nextColor
-        ), // Bottom-left
-        MyVertex(
-            MyVec3(0.1f - offset, 0.1f - offset, 0.0f),  // position
-            MyVec3(0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition
-            MyVec3(0.0f, 1.0f, 0.0f),                    // color
-            MyVec3(1.0f, 1.0f, 0.0f)                     // nextColor
-        ), // Top-right
-        MyVertex(
-            MyVec3(0.1f - offset, -0.1f - offset, 0.0f), // position
-            MyVec3(0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
-            MyVec3(1.0f, 1.0f, 0.0f),                    // color
-            MyVec3(0.0f, 0.0f, 1.0f)                     // nextColor
-        ) // Bottom-right
-    );
-    MyQuad quadA(triangleA, triangleB);
+    // //* Three Quads
+    // float offset = 0.3f;
+    // MyTriangle triangleA(
+    //     MyVertex(
+    //         MyVec3(-0.1f - offset, 0.1f - offset, 0.0f),  // position (x, y, z)
+    //         MyVec3(-0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition (x, y, z)
+    //         MyVec3(1.0f, 0.0f, 0.0f),                     // color (r, g, b)
+    //         MyVec3(0.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
+    //     ), // Top-left
+    //     MyVertex(
+    //         MyVec3(0.1f - offset, 0.1f - offset, 0.0f),  // position
+    //         MyVec3(0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition
+    //         MyVec3(0.0f, 1.0f, 0.0f),                    // color
+    //         MyVec3(1.0f, 1.0f, 0.0f)                     // nextColor
+    //     ), // Top-right
+    //     MyVertex(
+    //         MyVec3(-0.1f - offset, -0.1f - offset, 0.0f), // position
+    //         MyVec3(-0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
+    //         MyVec3(0.0f, 0.0f, 1.0f),                     // color
+    //         MyVec3(1.0f, 0.0f, 0.0f)                      // nextColor
+    //     ) // Bottom-left
+    // );
+    // MyTriangle triangleB(
+    //     MyVertex(
+    //         MyVec3(-0.1f - offset, -0.1f - offset, 0.0f), // position
+    //         MyVec3(-0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
+    //         MyVec3(0.0f, 0.0f, 1.0f),                     // color
+    //         MyVec3(1.0f, 0.0f, 0.0f)                      // nextColor
+    //     ), // Bottom-left
+    //     MyVertex(
+    //         MyVec3(0.1f - offset, 0.1f - offset, 0.0f),  // position
+    //         MyVec3(0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition
+    //         MyVec3(0.0f, 1.0f, 0.0f),                    // color
+    //         MyVec3(1.0f, 1.0f, 0.0f)                     // nextColor
+    //     ), // Top-right
+    //     MyVertex(
+    //         MyVec3(0.1f - offset, -0.1f - offset, 0.0f), // position
+    //         MyVec3(0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
+    //         MyVec3(1.0f, 1.0f, 0.0f),                    // color
+    //         MyVec3(0.0f, 0.0f, 1.0f)                     // nextColor
+    //     ) // Bottom-right
+    // );
+    // MyQuad quadA(triangleA, triangleB);
 
-    MyQuad quadB;
+    // MyQuad quadB;
 
-    MyVertex topLeft(
-        MyVec3(-0.1f + offset, 0.1f + offset, 0.0f),  // position (x, y, z)
-        MyVec3(-0.1f + offset, 0.1f + offset, 0.0f),  // nextPosition (x, y, z)
-        MyVec3(0.0f, 0.0f, 1.0f),                     // color (r, g, b)
-        MyVec3(1.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
-    );
-    MyVertex topRight(
-        MyVec3(0.1f + offset, 0.1f + offset, 0.0f),   // position (x, y, z)
-        MyVec3(0.1f + offset, 0.1f + offset, 0.0f),   // nextPosition (x, y, z)
-        MyVec3(0.0f, 1.0f, 0.0f),                     // color (r, g, b)
-        MyVec3(0.0f, 0.0f, 1.0f)                      // nextColor (r, g, b)
-    );
-    MyVertex bottomRight(
-        MyVec3(0.1f + offset, -0.1f + offset, 0.0f),  // position (x, y, z)
-        MyVec3(0.1f + offset, -0.1f + offset, 0.0f),  // nextPosition (x, y, z)
-        MyVec3(0.0f, 0.0f, 1.0f),                     // color (r, g, b)
-        MyVec3(0.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
-    );
-    MyVertex bottomLeft(
-        MyVec3(-0.1f + offset, -0.1f + offset, 0.0f), // position (x, y, z)
-        MyVec3(-0.1f + offset, -0.1f + offset, 0.0f), // nextPosition (x, y, z)
-        MyVec3(1.0f, 1.0f, 0.0f),                     // color (r, g, b)
-        MyVec3(0.0f, 0.0f, 1.0f)                      // nextColor (r, g, b)
-    );
-    MyQuad quadC(topLeft, topRight, bottomRight, bottomLeft);
+    // MyVertex topLeft(
+    //     MyVec3(-0.1f + offset, 0.1f + offset, 0.0f),  // position (x, y, z)
+    //     MyVec3(-0.1f + offset, 0.1f + offset, 0.0f),  // nextPosition (x, y, z)
+    //     MyVec3(0.0f, 0.0f, 1.0f),                     // color (r, g, b)
+    //     MyVec3(1.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
+    // );
+    // MyVertex topRight(
+    //     MyVec3(0.1f + offset, 0.1f + offset, 0.0f),   // position (x, y, z)
+    //     MyVec3(0.1f + offset, 0.1f + offset, 0.0f),   // nextPosition (x, y, z)
+    //     MyVec3(0.0f, 1.0f, 0.0f),                     // color (r, g, b)
+    //     MyVec3(0.0f, 0.0f, 1.0f)                      // nextColor (r, g, b)
+    // );
+    // MyVertex bottomRight(
+    //     MyVec3(0.1f + offset, -0.1f + offset, 0.0f),  // position (x, y, z)
+    //     MyVec3(0.1f + offset, -0.1f + offset, 0.0f),  // nextPosition (x, y, z)
+    //     MyVec3(0.0f, 0.0f, 1.0f),                     // color (r, g, b)
+    //     MyVec3(0.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
+    // );
+    // MyVertex bottomLeft(
+    //     MyVec3(-0.1f + offset, -0.1f + offset, 0.0f), // position (x, y, z)
+    //     MyVec3(-0.1f + offset, -0.1f + offset, 0.0f), // nextPosition (x, y, z)
+    //     MyVec3(1.0f, 1.0f, 0.0f),                     // color (r, g, b)
+    //     MyVec3(0.0f, 0.0f, 1.0f)                      // nextColor (r, g, b)
+    // );
+    // MyQuad quadC(topLeft, topRight, bottomRight, bottomLeft);
 
-    MyVertex vertices[100];
-    int i = 0;
-    for (MyVertex vertex : quadA.GetVertices()) {
-        vertices[i] = vertex;
-        i++;
-    }
-    for (MyVertex vertex : quadB.GetVertices()) {
-        vertices[i] = vertex;
-        i++;
-    }
-    for (MyVertex vertex : quadC.GetVertices()) {
-        vertices[i] = vertex;
-        i++;
-    }
+    // MyVertex vertices[100];
+    // int i = 0;
+    // for (MyVertex vertex : quadA.GetVertices()) {
+    //     vertices[i] = vertex;
+    //     i++;
+    // }
+    // for (MyVertex vertex : quadB.GetVertices()) {
+    //     vertices[i] = vertex;
+    //     i++;
+    // }
+    // for (MyVertex vertex : quadC.GetVertices()) {
+    //     vertices[i] = vertex;
+    //     i++;
+    // }
 
-    vertexBuffer = MyGraphicsEngine::GetInstance()->CreateVertexBuffer();
-    if (!vertexBuffer) {
+     //* Rainbow Cube
+    MyVertex vertices[] = {
+        MyVertex(
+           -0.5f,  -0.5f, -0.5f, // position
+            1.0f,  0.0f, 0.0f,   // color
+            1.0f,  0.0f, 0.0f    // nextColor
+        ), // Bottom-left-back
+        MyVertex(
+            -0.5f,  0.5f, -0.5f, // position
+            0.0f,  1.0f, 0.0f,   // color
+            0.0f,  1.0f, 0.0f    // nextColor
+        ), // Top-left-back
+        MyVertex(
+            0.5f,  0.5f, -0.5f, // position
+            0.0f,  0.0f, 1.0f, // color
+            0.0f,  0.0f, 1.0f  // nextColor
+        ), // Top-right-front
+        MyVertex(
+            0.5f,  -0.5f, -0.5f, // position
+            1.0f,  1.0f, 0.0f,   // color
+            1.0f,  1.0f, 0.0f    // nextColor
+        ), // Bottom-right-back
+        MyVertex(
+            0.5f, -0.5f, 0.5f,  // position
+            1.0f,  0.0f, 1.0f,  // color
+            1.0f,  0.0f, 1.0f   // nextColor
+        ), // Bottom-right-front
+        MyVertex(
+            0.5f,  0.5f, 0.5f,  // position
+            0.0f,  1.0f, 1.0f,  // color
+            0.0f,  1.0f, 1.0f   // nextColor
+        ), // Top-right-front
+        MyVertex(
+            -0.5f,  0.5f, 0.5f, // position
+            1.0f,  1.0f, 1.0f,  // color
+            1.0f,  1.0f, 1.0f   // nextColor
+        ), // Top-left-front
+        MyVertex(
+            -0.5f,  -0.5f, 0.5f, // position
+            0.0f,  0.0f, 0.0f,   // color
+            0.0f,  0.0f, 0.0f    // nextColor
+        ), // Bottom-left-front
+    };
+
+    this->vertexBuffer = MyGraphicsEngine::GetInstance()->CreateVertexBuffer();
+    if (!this->vertexBuffer) {
         std::cout << "[ERROR] : Failed to create vertexBuffer!" << std::endl;
         return;
     }
+
+    unsigned int indices[] = {
+        //* FRONT
+        0, 1, 2,
+        2, 3, 0,
+        //* BACK
+        4, 5, 6,
+        6, 7, 4,
+        //* TOP
+        1, 6, 5,
+        5, 2, 1,
+        //* BOTTOM
+        7, 0, 3,
+        3, 4, 7,
+        //* RIGHT
+        3, 2, 5,
+        5, 4, 3,
+        //* LEFT
+        7, 6, 1,
+        1, 0, 7,
+    };
+    this->indexBuffer = MyGraphicsEngine::GetInstance()->CreateIndexBuffer();
+    this->indexBuffer->Load(indices, ARRAYSIZE(indices));
+    if (!this->indexBuffer) {
+        std::cout << "[ERROR] : Failed to create indexBuffer!" << std::endl;
+        return;
+    }
+
 
     // Compile and create vertex shader
     void* vertexShaderByteCode = nullptr;
@@ -357,9 +434,13 @@ void MyAppWindow::OnUpdate() {
 
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : Setting vertex buffer: " << this->vertexBuffer << std::endl;
     MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetVertexBuffer(this->vertexBuffer);
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Setting index buffer: " << this->indexBuffer << std::endl;
+    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetIndexBuffer(this->indexBuffer);
 
     // Draw non-indexed
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->DrawTriangle(this->vertexBuffer->GetVertexCount(), 0);
+    // MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->DrawTriangles(this->vertexBuffer->GetVertexCount(), 0);
+    // Draw indexed
+    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->DrawIndexedTriangles(this->indexBuffer->GetIndexCount(), 0, 0);
 
     if (this->swapChain) {
         if (LOG_INFO_WINDOW) std::cout << "[INFO] : Presenting swap chain" << std::endl;
@@ -377,6 +458,16 @@ void MyAppWindow::OnDestroy() {
         this->vertexBuffer->Release();
         delete this->vertexBuffer;
         this->vertexBuffer = nullptr;
+    }
+    if (this->indexBuffer) {
+        this->indexBuffer->Release();
+        delete this->indexBuffer;
+        this->indexBuffer = nullptr;
+    }
+    if (this->constantBuffer) {
+        this->constantBuffer->Release();
+        delete this->constantBuffer;
+        this->constantBuffer = nullptr;
     }
     if (this->vertexShader) {
         this->vertexShader->Release();
