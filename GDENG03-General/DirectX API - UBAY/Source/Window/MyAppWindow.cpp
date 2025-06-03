@@ -5,6 +5,7 @@ using namespace DX3D;
 
 extern bool LOG_INFO_WINDOW;
 extern bool LOG_INFO_CONSTANTBUFFER;
+extern bool LOG_INFO_INPUTSYSTEM;
 // Add extern declarations for shader path constants
 extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
@@ -48,9 +49,16 @@ void MyAppWindow::UpdateObjects() {
     // this->constantData.world *= MyMatrix4x4::Translation(MyVec3::Lerp(MyVec3(-2.0f, -2.0f, 0.0f), MyVec3(2.0f, 2.0f, 0.0f), this->experimentalDelta * 0.1f));
 
     this->constantData.world.Scale(MyVec3(1.0f, 1.0f, 1.0f));
-    this->constantData.world *= MyMatrix4x4::RotationZ(this->experimentalDelta * 0.55f);
-    this->constantData.world *= MyMatrix4x4::RotationY(this->experimentalDelta * 0.55f);
-    this->constantData.world *= MyMatrix4x4::RotationX(this->experimentalDelta * 0.55f);
+
+    //* Auto Rotating Cube
+    // this->constantData.world *= MyMatrix4x4::RotationZ(this->experimentalDelta * 0.55f);
+    // this->constantData.world *= MyMatrix4x4::RotationY(this->experimentalDelta * 0.55f);
+    // this->constantData.world *= MyMatrix4x4::RotationX(this->experimentalDelta * 0.55f);
+
+    //* WASD Rotation
+    this->constantData.world *= MyMatrix4x4::RotationZ(0.0f);
+    this->constantData.world *= MyMatrix4x4::RotationY(this->yRotation);
+    this->constantData.world *= MyMatrix4x4::RotationX(this->xRotation);
 
     // this->constantData.view.SetIdentity();
     // this->constantData.projection.SetOrthographicLeftHand(
@@ -69,6 +77,9 @@ void MyAppWindow::OnCreate() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnCreate called" << std::endl;
 
     MyWindow::OnCreate();
+
+    if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Registering MyAppWindow as input listener" << std::endl;
+    MyInputSystem::GetInstance()->AddListener(this);
     MyGraphicsEngine::GetInstance()->Initialize();
     RECT windowRectangle = this->GetWindowRect();
     swapChain = MyGraphicsEngine::GetInstance()->CreateSwapChain();
@@ -416,6 +427,9 @@ void MyAppWindow::OnUpdate() {
 
     MyWindow::OnUpdate();
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : OnUpdate called" << std::endl;
+    if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Updating input system in MyAppWindow::OnUpdate" << std::endl;
+    MyInputSystem::GetInstance()->Update();
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : OnUpdate called" << std::endl;
     MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVec4(0.0f, 0.3f, 0.4f, 1.0f));
 
     RECT windowRectangle = this->GetWindowRect();
@@ -453,6 +467,9 @@ void MyAppWindow::OnUpdate() {
 void MyAppWindow::OnDestroy() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnDestroy called" << std::endl;
 
+    if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Removing MyAppWindow as input listener" << std::endl;
+    MyInputSystem::GetInstance()->RemoveListener(this);
+
     MyWindow::OnDestroy();
     if (this->vertexBuffer) {
         this->vertexBuffer->Release();
@@ -485,4 +502,64 @@ void MyAppWindow::OnDestroy() {
         this->swapChain = nullptr;
     }
     MyGraphicsEngine::GetInstance()->Release();
+}
+void MyAppWindow::OnKeyDown(int keyCode) {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnKeyDown called with keyCode: " << keyCode << std::endl;
+
+    // Handle key down events here
+    switch (keyCode) {
+    case 'W':
+        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : W pressed, xRotation increased" << std::endl;
+        break;
+    case 'A':
+        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : A pressed, yRotation decreased" << std::endl;
+        break;
+    case 'S':
+        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : S pressed, xRotation decreased" << std::endl;
+        break;
+    case 'D':
+        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : D pressed, yRotation increased" << std::endl;
+        break;
+    default:
+        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Unhandled key down: " << keyCode << std::endl;
+        break;
+    }
+}
+void MyAppWindow::OnKeyHold(int keyCode) {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnKeyDown called with keyCode: " << keyCode << std::endl;
+
+    // Handle key down events here
+    switch (keyCode) {
+    case 'W':
+        this->xRotation += this->rotationSpeed * this->deltaTime;
+        break;
+    case 'A':
+        this->yRotation -= this->rotationSpeed * this->deltaTime;
+        break;
+    case 'S':
+        this->xRotation -= this->rotationSpeed * this->deltaTime;
+        break;
+    case 'D':
+        this->yRotation += this->rotationSpeed * this->deltaTime;
+        break;
+    default:
+        break;
+    }
+}
+
+void MyAppWindow::OnKeyUp(int keyCode) {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnKeyUp called with keyCode: " << keyCode << std::endl;
+
+    // Handle key up events here
+    switch (keyCode) {
+    case 'W':
+    case 'A':
+    case 'S':
+    case 'D':
+        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Key released: " << (char)keyCode << std::endl;
+        break;
+    default:
+        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Unhandled key up: " << keyCode << std::endl;
+        break;
+    }
 }

@@ -138,6 +138,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Core\Primitives\MyQuad.cpp" />
     <ClCompile Include="Source\Core\Primitives\MyTriangle.cpp" />
+    <ClCompile Include="Source\Game\Input System\MyInputListener.cpp" />
+    <ClCompile Include="Source\Game\Input System\MyInputSystem.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyConstantBuffer.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyIndexBuffer.cpp" />
     <ClCompile Include="Source\Graphics\MyDeviceContext.cpp" />
@@ -152,6 +154,8 @@
   <ItemGroup>
     <ClInclude Include="Include\Core\Primitives\MyQuad.hpp" />
     <ClInclude Include="Include\Core\Primitives\MyTriangle.hpp" />
+    <ClInclude Include="Include\Game\Input System\MyInputListener.hpp" />
+    <ClInclude Include="Include\Game\Input System\MyInputSystem.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyConstantBuffer.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyIndexBuffer.hpp" />
     <ClInclude Include="Include\Graphics\MyDeviceContext.hpp" />

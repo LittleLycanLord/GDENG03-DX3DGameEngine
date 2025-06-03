@@ -8,6 +8,8 @@
 #include "Math/MyVertex.hpp"
 #include "Core/Primitives/MyTriangle.hpp"
 #include "Core/Primitives/MyQuad.hpp"
+#include "Game/Input System/MyInputSystem.hpp"
+#include "Game/Input System/MyInputListener.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MySwapChain.hpp"
@@ -18,7 +20,7 @@
 #include "Graphics/Shaders/MyPixelShader.hpp"
 
 namespace DX3D {
-    class MyAppWindow : public MyWindow {
+    class MyAppWindow : public MyWindow, public MyInputListener {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
@@ -33,7 +35,12 @@ namespace DX3D {
         unsigned long oldTime = 0;
         unsigned long newTime = 0;
         float deltaTime = 0;
+
+        //* Experimental variables
         float experimentalDelta = 0;
+        float rotationSpeed = 1.0f; // Speed of rotation in radians per frame
+        float xRotation = 0.0f;
+        float yRotation = 0.0f;
 
         MyConstant constantData;
 
@@ -57,9 +64,14 @@ namespace DX3D {
         //* ╚════════════════════════════════╝
     protected:
     public:
+        //* MyWindow
         virtual void OnCreate() override;
         virtual void OnUpdate() override;
         virtual void OnDestroy() override;
+        //* MyInputListener
+        virtual void OnKeyDown(int keyCode) override;
+        virtual void OnKeyHold(int keyCode) override;
+        virtual void OnKeyUp(int keyCode) override;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║

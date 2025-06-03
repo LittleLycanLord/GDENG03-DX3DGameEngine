@@ -13,6 +13,7 @@ bool LOG_INFO_CONSTANTBUFFER = false;
 bool LOG_INFO_INDEXBUFFER = true;
 bool LOG_INFO_VERTEXSHADER = false;
 bool LOG_INFO_PIXELSHADER = false;
+bool LOG_INFO_INPUTSYSTEM = false;
 
 
 // Directory for shader files
