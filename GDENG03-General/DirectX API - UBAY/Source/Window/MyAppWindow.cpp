@@ -61,6 +61,8 @@ void MyAppWindow::UpdateObjects() {
     this->constantData.world *= MyMatrix4x4::RotationY(this->yRotation);
     this->constantData.world *= MyMatrix4x4::RotationX(this->xRotation);
 
+    this->constantData.world *= MyMatrix4x4::Translation(this->cameraPosition);
+
     // this->constantData.view.SetIdentity();
     // this->constantData.projection.SetOrthographicLeftHand(
     //     (this->GetWindowRect().right - this->GetWindowRect().left) / 400.0f,
@@ -407,8 +409,8 @@ void MyAppWindow::OnCreate() {
     this->constantData.world.Translate(MyVec3(0.0f, 0.0f, 0.0f));
     this->constantData.view.SetIdentity();
     this->constantData.projection.SetOrthographicLeftHand(
-        (this->GetWindowRect().right - this->GetWindowRect().left) / 400.0f,
-        (this->GetWindowRect().bottom - this->GetWindowRect().top) / 400.0f,
+        (this->GetWindowRect().right - this->GetWindowRect().left) / 200.0f,
+        (this->GetWindowRect().bottom - this->GetWindowRect().top) / 200.0f,
         -4.0f,
         4.0
     );
@@ -539,16 +541,22 @@ void MyAppWindow::OnKeyHold(int keyCode) {
     // Handle key down events here
     switch (keyCode) {
     case 'W':
-        this->xRotation += this->rotationSpeed * this->deltaTime;
+        this->cameraPosition.z -= this->moveSpeed * this->deltaTime;
         break;
     case 'A':
-        this->yRotation -= this->rotationSpeed * this->deltaTime;
+        this->cameraPosition.x += this->moveSpeed * this->deltaTime;
         break;
     case 'S':
-        this->xRotation -= this->rotationSpeed * this->deltaTime;
+        this->cameraPosition.z += this->moveSpeed * this->deltaTime;
         break;
     case 'D':
-        this->yRotation += this->rotationSpeed * this->deltaTime;
+        this->cameraPosition.x -= this->moveSpeed * this->deltaTime;
+        break;
+    case 'Q':
+        this->cameraPosition.y -= this->moveSpeed * this->deltaTime;
+        break;
+    case 'E':
+        this->cameraPosition.y += this->moveSpeed * this->deltaTime;
         break;
     default:
         break;

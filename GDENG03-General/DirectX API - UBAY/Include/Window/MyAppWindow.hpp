@@ -38,9 +38,12 @@ namespace DX3D {
 
         //* Experimental variables
         float experimentalDelta = 0;
-        float rotationSpeed = 1.0f; // Speed of rotation in radians per frame
+        float rotationSpeed = 1.0f;
         float xRotation = 0.0f;
         float yRotation = 0.0f;
+
+        float moveSpeed = 1.0f;
+        MyVec3 cameraPosition{ 0.0f, 0.0f, -5.0f };
 
         MyConstant constantData;
 
@@ -70,7 +73,7 @@ namespace DX3D {
         virtual void OnDestroy() override;
         virtual void OnSetFocus() override;
         virtual void OnKillFocus() override;
-        
+
         //* MyInputListener
         virtual void OnKeyDown(int keyCode) override;
         virtual void OnKeyHold(int keyCode) override;

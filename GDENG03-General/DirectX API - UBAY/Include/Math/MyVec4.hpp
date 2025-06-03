@@ -23,6 +23,20 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
+        void Cross(MyVec4& A, MyVec4& B, MyVec4& C) {
+            this->x = A.y * (B.z * C.w - C.z * B.w) - A.z * (B.y * C.w - C.y * B.w) + A.w * (B.y * C.z - B.z * C.y);
+            this->y = -(A.x * (B.z * C.w - C.z * B.w) - A.z * (B.x * C.w - C.x * B.w) + A.w * (B.x * C.z - C.x * B.z));
+            this->z = A.x * (B.y * C.w - C.y * B.w) - A.y * (B.x * C.w - C.x * B.w) + A.w * (B.x * C.y - C.x * B.y);
+            this->w = -(A.x * (B.y * C.z - C.y * B.z) - A.y * (B.x * C.z - C.x * B.z) + A.z * (B.x * C.y - C.x * B.y));
+        }
+        MyVec4 GetCross(MyVec4& A, MyVec4& B, MyVec4& C) {
+            MyVec4 result(this->x, this->y, this->z, this->w);
+            result.x = A.y * (B.z * C.w - C.z * B.w) - A.z * (B.y * C.w - C.y * B.w) + A.w * (B.y * C.z - B.z * C.y);
+            result.y = -(A.x * (B.z * C.w - C.z * B.w) - A.z * (B.x * C.w - C.x * B.w) + A.w * (B.x * C.z - C.x * B.z));
+            result.z = A.x * (B.y * C.w - C.y * B.w) - A.y * (B.x * C.w - C.x * B.w) + A.w * (B.x * C.y - C.x * B.y);
+            result.w = -(A.x * (B.y * C.z - C.y * B.z) - A.y * (B.x * C.z - C.x * B.z) + A.z * (B.x * C.y - C.x * B.y));
+            return result;
+        }
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

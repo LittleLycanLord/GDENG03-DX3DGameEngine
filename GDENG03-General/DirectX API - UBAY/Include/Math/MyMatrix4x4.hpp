@@ -1,5 +1,6 @@
 #pragma once
 #include "Math/MyVec3.hpp"
+#include "Math/MyVec4.hpp"
 #include "memory"
 
 namespace DX3D {
@@ -30,7 +31,6 @@ namespace DX3D {
             matrix[2][2] = 1;
             matrix[3][3] = 1;
         }
-
         void Translate(const MyVec3& translation) {
             this->SetIdentity();
             matrix[3][0] = translation.x;
@@ -165,6 +165,58 @@ namespace DX3D {
             returnMatrix.matrix[3][2] = -(nearPlane / (farPlane - nearPlane));
             return returnMatrix;
         }
+        float GetDeterminant() {
+            MyVec4 minor;
+            MyVec4 A = { matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3] };
+            MyVec4 B = { matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3] };
+            MyVec4 C = { matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3] };
+
+            minor.Cross(A, B, C);
+            return -(this->matrix[3][0] * minor.x
+                + this->matrix[3][1] * minor.y
+                + this->matrix[3][2] * minor.z
+                + this->matrix[3][3] * minor.w);
+        }
+        MyMatrix4x4 GetInverse() {
+            MyMatrix4x4 returnMatrix;
+            int a;
+            int row;
+            int column;
+            MyVec4 vector;
+            MyVec4 vectors[3];
+            float determinant = this->GetDeterminant();
+            for (int row = 0; row < 4; row++) {
+                for (int column = 0; column < 4; column++) {
+                    if (column != row) {
+                        a = column;
+                        if (column > row)
+                            a--;
+
+                        vectors[a].x = this->matrix[column][0];
+                        vectors[a].y = this->matrix[column][1];
+                        vectors[a].z = this->matrix[column][2];
+                        vectors[a].w = this->matrix[column][3];
+                    }
+                }
+                vector.Cross(vectors[0], vectors[1], vectors[2]);
+
+                returnMatrix.matrix[0][row] = pow(-1.0f, row) * vector.x / determinant;
+                returnMatrix.matrix[1][row] = pow(-1.0f, row) * vector.y / determinant;
+                returnMatrix.matrix[2][row] = pow(-1.0f, row) * vector.z / determinant;
+                returnMatrix.matrix[3][row] = pow(-1.0f, row) * vector.w / determinant;
+            }
+            return returnMatrix;
+        }
+        void Inverse() {
+            SetMatrix(this->GetInverse());
+        }
+        void operator =(const MyMatrix4x4& matrix) {
+            memcpy(this->matrix, matrix.matrix, sizeof(float) * 16);
+        }
+        void SetMatrix(const MyMatrix4x4& matrix) {
+            memcpy(this->matrix, matrix.matrix, sizeof(float) * 16);
+        }
+
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
