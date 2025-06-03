@@ -1,57 +1,60 @@
 #pragma once
+#include "Core/Input System/MyInputListener.hpp"
+#include "Math/MyScreenPoint.hpp"
+#include <map>
+#include <iostream>
 #include <Windows.h>
-#include <WinUser.h>
 
 namespace DX3D {
-    class MyWindow {
+    class MyInputSystem {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        bool running{ false };
-    protected:
-        HWND windowHandle{ nullptr };
+        std::map<MyInputListener*, MyInputListener*> inputListeners;
+        unsigned char newKeyStates[256] = { 0 };
+        unsigned char oldKeyStates[256] = { 0 };
+
+        bool firstFrame = true;
+        MyScreenPoint newMousePosition = { 0, 0 };
+        MyScreenPoint oldMousePosition = { 0, 0 };
+        MyScreenPoint deltaMousePosition = { 0, 0 };
+
+        //* ╔════════════════════════════╗
+        //* ║ Constructors & Destructors ║
+        //* ╚════════════════════════════╝
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyWindow();
-        ~MyWindow();
+        MyInputSystem();
+        ~MyInputSystem();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        bool Initialize();
-        bool Broadcast();
-        bool Release();
+        void Update();
+        void AddListener(MyInputListener* inputListener);
+        void RemoveListener(MyInputListener* inputListener);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate();
-        virtual void OnUpdate();
-        virtual void OnDestroy();
-
-        virtual void OnSetFocus();
-        virtual void OnKillFocus();
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        bool IsRunning() const { return running; }
-        RECT GetWindowRect() const {
-            RECT rect;
-            GetClientRect(windowHandle, &rect);
-            return rect;
+        static MyInputSystem* GetInstance() {
+            static MyInputSystem instance;
+            return &instance;
         }
-        void SetWindowHandle(HWND windowHandle) { this->windowHandle = windowHandle; }
     };
 } // namespace DX3D
 

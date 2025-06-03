@@ -1,19 +1,23 @@
 #pragma once
 
 namespace DX3D {
-    class MyInputListener {
+    class MyScreenPoint {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
     public:
+        int x;
+        int y;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyInputListener();
-        ~MyInputListener();
+        MyScreenPoint() : x(0), y(0) {};
+        MyScreenPoint(int x, int y) : x(x), y(y) {};
+        MyScreenPoint(const MyScreenPoint& other) : x(other.x), y(other.y) {};
+        ~MyScreenPoint() {};
 
         //* ╔═══════════╗
         //* ║ Functions ║
@@ -26,9 +30,6 @@ namespace DX3D {
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnKeyDown(int keyCode) = 0;
-        virtual void OnKeyHold(int keyCode) = 0;
-        virtual void OnKeyUp(int keyCode) = 0;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║

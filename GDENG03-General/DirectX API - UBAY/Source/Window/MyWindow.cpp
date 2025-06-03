@@ -29,6 +29,16 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
             windowInstance->OnCreate();
             break;
         }
+    case WM_SETFOCUS: {
+            MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
+            windowInstance->OnSetFocus();
+            break;
+        }
+    case WM_KILLFOCUS: {
+            MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
+            windowInstance->OnKillFocus();
+            break;
+        }
     case WM_DESTROY: {
             MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
             windowInstance->OnDestroy();
@@ -120,4 +130,10 @@ void MyWindow::OnUpdate() {
 void MyWindow::OnDestroy() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnDestroy called" << std::endl;
     this->running = false;
+}
+void MyWindow::OnSetFocus() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnSetFocus called" << std::endl;
+}
+void MyWindow::OnKillFocus() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnUnfocus called" << std::endl;
 }

@@ -5,7 +5,8 @@ using namespace DX3D;
 
 extern bool LOG_INFO_WINDOW;
 extern bool LOG_INFO_CONSTANTBUFFER;
-extern bool LOG_INFO_INPUTSYSTEM;
+extern bool LOG_INFO_INPUTSYSTEM_KEYBOARD;
+extern bool LOG_INFO_INPUTSYSTEM_MOUSE;
 // Add extern declarations for shader path constants
 extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
@@ -78,7 +79,7 @@ void MyAppWindow::OnCreate() {
 
     MyWindow::OnCreate();
 
-    if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Registering MyAppWindow as input listener" << std::endl;
+    if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Registering MyAppWindow as input listener" << std::endl;
     MyInputSystem::GetInstance()->AddListener(this);
     MyGraphicsEngine::GetInstance()->Initialize();
     RECT windowRectangle = this->GetWindowRect();
@@ -427,7 +428,7 @@ void MyAppWindow::OnUpdate() {
 
     MyWindow::OnUpdate();
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : OnUpdate called" << std::endl;
-    if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Updating input system in MyAppWindow::OnUpdate" << std::endl;
+    if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Updating input system in MyAppWindow::OnUpdate" << std::endl;
     MyInputSystem::GetInstance()->Update();
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : OnUpdate called" << std::endl;
     MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVec4(0.0f, 0.3f, 0.4f, 1.0f));
@@ -467,7 +468,7 @@ void MyAppWindow::OnUpdate() {
 void MyAppWindow::OnDestroy() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnDestroy called" << std::endl;
 
-    if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Removing MyAppWindow as input listener" << std::endl;
+    if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Removing MyAppWindow as input listener" << std::endl;
     MyInputSystem::GetInstance()->RemoveListener(this);
 
     MyWindow::OnDestroy();
@@ -503,25 +504,32 @@ void MyAppWindow::OnDestroy() {
     }
     MyGraphicsEngine::GetInstance()->Release();
 }
+void MyAppWindow::OnSetFocus() {
+    MyInputSystem::GetInstance()->AddListener(this);
+}
+void MyAppWindow::OnKillFocus() {
+    MyInputSystem::GetInstance()->RemoveListener(this);
+}
+
 void MyAppWindow::OnKeyDown(int keyCode) {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnKeyDown called with keyCode: " << keyCode << std::endl;
 
     // Handle key down events here
     switch (keyCode) {
     case 'W':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : W pressed, xRotation increased" << std::endl;
+        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : W pressed, xRotation increased" << std::endl;
         break;
     case 'A':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : A pressed, yRotation decreased" << std::endl;
+        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : A pressed, yRotation decreased" << std::endl;
         break;
     case 'S':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : S pressed, xRotation decreased" << std::endl;
+        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : S pressed, xRotation decreased" << std::endl;
         break;
     case 'D':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : D pressed, yRotation increased" << std::endl;
+        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : D pressed, yRotation increased" << std::endl;
         break;
     default:
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Unhandled key down: " << keyCode << std::endl;
+        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Unhandled key down: " << keyCode << std::endl;
         break;
     }
 }
@@ -556,10 +564,41 @@ void MyAppWindow::OnKeyUp(int keyCode) {
     case 'A':
     case 'S':
     case 'D':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Key released: " << (char)keyCode << std::endl;
+        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Key released: " << (char)keyCode << std::endl;
         break;
     default:
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Unhandled key up: " << keyCode << std::endl;
+        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Unhandled key up: " << keyCode << std::endl;
         break;
     }
+}
+
+void MyAppWindow::OnMouseMove(const MyScreenPoint& deltaMousePosition) {
+    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnMouseMove called with deltaMousePosition: ("
+        << deltaMousePosition.x << ", " << deltaMousePosition.y << ")" << std::endl;
+
+    // this->xRotation += deltaMousePosition.y * this->rotationSpeed * this->deltaTime;
+    // this->yRotation += deltaMousePosition.x * this->rotationSpeed * this->deltaTime;
+}
+
+void MyAppWindow::OnLMBDown(const MyScreenPoint& mousePosition) {
+    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnLMBDown called with mousePosition: ("
+        << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
+}
+void MyAppWindow::OnLMBHold(const MyScreenPoint& deltaMousePosition) {
+    this->xRotation += deltaMousePosition.y * this->rotationSpeed * this->deltaTime;
+}
+void MyAppWindow::OnLMBUp(const MyScreenPoint& mousePosition) {
+    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnLMBUp called with mousePosition: ("
+        << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
+}
+void MyAppWindow::OnRMBDown(const MyScreenPoint& mousePosition) {
+    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnRMBDown called with mousePosition: ("
+        << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
+}
+void MyAppWindow::OnRMBHold(const MyScreenPoint& deltaMousePosition) {
+    this->yRotation += deltaMousePosition.x * this->rotationSpeed * this->deltaTime;
+}
+void MyAppWindow::OnRMBUp(const MyScreenPoint& mousePosition) {
+    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnRMBUp called with mousePosition: ("
+        << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }

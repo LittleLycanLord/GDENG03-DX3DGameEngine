@@ -8,8 +8,8 @@
 #include "Math/MyVertex.hpp"
 #include "Core/Primitives/MyTriangle.hpp"
 #include "Core/Primitives/MyQuad.hpp"
-#include "Game/Input System/MyInputSystem.hpp"
-#include "Game/Input System/MyInputListener.hpp"
+#include "Core/Input System/MyInputSystem.hpp"
+#include "Core/Input System/MyInputListener.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MySwapChain.hpp"
@@ -68,10 +68,20 @@ namespace DX3D {
         virtual void OnCreate() override;
         virtual void OnUpdate() override;
         virtual void OnDestroy() override;
+        virtual void OnSetFocus() override;
+        virtual void OnKillFocus() override;
+        
         //* MyInputListener
         virtual void OnKeyDown(int keyCode) override;
         virtual void OnKeyHold(int keyCode) override;
         virtual void OnKeyUp(int keyCode) override;
+        virtual void OnMouseMove(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnLMBUp(const MyScreenPoint& mousePosition) override;
+        virtual void OnLMBHold(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnLMBDown(const MyScreenPoint& mousePosition) override;
+        virtual void OnRMBUp(const MyScreenPoint& mousePosition) override;
+        virtual void OnRMBHold(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnRMBDown(const MyScreenPoint& mousePosition) override;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║

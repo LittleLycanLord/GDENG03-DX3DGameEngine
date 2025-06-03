@@ -136,10 +136,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Source\Core\Input System\MyInputListener.cpp" />
+    <ClCompile Include="Source\Core\Input System\MyInputSystem.cpp" />
     <ClCompile Include="Source\Core\Primitives\MyQuad.cpp" />
     <ClCompile Include="Source\Core\Primitives\MyTriangle.cpp" />
-    <ClCompile Include="Source\Game\Input System\MyInputListener.cpp" />
-    <ClCompile Include="Source\Game\Input System\MyInputSystem.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyConstantBuffer.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyIndexBuffer.cpp" />
     <ClCompile Include="Source\Graphics\MyDeviceContext.cpp" />
@@ -152,10 +152,10 @@
     <ClCompile Include="Source\Window\MyWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Core\Input System\MyInputListener.hpp" />
+    <ClInclude Include="Include\Core\Input System\MyInputSystem.hpp" />
     <ClInclude Include="Include\Core\Primitives\MyQuad.hpp" />
     <ClInclude Include="Include\Core\Primitives\MyTriangle.hpp" />
-    <ClInclude Include="Include\Game\Input System\MyInputListener.hpp" />
-    <ClInclude Include="Include\Game\Input System\MyInputSystem.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyConstantBuffer.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyIndexBuffer.hpp" />
     <ClInclude Include="Include\Graphics\MyDeviceContext.hpp" />
@@ -166,6 +166,7 @@
     <ClInclude Include="Include\Graphics\Shaders\MyVertexShader.hpp" />
     <ClInclude Include="Include\Math\MyConstant.hpp" />
     <ClInclude Include="Include\Math\MyMatrix4x4.hpp" />
+    <ClInclude Include="Include\Math\MyScreenPoint.hpp" />
     <ClInclude Include="Include\Math\MyVec3.hpp" />
     <ClInclude Include="Include\Math\MyVec4.hpp" />
     <ClInclude Include="Include\Math\MyVertex.hpp" />

@@ -1,54 +1,50 @@
 #pragma once
-#include "Game/Input System/MyInputListener.hpp"
-#include <map>
-#include <iostream>
-#include <Windows.h>
+#include "Math/MyScreenPoint.hpp"
 
 namespace DX3D {
-    class MyInputSystem {
+    class MyInputListener {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        std::map<MyInputListener*, MyInputListener*> inputListeners;
-        unsigned char newKeyStates[256] = { 0 };
-        unsigned char oldKeyStates[256] = { 0 };
-
-        //* ╔════════════════════════════╗
-        //* ║ Constructors & Destructors ║
-        //* ╚════════════════════════════╝
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyInputSystem();
-        ~MyInputSystem();
+        MyInputListener();
+        ~MyInputListener();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        void Update();
-        void AddListener(MyInputListener* inputListener);
-        void RemoveListener(MyInputListener* inputListener);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
+        //* Keyboard Input Events
+        virtual void OnKeyDown(int keyCode) = 0;
+        virtual void OnKeyHold(int keyCode) = 0;
+        virtual void OnKeyUp(int keyCode) = 0;
+
+        //* Mouse Input Events
+        virtual void OnMouseMove(const MyScreenPoint& deltaMousePosition) = 0;
+        virtual void OnLMBDown(const MyScreenPoint& mousePosition) = 0;
+        virtual void OnLMBHold(const MyScreenPoint& deltaMousePosition) = 0;
+        virtual void OnLMBUp(const MyScreenPoint& mousePosition) = 0;
+        virtual void OnRMBDown(const MyScreenPoint& mousePosition) = 0;
+        virtual void OnRMBHold(const MyScreenPoint& deltaMousePosition) = 0;
+        virtual void OnRMBUp(const MyScreenPoint& mousePosition) = 0;
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        static MyInputSystem* GetInstance() {
-            static MyInputSystem instance;
-            return &instance;
-        }
     };
 } // namespace DX3D
 

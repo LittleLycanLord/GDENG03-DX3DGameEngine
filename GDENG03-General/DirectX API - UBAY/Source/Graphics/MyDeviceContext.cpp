@@ -87,7 +87,7 @@ void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
         std::cout << "[ERROR] : D3DDeviceContext is null in MyDeviceContext::SetViewPortSize" << std::endl;
         return;
     }
-    D3D11_VIEWPORT viewport;
+    D3D11_VIEWPORT viewport = {};
     viewport.Width = (FLOAT)width;
     viewport.Height = (FLOAT)height;
     viewport.MinDepth = 0.0f;

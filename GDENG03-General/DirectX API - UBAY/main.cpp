@@ -13,8 +13,8 @@ bool LOG_INFO_CONSTANTBUFFER = false;
 bool LOG_INFO_INDEXBUFFER = true;
 bool LOG_INFO_VERTEXSHADER = false;
 bool LOG_INFO_PIXELSHADER = false;
-bool LOG_INFO_INPUTSYSTEM = false;
-
+bool LOG_INFO_INPUTSYSTEM_KEYBOARD = false;
+bool LOG_INFO_INPUTSYSTEM_MOUSE = false;
 
 // Directory for shader files
 extern const std::wstring VERTEX_SHADER_DIRECTORY = L"Shaders/Vertex/RainbowCubeVertexShader.hlsl";
