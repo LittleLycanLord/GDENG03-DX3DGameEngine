@@ -4,6 +4,7 @@
 #include "Window/MyWindow.hpp"
 #include "Math/MyMatrix4x4.hpp"
 #include "Math/MyVec3.hpp"
+#include "Math/MyVec2.hpp"
 #include "Math/MyConstant.hpp"
 #include "Math/MyVertex.hpp"
 #include "Core/Primitives/MyTriangle.hpp"
@@ -32,20 +33,26 @@ namespace DX3D {
         MyVertexShader* vertexShader{ nullptr };
         MyPixelShader* pixelShader{ nullptr };
 
-        unsigned long oldTime = 0;
-        unsigned long newTime = 0;
+        ULONGLONG oldTime = 0;
+        ULONGLONG newTime = 0;
         float deltaTime = 0;
+
+        bool lockMouse = true;
 
         //* Experimental variables
         float experimentalDelta = 0;
-        float rotationSpeed = 1.0f;
+        float rotationSpeed = 0.1f;
         float xRotation = 0.0f;
         float yRotation = 0.0f;
 
         float moveSpeed = 1.0f;
-        MyVec3 cameraPosition{ 0.0f, 0.0f, -5.0f };
 
         MyConstant constantData;
+        MyMatrix4x4 cameraMatrix;
+        MyVec3 cameraMoveInput;
+        MyVec3 cameraPosition;
+        MyVec3 cameraRotation;
+
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║

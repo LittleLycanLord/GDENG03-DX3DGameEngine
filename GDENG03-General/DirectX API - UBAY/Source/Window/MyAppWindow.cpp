@@ -26,7 +26,7 @@ MyAppWindow::~MyAppWindow() {}
 //* ╚═══════════╝
 void MyAppWindow::UpdateDeltaTime() {
     this->oldTime = this->newTime;
-    this->newTime = ::GetTickCount();
+    this->newTime = ::GetTickCount64();
     this->deltaTime = this->oldTime ? (this->newTime - this->oldTime) / 1000.0f : 0.0f;
 }
 void MyAppWindow::UpdateObjects() {
@@ -56,20 +56,25 @@ void MyAppWindow::UpdateObjects() {
     // this->constantData.world *= MyMatrix4x4::RotationY(this->experimentalDelta * 0.55f);
     // this->constantData.world *= MyMatrix4x4::RotationX(this->experimentalDelta * 0.55f);
 
-    //* WASD Rotation
-    this->constantData.world *= MyMatrix4x4::RotationZ(0.0f);
-    this->constantData.world *= MyMatrix4x4::RotationY(this->yRotation);
-    this->constantData.world *= MyMatrix4x4::RotationX(this->xRotation);
+    // //* WASD Movement + Mouse Rotation
+    // this->constantData.world *= MyMatrix4x4::RotationZ(0.0f);
+    // this->constantData.world *= MyMatrix4x4::RotationY(this->yRotation);
+    // this->constantData.world *= MyMatrix4x4::RotationX(this->xRotation);
 
-    this->constantData.world *= MyMatrix4x4::Translation(this->cameraPosition);
+    //* Camera Matrix
+    this->cameraMatrix.SetIdentity();
+    this->cameraMatrix *= MyMatrix4x4::RotationX(this->cameraRotation.x);
+    this->cameraMatrix *= MyMatrix4x4::RotationY(this->cameraRotation.y);
+    this->cameraMatrix *= MyMatrix4x4::RotationZ(this->cameraRotation.z);
+    this->cameraPosition += this->cameraMatrix.GetTranslation() +
+        (this->cameraMatrix.GetZDirection() * this->cameraMoveInput.y * this->moveSpeed * this->deltaTime) +
+        (this->cameraMatrix.GetYDirection() * this->cameraMoveInput.z * this->moveSpeed * this->deltaTime) +
+        (this->cameraMatrix.GetXDirection() * this->cameraMoveInput.x * this->moveSpeed * this->deltaTime);
+    this->cameraMatrix *= MyMatrix4x4::Translation(this->cameraPosition);
+    this->cameraMatrix.SetInverse();
 
-    // this->constantData.view.SetIdentity();
-    // this->constantData.projection.SetOrthographicLeftHand(
-    //     (this->GetWindowRect().right - this->GetWindowRect().left) / 400.0f,
-    //     (this->GetWindowRect().bottom - this->GetWindowRect().top) / 400.0f,
-    //     -4.0f,
-    //     4.0f
-    // );
+    this->constantData.view = this->cameraMatrix;
+
     this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext(), &this->constantData);
 }
 
@@ -83,6 +88,7 @@ void MyAppWindow::OnCreate() {
 
     if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Registering MyAppWindow as input listener" << std::endl;
     MyInputSystem::GetInstance()->AddListener(this);
+    MyInputSystem::GetInstance()->SetCursorVisibility(false);
     MyGraphicsEngine::GetInstance()->Initialize();
     RECT windowRectangle = this->GetWindowRect();
     swapChain = MyGraphicsEngine::GetInstance()->CreateSwapChain();
@@ -369,7 +375,6 @@ void MyAppWindow::OnCreate() {
         return;
     }
 
-
     // Compile and create vertex shader
     void* vertexShaderByteCode = nullptr;
     size_t vertexShaderSize = 0;
@@ -408,11 +413,19 @@ void MyAppWindow::OnCreate() {
     this->constantData.time = 0;
     this->constantData.world.Translate(MyVec3(0.0f, 0.0f, 0.0f));
     this->constantData.view.SetIdentity();
+
+    //* Set Projection Matrix
     this->constantData.projection.SetOrthographicLeftHand(
         (this->GetWindowRect().right - this->GetWindowRect().left) / 200.0f,
         (this->GetWindowRect().bottom - this->GetWindowRect().top) / 200.0f,
         -4.0f,
         4.0
+    );
+    this->constantData.projection.SetPerspectiveLeftHand(
+        45.0f * 3.14159265f / 180.0f, // FOV in radians
+        (this->GetWindowRect().right - this->GetWindowRect().left) / (float)(this->GetWindowRect().bottom - this->GetWindowRect().top),
+        0.1f, // Near plane
+        100.0f // Far plane
     );
     this->constantBuffer = MyGraphicsEngine::GetInstance()->CreateConstantBuffer();
     if (!this->constantBuffer) {
@@ -541,22 +554,28 @@ void MyAppWindow::OnKeyHold(int keyCode) {
     // Handle key down events here
     switch (keyCode) {
     case 'W':
-        this->cameraPosition.z -= this->moveSpeed * this->deltaTime;
+        // this->cameraPosition.z += moveSpeed * this->deltaTime; // Move camera forward
+        this->cameraMoveInput.y = 1.0f; // Move camera forward
         break;
     case 'A':
-        this->cameraPosition.x += this->moveSpeed * this->deltaTime;
+        // this->cameraPosition.x -= moveSpeed * this->deltaTime; // Move camera left
+        this->cameraMoveInput.x = -1.0f; // Move camera left
         break;
     case 'S':
-        this->cameraPosition.z += this->moveSpeed * this->deltaTime;
+        // this->cameraPosition.z -= moveSpeed * this->deltaTime; // Move camera backward
+        this->cameraMoveInput.y = -1.0f; // Move camera backward
         break;
     case 'D':
-        this->cameraPosition.x -= this->moveSpeed * this->deltaTime;
+        // this->cameraPosition.x += moveSpeed * this->deltaTime; // Move camera right
+        this->cameraMoveInput.x = 1.0f; // Move camera right
         break;
     case 'Q':
-        this->cameraPosition.y -= this->moveSpeed * this->deltaTime;
+        // this->cameraPosition.y += moveSpeed * this->deltaTime; // Move camera up
+        this->cameraMoveInput.z = 1.0f; // Move camera up
         break;
     case 'E':
-        this->cameraPosition.y += this->moveSpeed * this->deltaTime;
+        // this->cameraPosition.y -= moveSpeed * this->deltaTime; // Move camera down
+        this->cameraMoveInput.z = -1.0f; // Move camera down
         break;
     default:
         break;
@@ -567,15 +586,29 @@ void MyAppWindow::OnKeyUp(int keyCode) {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnKeyUp called with keyCode: " << keyCode << std::endl;
 
     // Handle key up events here
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnKeyDown called with keyCode: " << keyCode << std::endl;
+
+    // Handle key down events here
     switch (keyCode) {
     case 'W':
+        this->cameraMoveInput.y = 0.0f;
+        break;
     case 'A':
+        this->cameraMoveInput.x = 0.0f;
+        break;
     case 'S':
+        this->cameraMoveInput.y = 0.0f;
+        break;
     case 'D':
-        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Key released: " << (char)keyCode << std::endl;
+        this->cameraMoveInput.x = 0.0f;
+        break;
+    case 'Q':
+        this->cameraMoveInput.z = 0.0f;
+        break;
+    case 'E':
+        this->cameraMoveInput.z = 0.0f;
         break;
     default:
-        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Unhandled key up: " << keyCode << std::endl;
         break;
     }
 }
@@ -586,6 +619,14 @@ void MyAppWindow::OnMouseMove(const MyScreenPoint& deltaMousePosition) {
 
     // this->xRotation += deltaMousePosition.y * this->rotationSpeed * this->deltaTime;
     // this->yRotation += deltaMousePosition.x * this->rotationSpeed * this->deltaTime;
+
+    if (this->lockMouse)
+        MyInputSystem::GetInstance()->SetCursorPosition(
+            MyScreenPoint(
+                (this->GetWindowRect().right - this->GetWindowRect().left) / 2,
+                (this->GetWindowRect().bottom - this->GetWindowRect().top) / 2
+            )
+        );
 }
 
 void MyAppWindow::OnLMBDown(const MyScreenPoint& mousePosition) {
@@ -593,7 +634,7 @@ void MyAppWindow::OnLMBDown(const MyScreenPoint& mousePosition) {
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 void MyAppWindow::OnLMBHold(const MyScreenPoint& deltaMousePosition) {
-    this->xRotation += deltaMousePosition.y * this->rotationSpeed * this->deltaTime;
+    this->cameraRotation.x += (float)((deltaMousePosition.y - (this->GetWindowRect().bottom - this->GetWindowRect().top) / 2.0f) * this->rotationSpeed * this->deltaTime);
 }
 void MyAppWindow::OnLMBUp(const MyScreenPoint& mousePosition) {
     if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnLMBUp called with mousePosition: ("
@@ -604,7 +645,7 @@ void MyAppWindow::OnRMBDown(const MyScreenPoint& mousePosition) {
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 void MyAppWindow::OnRMBHold(const MyScreenPoint& deltaMousePosition) {
-    this->yRotation += deltaMousePosition.x * this->rotationSpeed * this->deltaTime;
+    this->cameraRotation.y += (float)((deltaMousePosition.x - ((this->GetWindowRect().right - this->GetWindowRect().left) / 2.0)) * this->rotationSpeed * this->deltaTime);
 }
 void MyAppWindow::OnRMBUp(const MyScreenPoint& mousePosition) {
     if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnRMBUp called with mousePosition: ("

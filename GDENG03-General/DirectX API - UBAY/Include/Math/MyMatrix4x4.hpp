@@ -1,233 +1,193 @@
 #pragma once
+#include <cmath>
 #include "Math/MyVec3.hpp"
 #include "Math/MyVec4.hpp"
 #include "memory"
 
 namespace DX3D {
     class MyMatrix4x4 {
-        //* ╔════════════╗
-        //* ║ Attributes ║
-        //* ╚════════════╝
-    private:
     public:
         float matrix[4][4];
 
-        //* ╔════════════════════════════╗
-        //* ║ Constructors & Destructors ║
-        //* ╚════════════════════════════╝
-    public:
-        MyMatrix4x4() { this->SetIdentity(); }
+        // Constructors & Destructor
+        MyMatrix4x4() { SetIdentity(); }
         ~MyMatrix4x4() {}
 
-        //* ╔═══════════╗
-        //* ║ Functions ║
-        //* ╚═══════════╝
-    private:
-    public:
+        // Assignment & Setters
+        void operator=(const MyMatrix4x4& returnMatrix) { memcpy(this->matrix, returnMatrix.matrix, sizeof(float) * 16); }
+        void SetMatrix(const MyMatrix4x4& returnMatrix) { memcpy(this->matrix, returnMatrix.matrix, sizeof(float) * 16); }
+
+        // Basic Matrix Operations
         void SetIdentity() {
             memset(this->matrix, 0, sizeof(float) * 16);
-            matrix[0][0] = 1;
-            matrix[1][1] = 1;
-            matrix[2][2] = 1;
-            matrix[3][3] = 1;
-        }
-        void Translate(const MyVec3& translation) {
-            this->SetIdentity();
-            matrix[3][0] = translation.x;
-            matrix[3][1] = translation.y;
-            matrix[3][2] = translation.z;
-        }
-        void Scale(const MyVec3& scale) {
-            this->SetIdentity();
-            matrix[0][0] = scale.x;
-            matrix[1][1] = scale.y;
-            matrix[2][2] = scale.z;
-        }
-        void RotateX(float angle) {
-            float cosAngle = (float)cos(angle);
-            float sinAngle = (float)sin(angle);
-            matrix[1][1] = cosAngle;
-            matrix[1][2] = sinAngle;
-            matrix[2][1] = -sinAngle;
-            matrix[2][2] = cosAngle;
-        }
-        void RotateY(float angle) {
-            float cosAngle = (float)cos(angle);
-            float sinAngle = (float)sin(angle);
-            matrix[0][0] = cosAngle;
-            matrix[0][2] = -sinAngle;
-            matrix[2][0] = sinAngle;
-            matrix[2][2] = cosAngle;
-        }
-        void RotateZ(float angle) {
-            float cosAngle = (float)cos(angle);
-            float sinAngle = (float)sin(angle);
-            matrix[0][0] = cosAngle;
-            matrix[0][1] = sinAngle;
-            matrix[1][0] = -sinAngle;
-            matrix[1][1] = cosAngle;
-        }
-
-        void SetOrthographicLeftHand(float width, float height, float nearPlane, float farPlane) {
-            this->SetIdentity();
-            matrix[0][0] = 2.0f / width;
-            matrix[1][1] = 2.0f / height;
-            matrix[2][2] = 1.0f / (farPlane - nearPlane);
-            matrix[3][2] = -(nearPlane / (farPlane - nearPlane));
-        }
-
-        // Matrix multiplication
-        MyMatrix4x4 operator *(const MyMatrix4x4& rightHandSide) const {
-            MyMatrix4x4 result;
-            for (int row = 0; row < 4; ++row)
-                for (int column = 0; column < 4; ++column) {
-                    result.matrix[row][column] = 0.0f;
-                    for (int k = 0; k < 4; ++k)
-                        result.matrix[row][column] += this->matrix[row][k] * rightHandSide.matrix[k][column];
-                }
-            return result;
-        }
-
-        MyMatrix4x4& operator*=(const MyMatrix4x4& rightHandSide) {
-            *this = *this * rightHandSide;
-            return *this;
-        }
-
-        MyVec3 DotProduct(const MyVec3& multipliedVector) const {
-            float x = multipliedVector.x * matrix[0][0] + multipliedVector.y * matrix[1][0] + multipliedVector.z * matrix[2][0] + matrix[3][0];
-            float y = multipliedVector.x * matrix[0][1] + multipliedVector.y * matrix[1][1] + multipliedVector.z * matrix[2][1] + matrix[3][1];
-            float z = multipliedVector.x * matrix[0][2] + multipliedVector.y * matrix[1][2] + multipliedVector.z * matrix[2][2] + matrix[3][2];
-            return MyVec3(x, y, z);
+            this->matrix[0][0] = 1; this->matrix[1][1] = 1; this->matrix[2][2] = 1; this->matrix[3][3] = 1;
         }
         void Transpose() {
             for (int row = 0; row < 4; ++row)
-                for (int column = row + 1; column < 4; ++column)
-                    std::swap(matrix[row][column], matrix[column][row]);
+                for (int col = row + 1; col < 4; ++col)
+                    std::swap(this->matrix[row][col], this->matrix[col][row]);
+        }
+        MyMatrix4x4 operator*(const MyMatrix4x4& rhs) const {
+            MyMatrix4x4 result;
+            for (int row = 0; row < 4; ++row)
+                for (int col = 0; col < 4; ++col) {
+                    result.matrix[row][col] = 0.0f;
+                    for (int k = 0; k < 4; ++k)
+                        result.matrix[row][col] += this->matrix[row][k] * rhs.matrix[k][col];
+                }
+            return result;
+        }
+        MyMatrix4x4& operator*=(const MyMatrix4x4& rhs) {
+            *this = *this * rhs;
+            return *this;
         }
 
-        static MyMatrix4x4 Identity() {
-            MyMatrix4x4 returnMatrix;
-            returnMatrix.SetIdentity();
-            return returnMatrix;
-        }
+        // Static Constructors
+        static MyMatrix4x4 Identity() { MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity(); return returnMatrix; }
         static MyMatrix4x4 Translation(const MyVec3& translation) {
-            MyMatrix4x4 returnMatrix;
-            returnMatrix.SetIdentity();
-            returnMatrix.matrix[3][0] = translation.x;
-            returnMatrix.matrix[3][1] = translation.y;
-            returnMatrix.matrix[3][2] = translation.z;
+            MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
+            returnMatrix.matrix[3][0] = translation.x; returnMatrix.matrix[3][1] = translation.y; returnMatrix.matrix[3][2] = translation.z;
             return returnMatrix;
         }
-        static MyMatrix4x4 Scaling(const MyVec3& scale) {
-            MyMatrix4x4 returnMatrix;
-            returnMatrix.SetIdentity();
-            returnMatrix.matrix[0][0] = scale.x;
-            returnMatrix.matrix[1][1] = scale.y;
-            returnMatrix.matrix[2][2] = scale.z;
+        static MyMatrix4x4 Scaling(const MyVec3& sinAngle) {
+            MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
+            returnMatrix.matrix[0][0] = sinAngle.x; returnMatrix.matrix[1][1] = sinAngle.y; returnMatrix.matrix[2][2] = sinAngle.z;
             return returnMatrix;
         }
         static MyMatrix4x4 RotationX(float angle) {
-            MyMatrix4x4 returnMatrix;
-            float cosAngle = (float)cos(angle);
-            float sinAngle = (float)sin(angle);
-            returnMatrix.matrix[1][1] = cosAngle;
-            returnMatrix.matrix[1][2] = sinAngle;
-            returnMatrix.matrix[2][1] = -sinAngle;
-            returnMatrix.matrix[2][2] = cosAngle;
+            MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
+            float cosAngle = std::cos(angle), sinAngle = std::sin(angle);
+            returnMatrix.matrix[1][1] = cosAngle; returnMatrix.matrix[1][2] = sinAngle;
+            returnMatrix.matrix[2][1] = -sinAngle; returnMatrix.matrix[2][2] = cosAngle;
             return returnMatrix;
         }
         static MyMatrix4x4 RotationY(float angle) {
-            MyMatrix4x4 returnMatrix;
-            float cosAngle = (float)cos(angle);
-            float sinAngle = (float)sin(angle);
-            returnMatrix.matrix[0][0] = cosAngle;
-            returnMatrix.matrix[0][2] = -sinAngle;
-            returnMatrix.matrix[2][0] = sinAngle;
-            returnMatrix.matrix[2][2] = cosAngle;
+            MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
+            float cosAngle = std::cos(angle), sinAngle = std::sin(angle);
+            returnMatrix.matrix[0][0] = cosAngle; returnMatrix.matrix[0][2] = -sinAngle;
+            returnMatrix.matrix[2][0] = sinAngle; returnMatrix.matrix[2][2] = cosAngle;
             return returnMatrix;
         }
         static MyMatrix4x4 RotationZ(float angle) {
-            MyMatrix4x4 returnMatrix;
-            float cosAngle = (float)cos(angle);
-            float sinAngle = (float)sin(angle);
-            returnMatrix.matrix[0][0] = cosAngle;
-            returnMatrix.matrix[0][1] = sinAngle;
-            returnMatrix.matrix[1][0] = -sinAngle;
-            returnMatrix.matrix[1][1] = cosAngle;
+            MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
+            float cosAngle = std::cos(angle), sinAngle = std::sin(angle);
+            returnMatrix.matrix[0][0] = cosAngle; returnMatrix.matrix[0][1] = sinAngle;
+            returnMatrix.matrix[1][0] = -sinAngle; returnMatrix.matrix[1][1] = cosAngle;
             return returnMatrix;
         }
         static MyMatrix4x4 OrthographicLeftHand(float width, float height, float nearPlane, float farPlane) {
-            MyMatrix4x4 returnMatrix;
-            returnMatrix.SetIdentity();
+            MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
             returnMatrix.matrix[0][0] = 2.0f / width;
             returnMatrix.matrix[1][1] = 2.0f / height;
             returnMatrix.matrix[2][2] = 1.0f / (farPlane - nearPlane);
             returnMatrix.matrix[3][2] = -(nearPlane / (farPlane - nearPlane));
             return returnMatrix;
         }
+        static MyMatrix4x4 PerspectiveLeftHand(float fieldOfView, float aspectRatio, float nearPlane, float farPlane) {
+            MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
+            float yScale = 1.0f / std::tan(fieldOfView / 2.0f);
+            float xScale = yScale / aspectRatio;
+            returnMatrix.matrix[0][0] = xScale;
+            returnMatrix.matrix[1][1] = yScale;
+            returnMatrix.matrix[2][2] = farPlane / (farPlane - nearPlane);
+            returnMatrix.matrix[2][3] = 1.0f;
+            returnMatrix.matrix[3][2] = (-nearPlane * farPlane) / (farPlane - nearPlane);
+            return returnMatrix;
+        }
+
+        // Transformation Helpers (in-place)
+        void Translate(const MyVec3& translation) {
+            SetIdentity();
+            this->matrix[3][0] = translation.x; this->matrix[3][1] = translation.y; this->matrix[3][2] = translation.z;
+        }
+        void Scale(const MyVec3& scale) {
+            SetIdentity();
+            this->matrix[0][0] = scale.x; this->matrix[1][1] = scale.y; this->matrix[2][2] = scale.z;
+        }
+        void RotateX(float angle) {
+            SetIdentity();
+            float cosAngle = std::cos(angle), sinAngle = std::sin(angle);
+            this->matrix[1][1] = cosAngle; this->matrix[1][2] = sinAngle;
+            this->matrix[2][1] = -sinAngle; this->matrix[2][2] = cosAngle;
+        }
+        void RotateY(float angle) {
+            SetIdentity();
+            float cosAngle = std::cos(angle), sinAngle = std::sin(angle);
+            this->matrix[0][0] = cosAngle; this->matrix[0][2] = -sinAngle;
+            this->matrix[2][0] = sinAngle; this->matrix[2][2] = cosAngle;
+        }
+        void RotateZ(float angle) {
+            SetIdentity();
+            float cosAngle = std::cos(angle), sinAngle = std::sin(angle);
+            this->matrix[0][0] = cosAngle; this->matrix[0][1] = sinAngle;
+            this->matrix[1][0] = -sinAngle; this->matrix[1][1] = cosAngle;
+        }
+        void SetOrthographicLeftHand(float width, float height, float nearPlane, float farPlane) {
+            SetIdentity();
+            this->matrix[0][0] = 2.0f / width;
+            this->matrix[1][1] = 2.0f / height;
+            this->matrix[2][2] = 1.0f / (farPlane - nearPlane);
+            this->matrix[3][2] = -(nearPlane / (farPlane - nearPlane));
+        }
+        void SetPerspectiveLeftHand(float fieldOfView, float aspectRatio, float nearPlane, float farPlane) {
+            SetIdentity();
+            float yScale = 1.0f / std::tan(fieldOfView / 2.0f);
+            float xScale = yScale / aspectRatio;
+            this->matrix[0][0] = xScale;
+            this->matrix[1][1] = yScale;
+            this->matrix[2][2] = farPlane / (farPlane - nearPlane);
+            this->matrix[2][3] = 1.0f;
+            this->matrix[3][2] = (-nearPlane * farPlane) / (farPlane - nearPlane);
+        }
+
+        // Utility Functions
+        void SetInverse() { SetMatrix(this->Inverse()); }
+        MyMatrix4x4 Inverse() {
+            MyMatrix4x4 inverse;
+            int a;
+            MyVec4 vector, vectors[3];
+            float determinant = this->GetDeterminant();
+            if (determinant == 0.0f) return inverse; // Return identity if not invertible
+            for (int row = 0; row < 4; row++) {
+                for (int col = 0; col < 4; col++) {
+                    if (col != row) {
+                        a = col;
+                        if (col > row) a--;
+                        vectors[a].x = this->matrix[col][0];
+                        vectors[a].y = this->matrix[col][1];
+                        vectors[a].z = this->matrix[col][2];
+                        vectors[a].w = this->matrix[col][3];
+                    }
+                }
+                vector.Cross(vectors[0], vectors[1], vectors[2]);
+                inverse.matrix[0][row] = (float)pow(-1.0f, row) * vector.x / determinant;
+                inverse.matrix[1][row] = (float)pow(-1.0f, row) * vector.y / determinant;
+                inverse.matrix[2][row] = (float)pow(-1.0f, row) * vector.z / determinant;
+                inverse.matrix[3][row] = (float)pow(-1.0f, row) * vector.w / determinant;
+            }
+            return inverse;
+        }
         float GetDeterminant() {
             MyVec4 minor;
-            MyVec4 A = { matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3] };
-            MyVec4 B = { matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3] };
-            MyVec4 C = { matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3] };
-
+            MyVec4 A = { this->matrix[0][0], this->matrix[0][1], this->matrix[0][2], this->matrix[0][3] };
+            MyVec4 B = { this->matrix[1][0], this->matrix[1][1], this->matrix[1][2], this->matrix[1][3] };
+            MyVec4 C = { this->matrix[2][0], this->matrix[2][1], this->matrix[2][2], this->matrix[2][3] };
             minor.Cross(A, B, C);
             return -(this->matrix[3][0] * minor.x
                 + this->matrix[3][1] * minor.y
                 + this->matrix[3][2] * minor.z
                 + this->matrix[3][3] * minor.w);
         }
-        MyMatrix4x4 GetInverse() {
-            MyMatrix4x4 returnMatrix;
-            int a;
-            int row;
-            int column;
-            MyVec4 vector;
-            MyVec4 vectors[3];
-            float determinant = this->GetDeterminant();
-            for (int row = 0; row < 4; row++) {
-                for (int column = 0; column < 4; column++) {
-                    if (column != row) {
-                        a = column;
-                        if (column > row)
-                            a--;
-
-                        vectors[a].x = this->matrix[column][0];
-                        vectors[a].y = this->matrix[column][1];
-                        vectors[a].z = this->matrix[column][2];
-                        vectors[a].w = this->matrix[column][3];
-                    }
-                }
-                vector.Cross(vectors[0], vectors[1], vectors[2]);
-
-                returnMatrix.matrix[0][row] = pow(-1.0f, row) * vector.x / determinant;
-                returnMatrix.matrix[1][row] = pow(-1.0f, row) * vector.y / determinant;
-                returnMatrix.matrix[2][row] = pow(-1.0f, row) * vector.z / determinant;
-                returnMatrix.matrix[3][row] = pow(-1.0f, row) * vector.w / determinant;
-            }
-            return returnMatrix;
+        MyVec3 GetDotProduct(const MyVec3& vector) const {
+            float x = vector.x * this->matrix[0][0] + vector.y * this->matrix[1][0] + vector.z * this->matrix[2][0] + this->matrix[3][0];
+            float y = vector.x * this->matrix[0][1] + vector.y * this->matrix[1][1] + vector.z * this->matrix[2][1] + this->matrix[3][1];
+            float z = vector.x * this->matrix[0][2] + vector.y * this->matrix[1][2] + vector.z * this->matrix[2][2] + this->matrix[3][2];
+            return MyVec3(x, y, z);
         }
-        void Inverse() {
-            SetMatrix(this->GetInverse());
-        }
-        void operator =(const MyMatrix4x4& matrix) {
-            memcpy(this->matrix, matrix.matrix, sizeof(float) * 16);
-        }
-        void SetMatrix(const MyMatrix4x4& matrix) {
-            memcpy(this->matrix, matrix.matrix, sizeof(float) * 16);
-        }
-
-
-        //* ╔════════════════════════════════╗
-        //* ║ Virtual / Overridden Functions ║
-        //* ╚════════════════════════════════╝
-    protected:
-    public:
-
-        //* ╔═══════════════════╗
-        //* ║ Getters & Setters ║
-        //* ╚═══════════════════╝
-    public:
+        MyVec3 GetXDirection() { return MyVec3(this->matrix[0][0], this->matrix[0][1], this->matrix[0][2]); }
+        MyVec3 GetYDirection() { return MyVec3(this->matrix[1][0], this->matrix[1][1], this->matrix[1][2]); }
+        MyVec3 GetZDirection() { return MyVec3(this->matrix[2][0], this->matrix[2][1], this->matrix[2][2]); }
+        MyVec3 GetTranslation() { return MyVec3(this->matrix[3][0], this->matrix[3][1], this->matrix[3][2]); }
     };
 } // namespace DX3D
 

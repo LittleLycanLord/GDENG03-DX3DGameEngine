@@ -28,10 +28,9 @@ namespace DX3D {
     public:
         std::vector<MyVertex> GetVertices() {
             std::vector<MyVertex> vertices;
-            for (MyVertex vertex : this->triangleA.GetVertices())
-                vertices.push_back(vertex);
-            for (MyVertex vertex : this->triangleB.GetVertices())
-                vertices.push_back(vertex);
+            vertices.reserve(triangleA.GetVertices().size() + triangleB.GetVertices().size()); // preallocate memory
+            vertices.insert(vertices.end(), triangleA.GetVertices().begin(), triangleA.GetVertices().end());
+            vertices.insert(vertices.end(), triangleB.GetVertices().begin(), triangleB.GetVertices().end());
             return vertices;
         }
 

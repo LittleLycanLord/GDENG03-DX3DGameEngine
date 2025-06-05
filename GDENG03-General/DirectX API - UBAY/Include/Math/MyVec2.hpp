@@ -1,45 +1,43 @@
 #pragma once
 
 namespace DX3D {
-    class MyVec3 {
+    class MyVec2 {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
     public:
-        float x, y, z;
+        float x, y;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyVec3() : x(0), y(0), z(0) {}
-        MyVec3(float all) : x(all), y(all), z(all) {}
-        MyVec3(float x, float y, float z) : x(x), y(y), z(z) {}
-        MyVec3(const MyVec3& other) : x(other.x), y(other.y), z(other.z) {}
+        MyVec2() : x(0), y(0) {}
+        MyVec2(float all) : x(all), y(all) {}
+        MyVec2(float x, float y) : x(x), y(y) {}
+        MyVec2(const MyVec2& other) : x(other.x), y(other.y) {}
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        MyVec3 operator * (float scalar) const {
-            return MyVec3(this->x * scalar, this->y * scalar, this->z * scalar);
+        MyVec2 operator * (float scalar) const {
+            return MyVec2(this->x * scalar, this->y * scalar);
         }
-        MyVec3 operator + (MyVec3 other) const {
-            return MyVec3(this->x + other.x, this->y + other.y, this->z + other.z);
+        MyVec2 operator + (MyVec2 other) const {
+            return MyVec2(this->x + other.x, this->y + other.y);
         }
-        MyVec3& operator += (const MyVec3& other) {
+        MyVec2& operator += (const MyVec2& other) {
             this->x += other.x;
             this->y += other.y;
-            this->z += other.z;
             return *this;
         }
-        static MyVec3 Lerp(const MyVec3& start, const MyVec3& end, float delta) {
-            MyVec3 returnVector;
+        static MyVec2 Lerp(const MyVec2& start, const MyVec2& end, float delta) {
+            MyVec2 returnVector;
             returnVector.x = start.x * (1.0f - delta) + end.x * (delta);
             returnVector.y = start.y * (1.0f - delta) + end.y * (delta);
-            returnVector.z = start.z * (1.0f - delta) + end.z * (delta);
             return returnVector;
         }
 

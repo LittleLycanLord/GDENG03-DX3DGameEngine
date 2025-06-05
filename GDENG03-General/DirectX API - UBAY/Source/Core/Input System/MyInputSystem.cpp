@@ -67,9 +67,9 @@ void MyInputSystem::Update() {
                     MyInputListener* listener = listenerPair.first;
                     if (listener != nullptr) {
                         if (key == VK_LBUTTON)
-                            listener->OnLMBHold(this->deltaMousePosition);
+                            listener->OnLMBHold(this->newMousePosition);
                         if (key == VK_RBUTTON)
-                            listener->OnRMBHold(this->deltaMousePosition);
+                            listener->OnRMBHold(this->newMousePosition);
                         listener->OnKeyHold(key);
                         if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Key " << key << " being held in MyInputSystem::Update" << std::endl;
                     }
@@ -125,6 +125,12 @@ void MyInputSystem::RemoveListener(MyInputListener* inputListener) {
     else {
         if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[WARNING] : Listener not found in MyInputSystem::RemoveListener" << std::endl;
     }
+}
+void MyInputSystem::SetCursorPosition(const MyScreenPoint& position) {
+    SetCursorPos(position.x, position.y);
+}
+void MyInputSystem::SetCursorVisibility(bool showCursor) {
+    ShowCursor(showCursor);
 }
 
 //* ╔════════════════════════════════╗

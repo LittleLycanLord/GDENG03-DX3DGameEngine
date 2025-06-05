@@ -7,7 +7,7 @@ namespace DX3D {
         MyMatrix4x4 world;
         MyMatrix4x4 view;
         MyMatrix4x4 projection;
-        float time;
+        float time = 0.0f;
     };
 } // namespace DX3D
 

@@ -20,6 +20,11 @@ namespace DX3D {
         MyScreenPoint oldMousePosition = { 0, 0 };
         MyScreenPoint deltaMousePosition = { 0, 0 };
 
+    public:
+        static MyInputSystem* GetInstance() {
+            static MyInputSystem instance;
+            return &instance;
+        }
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
@@ -41,6 +46,9 @@ namespace DX3D {
         void AddListener(MyInputListener* inputListener);
         void RemoveListener(MyInputListener* inputListener);
 
+        void SetCursorPosition(const MyScreenPoint& position);
+        void SetCursorVisibility(bool showCursor);
+
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -51,10 +59,7 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        static MyInputSystem* GetInstance() {
-            static MyInputSystem instance;
-            return &instance;
-        }
+        
     };
 } // namespace DX3D
 
