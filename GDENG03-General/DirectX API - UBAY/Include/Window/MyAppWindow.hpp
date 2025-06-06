@@ -27,12 +27,12 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MySwapChain* swapChain{ nullptr };
-        MyVertexBuffer* vertexBuffer{ nullptr };
-        MyConstantBuffer* constantBuffer{ nullptr };
-        MyIndexBuffer* indexBuffer{ nullptr };
-        MyVertexShader* vertexShader{ nullptr };
-        MyPixelShader* pixelShader{ nullptr };
+        MySwapChainPtr swapChain{ nullptr };
+        MyVertexBufferPtr vertexBuffer{ nullptr };
+        MyConstantBufferPtr constantBuffer{ nullptr };
+        MyIndexBufferPtr indexBuffer{ nullptr };
+        MyVertexShaderPtr vertexShader{ nullptr };
+        MyPixelShaderPtr pixelShader{ nullptr };
 
         ULONGLONG oldTime = 0;
         ULONGLONG newTime = 0;

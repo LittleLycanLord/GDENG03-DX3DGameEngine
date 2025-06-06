@@ -6,16 +6,6 @@ using namespace DX3D;
 
 extern bool LOG_INFO_WINDOW;
 
-//* ╔════════════════════════════╗
-//* ║ Constructors & Destructors ║
-//* ╚════════════════════════════╝
-MyWindow::MyWindow() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow constructed" << std::endl;
-}
-MyWindow::~MyWindow() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow destructed" << std::endl;
-}
-
 //* ╔═════════════════════════════════╗
 //* ║ Magical Shit I Don't Understand ║
 //* ╚═════════════════════════════════╝
@@ -23,26 +13,23 @@ MyWindow::~MyWindow() {
 LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParameters, LPARAM lParameters) {
     switch (message) {
     case WM_CREATE: {
-            MyWindow* windowInstance = (MyWindow*)((LPCREATESTRUCT)lParameters)->lpCreateParams;
-            SetWindowLongPtr(windowHandle, GWLP_USERDATA, (LONG_PTR)windowInstance);
-            windowInstance->SetWindowHandle(windowHandle);
-            windowInstance->OnCreate();
+
             break;
         }
     case WM_SETFOCUS: {
             MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
-            windowInstance->OnSetFocus();
+            if (windowInstance) windowInstance->OnSetFocus();
             break;
         }
     case WM_KILLFOCUS: {
             MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
-            windowInstance->OnKillFocus();
+            if (windowInstance) windowInstance->OnKillFocus();
             break;
         }
     case WM_DESTROY: {
             MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
-            windowInstance->OnDestroy();
-            ::PostQuitMessage(0);
+            if (windowInstance) windowInstance->OnDestroy();
+            PostQuitMessage(0);
             break;
         }
     default:
@@ -51,12 +38,13 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
     return NULL;
 }
 
-//* ╔═══════════╗
-//* ║ Functions ║
-//* ╚═══════════╝
-bool MyWindow::Initialize() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::Initialize called" << std::endl;
-    WNDCLASSEX windowClass;
+//* ╔════════════════════════════╗
+//* ║ Constructors & Destructors ║
+//* ╚════════════════════════════╝
+MyWindow::MyWindow() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow constructed" << std::endl;
+
+    WNDCLASSEX windowClass = {};
     windowClass.cbClsExtra = NULL;
     windowClass.cbSize = sizeof(WNDCLASSEX);
     windowClass.cbWndExtra = NULL;
@@ -72,47 +60,52 @@ bool MyWindow::Initialize() {
 
     if (!::RegisterClassEx(&windowClass)) {
         if (LOG_INFO_WINDOW) throw std::exception("RegisterClassEx failed");
-        return false;
     }
 
     windowHandle = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"Conrad Ubay | DirectX 3D Engine Window",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
         1280, 720, NULL, NULL,
-        NULL, this);
+        NULL, NULL);
 
     if (!windowHandle) {
         if (LOG_INFO_WINDOW) throw std::exception("CreateWindowEx failed");
-        return false;
+    } else {
+        ShowWindow(windowHandle, SW_SHOW);
+        UpdateWindow(windowHandle);
     }
-
-    ::ShowWindow(windowHandle, SW_SHOW);
-    ::UpdateWindow(windowHandle);
 
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : Window created and shown" << std::endl;
     this->running = true;
-    return true;
 }
+MyWindow::~MyWindow() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow destructed" << std::endl;
+
+    DestroyWindow(windowHandle);
+    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Window destroyed" << std::endl;
+}
+
+//* ╔═══════════╗
+//* ║ Functions ║
+//* ╚═══════════╝
 bool MyWindow::Broadcast() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::Broadcast called" << std::endl;
 
+    MSG message;
+
+    if (!this->initialized) {
+        // MyWindow* windowInstance = (MyWindow*)((LPCREATESTRUCT)lParameters)->lpCreateParams;
+        SetWindowLongPtr(windowHandle, GWLP_USERDATA, (LONG_PTR)this);
+        this->OnCreate();
+        this->initialized = true;
+    }
+
     this->OnUpdate();
 
-    MSG message;
     while (::PeekMessage(&message, NULL, 0, 0, PM_REMOVE) > 0) {
         ::TranslateMessage(&message);
         ::DispatchMessage(&message);
     }
     Sleep(0);
-    return true;
-}
-
-bool MyWindow::Release() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::Release called" << std::endl;
-    if (!::DestroyWindow(windowHandle)) {
-        if (LOG_INFO_WINDOW) throw std::exception("DestroyWindow failed");
-        return false;
-    }
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Window destroyed" << std::endl;
     return true;
 }
 

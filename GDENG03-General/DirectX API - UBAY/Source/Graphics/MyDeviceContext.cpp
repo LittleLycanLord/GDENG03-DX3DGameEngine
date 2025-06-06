@@ -24,7 +24,7 @@ MyDeviceContext::~MyDeviceContext() {
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-bool MyDeviceContext::ClearRenderTargetColor(MySwapChain* swapChain, MyVec4 color) {
+bool MyDeviceContext::ClearRenderTargetColor(MySwapChainPtr swapChain, MyVec4 color) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] MyDeviceContext::ClearRenderTargetColor called" << std::endl;
     if (!swapChain || !swapChain->D3D11RenderTargetView) {
         std::cerr << "[ERROR] swapChain or D3D11RenderTargetView is null in MyDeviceContext::ClearRenderTargetColor" << std::endl;
@@ -49,7 +49,7 @@ bool MyDeviceContext::ClearRenderTargetColor(MySwapChain* swapChain, MyVec4 colo
     return true;
 }
 
-void MyDeviceContext::SetVertexBuffer(MyVertexBuffer* vertexBuffer) {
+void MyDeviceContext::SetVertexBuffer(MyVertexBufferPtr vertexBuffer) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetVertexBuffer called" << std::endl;
     if (!vertexBuffer || !vertexBuffer->D3DVertexBuffer || !vertexBuffer->D3DInputLayout) {
         throw std::exception("vertexBuffer, vertexBuffer->vertexBuffer, or inputLayout is null in MyDeviceContext::SetVertexBuffer");
@@ -71,7 +71,7 @@ void MyDeviceContext::SetVertexBuffer(MyVertexBuffer* vertexBuffer) {
     this->D3DDeviceContext->IASetInputLayout(vertexBuffer->D3DInputLayout);
 }
 
-void MyDeviceContext::SetIndexBuffer(MyIndexBuffer* indexBuffer) {
+void MyDeviceContext::SetIndexBuffer(MyIndexBufferPtr indexBuffer) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetIndexBuffer called" << std::endl;
     if (!indexBuffer || !indexBuffer->D3DIndexBuffer) {
         throw std::exception("indexBuffer, indexBuffer->D3DIndexBuffer, is null in MyDeviceContext::SetIndexBuffer");
@@ -104,7 +104,7 @@ void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
     this->D3DDeviceContext->RSSetViewports(1, &viewport);
 }
 
-void MyDeviceContext::SetVertexShader(MyVertexShader* vertexShader) {
+void MyDeviceContext::SetVertexShader(MyVertexShaderPtr vertexShader) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetVertexShader called" << std::endl;
     if (!vertexShader || !vertexShader->D3DVertexShader) {
         throw std::exception("vertexShader or D3DVertexShader is null in MyDeviceContext::SetVertexShader");
@@ -121,7 +121,7 @@ void MyDeviceContext::SetVertexShader(MyVertexShader* vertexShader) {
     );
 }
 
-void MyDeviceContext::SetPixelShader(MyPixelShader* pixelShader) {
+void MyDeviceContext::SetPixelShader(MyPixelShaderPtr pixelShader) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetPixelShader called" << std::endl;
     if (!pixelShader || !pixelShader->D3DPixelShader) {
         throw std::exception("pixelShader or D3DPixelShader is null in MyDeviceContext::SetPixelShader");
@@ -137,14 +137,14 @@ void MyDeviceContext::SetPixelShader(MyPixelShader* pixelShader) {
         0
     );
 }
-void MyDeviceContext::SetConstantBuffer(MyVertexShader* vertexShader, MyConstantBuffer* constantBuffer) {
+void MyDeviceContext::SetConstantBuffer(MyVertexShaderPtr vertexShader, MyConstantBufferPtr constantBuffer) {
     this->D3DDeviceContext->VSSetConstantBuffers(
         0,
         1,
         &constantBuffer->D3DConstantBuffer
     );
 }
-void MyDeviceContext::SetConstantBuffer(MyPixelShader* pixelShader, MyConstantBuffer* constantBuffer) {
+void MyDeviceContext::SetConstantBuffer(MyPixelShaderPtr pixelShader, MyConstantBufferPtr constantBuffer) {
     this->D3DDeviceContext->PSSetConstantBuffers(
         0,
         1,

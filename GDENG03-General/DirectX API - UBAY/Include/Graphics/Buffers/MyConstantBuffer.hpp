@@ -33,7 +33,7 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        void Update(MyDeviceContext* deviceContext, void* buffer);
+        void Update(MyDeviceContextPtr deviceContext, void* buffer);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

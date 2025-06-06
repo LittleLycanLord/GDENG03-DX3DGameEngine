@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 namespace DX3D {
     class MySwapChain;
@@ -10,5 +11,13 @@ namespace DX3D {
     class MyPixelShader;
     class MyRenderSystem;
     class MyGraphicsEngine;
+
+    typedef std::shared_ptr<MySwapChain> MySwapChainPtr;
+    typedef std::shared_ptr<MyDeviceContext> MyDeviceContextPtr;
+    typedef std::shared_ptr<MyVertexBuffer> MyVertexBufferPtr;
+    typedef std::shared_ptr<MyConstantBuffer> MyConstantBufferPtr;
+    typedef std::shared_ptr<MyIndexBuffer> MyIndexBufferPtr;
+    typedef std::shared_ptr<MyVertexShader> MyVertexShaderPtr;
+    typedef std::shared_ptr<MyPixelShader> MyPixelShaderPtr;
 } // namespace DX3D
 

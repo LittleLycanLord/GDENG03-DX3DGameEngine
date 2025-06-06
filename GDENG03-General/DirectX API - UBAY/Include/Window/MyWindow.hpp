@@ -10,6 +10,7 @@ namespace DX3D {
         //* ╚════════════╝
     private:
         bool running{ false };
+        bool initialized{ false };
     protected:
         HWND windowHandle{ nullptr };
     public:
@@ -25,10 +26,8 @@ namespace DX3D {
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
-    public:
-        bool Initialize();
         bool Broadcast();
-        bool Release();
+    public:
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
@@ -46,13 +45,16 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        bool IsRunning() const { return running; }
+        bool IsRunning() {
+            if (this->running)
+                this->Broadcast();
+            return this->running;
+        }
         RECT GetWindowRect() const {
             RECT rect;
             GetClientRect(windowHandle, &rect);
             return rect;
         }
-        void SetWindowHandle(HWND windowHandle) { this->windowHandle = windowHandle; }
     };
 } // namespace DX3D
 

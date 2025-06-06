@@ -13,7 +13,9 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyRenderSystem* renderSystem { nullptr };
+        static MyGraphicsEngine* instance;
+        
+        MyRenderSystem* renderSystem{ nullptr };
 
         //* ╔════════════════════════════╗
         //* ║ Singleton Instance Accessor ║
@@ -27,17 +29,18 @@ namespace DX3D {
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
-    public:
+    private:
         MyGraphicsEngine();
         ~MyGraphicsEngine();
+    public:
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        bool Initialize();
-        bool Release();
+        static void Create();
+        static void Release();
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝

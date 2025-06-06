@@ -19,7 +19,7 @@ namespace DX3D {
         //* ╚════════════╝
     private:
         ID3D11Device* D3DDevice{ nullptr };
-        MyDeviceContext* immediateDeviceContext{ nullptr };
+        MyDeviceContextPtr immediateDeviceContext{ nullptr };
         ID3D11DeviceContext* D3DDeviceContext{ nullptr };
         IDXGIDevice* DXGIDevice{ nullptr };
         IDXGIAdapter* DXGIAdapter{ nullptr };
@@ -52,14 +52,12 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        bool Initialize();
-        bool Release();
-        MySwapChain* CreateSwapChain(HWND windowHandle, UINT width, UINT height);
-        MyVertexBuffer* CreateVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize);
-        MyConstantBuffer* CreateConstantBuffer(void* buffer, UINT bufferSize);
-        MyIndexBuffer* CreateIndexBuffer(void* indices, UINT indexCount);
-        MyVertexShader* CreateVertexShader(const void* shaderByteCode, size_t shaderSize);
-        MyPixelShader* CreatePixelShader(const void* shaderByteCode, size_t shaderSize);
+        MySwapChainPtr CreateSwapChain(HWND windowHandle, UINT width, UINT height);
+        MyVertexBufferPtr CreateVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize);
+        MyConstantBufferPtr CreateConstantBuffer(void* buffer, UINT bufferSize);
+        MyIndexBufferPtr CreateIndexBuffer(void* indices, UINT indexCount);
+        MyVertexShaderPtr CreateVertexShader(const void* shaderByteCode, size_t shaderSize);
+        MyPixelShaderPtr CreatePixelShader(const void* shaderByteCode, size_t shaderSize);
 
         bool CompileVertexShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize);
         bool CompilePixelShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize);
@@ -74,7 +72,7 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyDeviceContext* GetImmedieateDeviceContext() const { return this->immediateDeviceContext; }
+        MyDeviceContextPtr GetImmedieateDeviceContext() const { return this->immediateDeviceContext; }
     };
 } // namespace DX3D
 

@@ -59,7 +59,7 @@ MyConstantBuffer::~MyConstantBuffer() {
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-void MyConstantBuffer::Update(MyDeviceContext* deviceContext, void* buffer) {
+void MyConstantBuffer::Update(MyDeviceContextPtr deviceContext, void* buffer) {
     if (LOG_INFO_CONSTANT_BUFFER)
         std::cout << "[INFO] : Updating constant buffer..." << std::endl;
     deviceContext->D3DDeviceContext->UpdateSubresource(

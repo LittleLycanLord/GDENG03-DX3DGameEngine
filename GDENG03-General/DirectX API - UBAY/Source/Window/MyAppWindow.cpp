@@ -89,8 +89,7 @@ void MyAppWindow::OnCreate() {
     if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Registering MyAppWindow as input listener" << std::endl;
     MyInputSystem::GetInstance()->AddListener(this);
     MyInputSystem::GetInstance()->SetCursorVisibility(false);
-    MyGraphicsEngine::GetInstance()->Initialize();
-    
+
     RECT windowRectangle = this->GetWindowRect();
     swapChain = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateSwapChain(this->windowHandle, windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
 
@@ -479,31 +478,12 @@ void MyAppWindow::OnDestroy() {
     MyInputSystem::GetInstance()->RemoveListener(this);
 
     MyWindow::OnDestroy();
-    if (this->vertexBuffer) {
-        delete this->vertexBuffer;
-        this->vertexBuffer = nullptr;
-    }
-    if (this->indexBuffer) {
-        delete this->indexBuffer;
-        this->indexBuffer = nullptr;
-    }
-    if (this->constantBuffer) {
-        delete this->constantBuffer;
-        this->constantBuffer = nullptr;
-    }
-    if (this->vertexShader) {
-        delete this->vertexShader;
-        this->vertexShader = nullptr;
-    }
-    if (this->pixelShader) {
-        delete this->pixelShader;
-        this->pixelShader = nullptr;
-    }
-    if (this->swapChain) {
-        delete this->swapChain;
-        this->swapChain = nullptr;
-    }
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->Release();
+    this->vertexBuffer = nullptr;
+    this->indexBuffer = nullptr;
+    this->constantBuffer = nullptr;
+    this->vertexShader = nullptr;
+    this->pixelShader = nullptr;
+    this->swapChain = nullptr;
 }
 void MyAppWindow::OnSetFocus() {
     MyInputSystem::GetInstance()->AddListener(this);

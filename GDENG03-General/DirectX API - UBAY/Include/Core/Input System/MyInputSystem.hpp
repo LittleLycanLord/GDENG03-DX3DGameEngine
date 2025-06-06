@@ -1,9 +1,10 @@
 #pragma once
-#include "Core/Input System/MyInputListener.hpp"
-#include "Math/MyScreenPoint.hpp"
 #include <map>
 #include <iostream>
 #include <Windows.h>
+#include <exception>
+#include "Core/Input System/MyInputListener.hpp"
+#include "Math/MyScreenPoint.hpp"
 
 namespace DX3D {
     class MyInputSystem {
@@ -11,6 +12,8 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        static MyInputSystem* instance;
+
         std::map<MyInputListener*, MyInputListener*> inputListeners;
         unsigned char newKeyStates[256] = { 0 };
         unsigned char oldKeyStates[256] = { 0 };
@@ -25,15 +28,11 @@ namespace DX3D {
             static MyInputSystem instance;
             return &instance;
         }
-        //* ╔════════════════════════════╗
-        //* ║ Constructors & Destructors ║
-        //* ╚════════════════════════════╝
-    public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
-    public:
+    private:
         MyInputSystem();
         ~MyInputSystem();
 
@@ -42,6 +41,8 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
+        static void Create();
+        static void Release();
         void Update();
         void AddListener(MyInputListener* inputListener);
         void RemoveListener(MyInputListener* inputListener);
@@ -59,7 +60,7 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        
+
     };
 } // namespace DX3D
 

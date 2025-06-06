@@ -1,22 +1,36 @@
 #include "Core/Input System/MyInputSystem.hpp"
 
+DX3D::MyInputSystem* DX3D::MyInputSystem::instance = nullptr;
+
 using namespace DX3D;
 
 extern bool LOG_INFO_INPUT_SYSTEM_KEYBOARD;
 extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
 
-//* ╔════════════════════════════╗
-//* ║ Constructors & Destructors ║
-//* ╚════════════════════════════╝
 MyInputSystem::MyInputSystem() {}
-MyInputSystem::~MyInputSystem() {}
+MyInputSystem::~MyInputSystem() {
+    MyInputSystem::instance = nullptr;
+}
 
-//* ╔═══════════╗
-//* ║ Functions ║
-//* ╚═══════════╝
+void MyInputSystem::Create() {
+    if (MyInputSystem::instance) {
+        std::cerr << "[ERROR]: MyInputSystem already created" << std::endl;
+        throw std::exception("MyInputSystem already created");
+    }
+    MyInputSystem::instance = new MyInputSystem();
+}
+void MyInputSystem::Release() {
+    if (MyInputSystem::instance) {
+        delete MyInputSystem::instance;
+        MyInputSystem::instance = nullptr;
+        if (LOG_INFO_INPUT_SYSTEM_MOUSE || LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : MyInputSystem released" << std::endl;
+    }
+    else {
+        throw std::exception("MyGraphicsEngine is already null in MyGraphicsEngine::Release");
+    }
+}
 void MyInputSystem::Update() {
 
-    //* Mouse Update
     POINT currentMousePosition = {};
     GetCursorPos(&currentMousePosition);
 
@@ -45,11 +59,10 @@ void MyInputSystem::Update() {
     this->oldMousePosition = this->newMousePosition;
 
 
-    //* Keyboard Update
     if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : MyInputSystem::Update called" << std::endl;
     if (GetKeyboardState(this->newKeyStates)) {
         for (int key = 0; key < 256; key++) {
-            if (this->newKeyStates[key] & 0x80) { // Check if the key is pressed
+            if (this->newKeyStates[key] & 0x80) {
                 if (!(this->oldKeyStates[key] & 0x80)) {
                     for (auto& listenerPair : this->inputListeners) {
                         MyInputListener* listener = listenerPair.first;
@@ -136,6 +149,3 @@ void MyInputSystem::SetCursorVisibility(bool showCursor) {
     ShowCursor(showCursor);
 }
 
-//* ╔════════════════════════════════╗
-//* ║ Virtual / Overridden Functions ║
-//* ╚════════════════════════════════╝

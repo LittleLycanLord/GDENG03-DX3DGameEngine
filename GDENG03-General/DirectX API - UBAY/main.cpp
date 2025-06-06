@@ -1,3 +1,4 @@
+#include "Core/Input System/MyInputSystem.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Window/MyAppWindow.hpp"
 #include <string>
@@ -26,22 +27,39 @@ using namespace DX3D;
 
 int main() {
     std::cout << "[INFO] Application started" << std::endl;
-    MyAppWindow appWindow;
+
     try {
-        if (!appWindow.Initialize()) {
-            std::cerr << "[ERROR] Failed to initialize application window" << std::endl;
-            throw std::exception("Failed to initialize application window");
-            return -1;
-        }
-        while (appWindow.IsRunning()) {
-            appWindow.Broadcast();
-        }
+        MyGraphicsEngine::Create();
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "[ERROR] Failed to create MyGraphicsEngine: " << ex.what() << std::endl;
+        return -1;
+    }
+    try {
+        MyInputSystem::Create();
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "[ERROR] Failed to create MyInputSystem: " << ex.what() << std::endl;
+        return -2;
+    }
+
+    try {
+        MyAppWindow appWindow;
+
+        while (appWindow.IsRunning());
     }
     catch (const std::exception& ex) {
         std::cerr << "[ERROR] Exception: " << ex.what() << std::endl;
+        MyGraphicsEngine::Release();
+        MyInputSystem::Release();
         return -1;
     }
     std::cout << "[INFO] Application exiting" << std::endl;
+
+    MyGraphicsEngine::Release();
+    MyInputSystem::Release();
+    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] MyGraphicsEngine released" << std::endl;
+
     return 0;
 }
 

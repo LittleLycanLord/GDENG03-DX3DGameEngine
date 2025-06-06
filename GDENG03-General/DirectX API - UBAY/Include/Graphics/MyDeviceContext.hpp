@@ -33,14 +33,14 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        bool ClearRenderTargetColor(MySwapChain* swapChain, MyVec4 color);
-        void SetVertexBuffer(MyVertexBuffer* vertexBuffer);
-        void SetIndexBuffer(MyIndexBuffer* indexBuffer);
+        bool ClearRenderTargetColor(MySwapChainPtr swapChain, MyVec4 color);
+        void SetVertexBuffer(MyVertexBufferPtr vertexBuffer);
+        void SetIndexBuffer(MyIndexBufferPtr indexBuffer);
         void SetViewPortSize(UINT width, UINT height);
-        void SetVertexShader(MyVertexShader* vertexShader);
-        void SetPixelShader(MyPixelShader* pixelShader);
-        void SetConstantBuffer(MyVertexShader* vertexShader, MyConstantBuffer* constantBuffer);
-        void SetConstantBuffer(MyPixelShader* pixelShader, MyConstantBuffer* constantBuffer);
+        void SetVertexShader(MyVertexShaderPtr vertexShader);
+        void SetPixelShader(MyPixelShaderPtr pixelShader);
+        void SetConstantBuffer(MyVertexShaderPtr vertexShader, MyConstantBufferPtr constantBuffer);
+        void SetConstantBuffer(MyPixelShaderPtr pixelShader, MyConstantBufferPtr constantBuffer);
 
         void DrawTriangles(UINT vertexCount, UINT startVertexIndex);
         void DrawIndexedTriangles(UINT indexCount, UINT startVertexIndex, UINT startIndexLocation) ;

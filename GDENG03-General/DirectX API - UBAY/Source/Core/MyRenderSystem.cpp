@@ -11,16 +11,7 @@ extern bool LOG_INFO_PIXEL_SHADER;
 //* ╚════════════════════════════╝
 MyRenderSystem::MyRenderSystem() {
     if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyRenderSystem constructed" << std::endl;
-}
-MyRenderSystem::~MyRenderSystem() {
-    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyRenderSystem destructed" << std::endl;
-}
 
-//* ╔═══════════╗
-//* ║ Functions ║
-//* ╚═══════════╝
-bool MyRenderSystem::Initialize() {
-    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyRenderSystem::Initialize called" << std::endl;
 
     D3D_DRIVER_TYPE driverTypes[] = {
         D3D_DRIVER_TYPE_HARDWARE,
@@ -56,13 +47,13 @@ bool MyRenderSystem::Initialize() {
         std::cout << "D3D11CreateDevice failed in MyRenderSystem::Initialize. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
-        return false;
+        return;
     }
 
     if (LOG_INFO_RENDER_SYSTEM)
         std::cout << "[INFO] : D3D11 Device created successfully" << std::endl;
 
-    immediateDeviceContext = new MyDeviceContext(this->D3DDeviceContext, this);
+    immediateDeviceContext = std::make_shared<MyDeviceContext>(this->D3DDeviceContext, this);
 
     HRESULT hr = this->D3DDevice->QueryInterface(
         __uuidof(IDXGIDevice),
@@ -72,7 +63,7 @@ bool MyRenderSystem::Initialize() {
         std::cout << "QueryInterface for IDXGIDevice failed in MyRenderSystem::Initialize. HRESULT: 0x" << std::hex << hr << std::endl;
         _com_error err(hr);
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
-        return false;
+        return;
     }
     hr = this->DXGIDevice->GetParent(
         __uuidof(IDXGIAdapter),
@@ -82,7 +73,7 @@ bool MyRenderSystem::Initialize() {
         std::cout << "GetParent for IDXGIAdapter failed in MyRenderSystem::Initialize. HRESULT: 0x" << std::hex << hr << std::endl;
         _com_error err(hr);
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
-        return false;
+        return;
     }
     hr = this->DXGIAdapter->GetParent(
         __uuidof(IDXGIFactory),
@@ -92,57 +83,39 @@ bool MyRenderSystem::Initialize() {
         std::cout << "GetParent for IDXGIFactory failed in MyRenderSystem::Initialize. HRESULT: 0x" << std::hex << hr << std::endl;
         _com_error err(hr);
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
-        return false;
+        return;
     }
 
-    return SUCCEEDED(result);
 }
-
-bool MyRenderSystem::Release() {
-    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyRenderSystem::Release called" << std::endl;
+MyRenderSystem::~MyRenderSystem() {
+    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyRenderSystem destructed" << std::endl;
 
     if (this->DXGIDevice) {
         this->DXGIDevice->Release();
         this->DXGIDevice = nullptr;
     }
-    else {
-        throw std::exception("DXGIDevice is already null in MyRenderSystem::Release");
-    }
     if (this->DXGIAdapter) {
         this->DXGIAdapter->Release();
         this->DXGIAdapter = nullptr;
-    }
-    else {
-        throw std::exception("DXGIAdapter is already null in MyRenderSystem::Release");
     }
     if (this->DXGIFactory) {
         this->DXGIFactory->Release();
         this->DXGIFactory = nullptr;
     }
-    else {
-        throw std::exception("DXGIFactory is already null in MyRenderSystem::Release");
-    }
     if (this->D3DDevice) {
         this->D3DDevice->Release();
         this->D3DDevice = nullptr;
     }
-    else {
-        throw std::exception("D3DDevice is already null in MyRenderSystem::Release");
-    }
-    if (this->immediateDeviceContext) {
-        delete this->immediateDeviceContext;
-        this->immediateDeviceContext = nullptr;
-    }
-    else {
-        throw std::exception("immediateDeviceContext is already null in MyRenderSystem::Release");
-    }
 
-    return true;
+    this->immediateDeviceContext = nullptr;
 }
 
-MySwapChain* MyRenderSystem::CreateSwapChain(HWND windowHandle, UINT width, UINT height) {
+//* ╔═══════════╗
+//* ║ Functions ║
+//* ╚═══════════╝
+MySwapChainPtr MyRenderSystem::CreateSwapChain(HWND windowHandle, UINT width, UINT height) {
     try {
-        MySwapChain* swapChain = new MySwapChain(windowHandle, width, height, this);
+        MySwapChainPtr swapChain = std::make_shared<MySwapChain>(windowHandle, width, height, this);
         if (!swapChain) {
             std::cerr << "[ERROR] Failed to allocate MySwapChain in MyRenderSystem::CreateSwapChain" << std::endl;
             throw std::exception("Failed to allocate MySwapChain in MyRenderSystem::CreateSwapChain");
@@ -155,9 +128,9 @@ MySwapChain* MyRenderSystem::CreateSwapChain(HWND windowHandle, UINT width, UINT
     }
 }
 
-MyVertexBuffer* MyRenderSystem::CreateVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize) {
+MyVertexBufferPtr MyRenderSystem::CreateVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize) {
     try {
-        MyVertexBuffer* vertexBuffer = new MyVertexBuffer(vertexList, vertexSize, vertexCount, shaderByteCode, shaderByteCodeSize, this);
+        MyVertexBufferPtr vertexBuffer = std::make_shared<MyVertexBuffer>(vertexList, vertexSize, vertexCount, shaderByteCode, shaderByteCodeSize, this);
         if (!vertexBuffer) {
             std::cerr << "[ERROR] Failed to allocate MyVertexBuffer in MyRenderSystem::CreateVertexBuffer" << std::endl;
             throw std::exception("Failed to allocate MyVertexBuffer in MyRenderSystem::CreateVertexBuffer");
@@ -169,9 +142,9 @@ MyVertexBuffer* MyRenderSystem::CreateVertexBuffer(void* vertexList, UINT vertex
         return nullptr;
     }
 }
-MyConstantBuffer* MyRenderSystem::CreateConstantBuffer(void* buffer, UINT bufferSize) {
+MyConstantBufferPtr MyRenderSystem::CreateConstantBuffer(void* buffer, UINT bufferSize) {
     try {
-        MyConstantBuffer* constantBuffer = new MyConstantBuffer(buffer, bufferSize, this);
+        MyConstantBufferPtr constantBuffer = std::make_shared<MyConstantBuffer>(buffer, bufferSize, this);
         if (!constantBuffer) {
             std::cerr << "[ERROR] Failed to allocate MyConstantBuffer in MyRenderSystem::CreateConstantBuffer" << std::endl;
             throw std::exception("Failed to allocate MyConstantBuffer in MyRenderSystem::CreateConstantBuffer");
@@ -183,9 +156,9 @@ MyConstantBuffer* MyRenderSystem::CreateConstantBuffer(void* buffer, UINT buffer
         return nullptr;
     }
 }
-MyIndexBuffer* MyRenderSystem::CreateIndexBuffer(void* indices, UINT indexCount) {
+MyIndexBufferPtr MyRenderSystem::CreateIndexBuffer(void* indices, UINT indexCount) {
     try {
-        MyIndexBuffer* indexBuffer = new MyIndexBuffer(indices, indexCount, this);
+        MyIndexBufferPtr indexBuffer = std::make_shared<MyIndexBuffer>(indices, indexCount, this);
         if (!indexBuffer) {
             std::cerr << "[ERROR] Failed to allocate MyIndexBuffer in MyRenderSystem::CreateIndexBuffer" << std::endl;
             throw std::exception("Failed to allocate MyIndexBuffer in MyRenderSystem::CreateIndexBuffer");
@@ -198,9 +171,9 @@ MyIndexBuffer* MyRenderSystem::CreateIndexBuffer(void* indices, UINT indexCount)
     }
 }
 
-MyVertexShader* MyRenderSystem::CreateVertexShader(const void* shaderByteCode, size_t shaderSize) {
+MyVertexShaderPtr MyRenderSystem::CreateVertexShader(const void* shaderByteCode, size_t shaderSize) {
     try {
-        MyVertexShader* vertexShader = new MyVertexShader(shaderByteCode, shaderSize, this);
+        MyVertexShaderPtr vertexShader = std::make_shared<MyVertexShader>(shaderByteCode, shaderSize, this);
         if (!vertexShader) {
             std::cerr << "[ERROR] Failed to allocate MyVertexShader in MyRenderSystem::CreateVertexShader" << std::endl;
             throw std::exception("Failed to allocate MyVertexShader in MyRenderSystem::CreateVertexShader");
@@ -213,9 +186,9 @@ MyVertexShader* MyRenderSystem::CreateVertexShader(const void* shaderByteCode, s
     }
 }
 
-MyPixelShader* MyRenderSystem::CreatePixelShader(const void* shaderByteCode, size_t shaderSize) {
+MyPixelShaderPtr MyRenderSystem::CreatePixelShader(const void* shaderByteCode, size_t shaderSize) {
     try {
-        MyPixelShader* pixelShader = new MyPixelShader(shaderByteCode, shaderSize, this);
+        MyPixelShaderPtr pixelShader = std::make_shared<MyPixelShader>(shaderByteCode, shaderSize, this);
         if (!pixelShader) {
             std::cerr << "[ERROR] Failed to allocate MyPixelShader in MyRenderSystem::CreatePixelShader" << std::endl;
             throw std::exception("Failed to allocate MyPixelShader in MyRenderSystem::CreatePixelShader");
