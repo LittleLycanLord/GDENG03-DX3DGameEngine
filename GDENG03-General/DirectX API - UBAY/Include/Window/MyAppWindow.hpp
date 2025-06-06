@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <vector>
+#include <exception>
 #include "Window/MyWindow.hpp"
 #include "Math/MyMatrix4x4.hpp"
 #include "Math/MyVec3.hpp"

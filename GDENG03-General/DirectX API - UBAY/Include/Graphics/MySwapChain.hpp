@@ -1,17 +1,24 @@
 #pragma once
 #include <d3d11.h>
 #include <Windows.h>
+#include <iostream>
+#include <comdef.h>
+#include <exception>
+#include "Core/Prerequisites.hpp"
+#include "Core/MyRenderSystem.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 
 namespace DX3D {
-    class MyDeviceContext;
     class MySwapChain {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        MyRenderSystem* renderSystem{ nullptr };
+
         IDXGISwapChain* DXGISwapChain;
         ID3D11RenderTargetView* D3D11RenderTargetView{ nullptr };
+
         friend class MyDeviceContext;
     public:
 
@@ -19,7 +26,7 @@ namespace DX3D {
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MySwapChain();
+        MySwapChain(HWND windowHandle, UINT width, UINT height, MyRenderSystem* renderSystem);
         ~MySwapChain();
 
         //* ╔═══════════╗
@@ -27,9 +34,7 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        bool Initialize(HWND windowHandle, UINT width, UINT height);
         bool Present(bool vsync);
-        bool Release();
 
 
         //* ╔════════════════════════════════╗

@@ -1,8 +1,11 @@
 #pragma once
-#include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
 #include <iostream>
 #include <comdef.h>
+#include <exception>
+#include "Core/Prerequisites.hpp"
+#include "Core/MyRenderSystem.hpp"
+#include "Graphics/MyDeviceContext.hpp"
+#include "Graphics/MyGraphicsEngine.hpp"
 
 namespace DX3D {
     class MyVertexBuffer {
@@ -10,6 +13,8 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        MyRenderSystem* renderSystem { nullptr };
+
         UINT vertexSize{ 0 };
         UINT vertexCount{ 0 };
         ID3D11Buffer* D3DVertexBuffer{ nullptr };
@@ -22,7 +27,7 @@ namespace DX3D {
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyVertexBuffer();
+        MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize, MyRenderSystem* renderSystem);
         ~MyVertexBuffer();
 
         //* ╔═══════════╗
@@ -30,8 +35,6 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        bool Load(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize);
-        bool Release();
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

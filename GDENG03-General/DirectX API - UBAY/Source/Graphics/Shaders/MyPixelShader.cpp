@@ -4,46 +4,40 @@
 
 using namespace DX3D;
 
-extern bool LOG_INFO_PIXELSHADER;
+extern bool LOG_INFO_PIXEL_SHADER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyPixelShader::MyPixelShader() {}
-MyPixelShader::~MyPixelShader() {}
-
-//* ╔═══════════╗
-//* ║ Functions ║
-//* ╚═══════════╝
-bool MyPixelShader::Initialize(const void* shaderByteCode, size_t shaderSize) {
-    HRESULT result = MyGraphicsEngine::GetInstance()->D3DDevice->CreatePixelShader(
+MyPixelShader::MyPixelShader(const void* shaderByteCode, size_t shaderSize, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
+    HRESULT result = this->renderSystem->D3DDevice->CreatePixelShader(
         shaderByteCode,
         shaderSize,
         NULL,
         &this->D3DPixelShader
     );
     if (FAILED(result)) {
-        std::cout << "[ERROR] : CreatePixelShader failed in MyPixelShader::Initialize. HRESULT: 0x" << std::hex << result << std::endl;
+        std::cout << "CreatePixelShader failed in MyPixelShader::Initialize. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
-        return false;
+        return;
     }
-    if (LOG_INFO_PIXELSHADER)
+    if (LOG_INFO_PIXEL_SHADER)
         std::cout << "[INFO] : Pixel shader created successfully" << std::endl;
-    return true;
+
 }
-bool MyPixelShader::Release() {
+MyPixelShader::~MyPixelShader() {
     if (this->D3DPixelShader) {
         this->D3DPixelShader->Release();
         this->D3DPixelShader = nullptr;
-        if (LOG_INFO_PIXELSHADER)
+        if (LOG_INFO_PIXEL_SHADER)
             std::cout << "[INFO] : Pixel shader released" << std::endl;
     }
-    else {
-        std::cout << "[ERROR] : D3DPixelShader is already null in MyPixelShader::Release" << std::endl;
-    }
-    return true;
 }
+
+//* ╔═══════════╗
+//* ║ Functions ║
+//* ╚═══════════╝
 
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║

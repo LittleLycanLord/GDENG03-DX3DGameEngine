@@ -1,8 +1,11 @@
 #pragma once
-#include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
 #include <iostream>
 #include <comdef.h>
+#include <exception>
+#include "Core/Prerequisites.hpp"
+#include "Core/MyRenderSystem.hpp"
+#include "Graphics/MyDeviceContext.hpp"
+#include "Graphics/MyGraphicsEngine.hpp"
 
 namespace DX3D {
     class MyIndexBuffer {
@@ -10,6 +13,8 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        MyRenderSystem* renderSystem{ nullptr };
+
         UINT indexCount{ 0 };
         ID3D11Buffer* D3DIndexBuffer{ nullptr };
 
@@ -20,7 +25,7 @@ namespace DX3D {
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyIndexBuffer();
+        MyIndexBuffer(void* indices, UINT indexCount, MyRenderSystem* renderSystem);
         ~MyIndexBuffer();
 
         //* ╔═══════════╗
@@ -28,8 +33,6 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        bool Load(void* indices, UINT indexCount);
-        bool Release();
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

@@ -1,8 +1,11 @@
 #pragma once
-#include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
 #include <iostream>
 #include <comdef.h>
+#include <exception>
+#include "Core/Prerequisites.hpp"
+#include "Core/MyRenderSystem.hpp"
+#include "Graphics/MyDeviceContext.hpp"
+#include "Graphics/MyGraphicsEngine.hpp"
 
 
 namespace DX3D {
@@ -11,6 +14,8 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        MyRenderSystem* renderSystem{ nullptr };
+
         ID3D11Buffer* D3DConstantBuffer{ nullptr };
 
         friend class MyDeviceContext;
@@ -20,7 +25,7 @@ namespace DX3D {
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyConstantBuffer();
+        MyConstantBuffer(void* buffer, UINT bufferSize, MyRenderSystem* renderSystem);
         ~MyConstantBuffer();
 
         //* ╔═══════════╗
@@ -28,9 +33,7 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        bool Load(void* buffer, UINT bufferSize);
         void Update(MyDeviceContext* deviceContext, void* buffer);
-        bool Release();
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

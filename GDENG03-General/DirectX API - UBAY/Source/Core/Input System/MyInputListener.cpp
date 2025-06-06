@@ -2,6 +2,8 @@
 
 using namespace DX3D;
 
+//! Note: This class is an abstract base class for input listeners.
+
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝

@@ -4,9 +4,9 @@
 using namespace DX3D;
 
 extern bool LOG_INFO_WINDOW;
-extern bool LOG_INFO_CONSTANTBUFFER;
-extern bool LOG_INFO_INPUTSYSTEM_KEYBOARD;
-extern bool LOG_INFO_INPUTSYSTEM_MOUSE;
+extern bool LOG_INFO_CONSTANT_BUFFER;
+extern bool LOG_INFO_INPUT_SYSTEM_KEYBOARD;
+extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
 // Add extern declarations for shader path constants
 extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
@@ -75,7 +75,7 @@ void MyAppWindow::UpdateObjects() {
 
     this->constantData.view = this->cameraMatrix;
 
-    this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext(), &this->constantData);
+    this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext(), &this->constantData);
 }
 
 //* ╔════════════════════════════════╗
@@ -86,13 +86,13 @@ void MyAppWindow::OnCreate() {
 
     MyWindow::OnCreate();
 
-    if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Registering MyAppWindow as input listener" << std::endl;
+    if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Registering MyAppWindow as input listener" << std::endl;
     MyInputSystem::GetInstance()->AddListener(this);
     MyInputSystem::GetInstance()->SetCursorVisibility(false);
     MyGraphicsEngine::GetInstance()->Initialize();
+    
     RECT windowRectangle = this->GetWindowRect();
-    swapChain = MyGraphicsEngine::GetInstance()->CreateSwapChain();
-    swapChain->Initialize(this->windowHandle, windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
+    swapChain = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateSwapChain(this->windowHandle, windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
 
     //! Note: Define vertices in a CLOCKWISE MANNER
     // // * Single Color Triangle
@@ -342,12 +342,6 @@ void MyAppWindow::OnCreate() {
         ), // Bottom-left-front
     };
 
-    this->vertexBuffer = MyGraphicsEngine::GetInstance()->CreateVertexBuffer();
-    if (!this->vertexBuffer) {
-        std::cout << "[ERROR] : Failed to create vertexBuffer!" << std::endl;
-        return;
-    }
-
     unsigned int indices[] = {
         //* FRONT
         0, 1, 2,
@@ -368,48 +362,50 @@ void MyAppWindow::OnCreate() {
         7, 6, 1,
         1, 0, 7,
     };
-    this->indexBuffer = MyGraphicsEngine::GetInstance()->CreateIndexBuffer();
-    this->indexBuffer->Load(indices, ARRAYSIZE(indices));
+    this->indexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateIndexBuffer(indices, ARRAYSIZE(indices));
     if (!this->indexBuffer) {
-        std::cout << "[ERROR] : Failed to create indexBuffer!" << std::endl;
+        std::cerr << "[ERROR] Failed to create indexBuffer!" << std::endl;
+        throw std::exception("Failed to create indexBuffer!");
         return;
     }
 
     // Compile and create vertex shader
     void* vertexShaderByteCode = nullptr;
     size_t vertexShaderSize = 0;
-    if (!MyGraphicsEngine::GetInstance()->CompileVertexShader(
+    if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompileVertexShader(
         VERTEX_SHADER_DIRECTORY.c_str(), "main", &vertexShaderByteCode, &vertexShaderSize)) {
-        std::cout << "[ERROR] : Failed to compile vertex shader!" << std::endl;
+        throw std::exception("Failed to compile vertex shader!");
         return;
     }
-    this->vertexShader = MyGraphicsEngine::GetInstance()->CreateVertexShader(vertexShaderByteCode, vertexShaderSize);
+    this->vertexShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexShader(vertexShaderByteCode, vertexShaderSize);
     if (!this->vertexShader) {
-        std::cout << "[ERROR] : Failed to create vertexShader!" << std::endl;
+        throw std::exception("Failed to create vertexShader!");
         return;
     }
-    if (!this->vertexBuffer->Load(vertices, sizeof(MyVertex), ARRAYSIZE(vertices), vertexShaderByteCode, vertexShaderSize)) {
-        std::cout << "[ERROR] : vertexBuffer->Load failed!" << std::endl;
+
+    this->vertexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexBuffer(vertices, sizeof(MyVertex), ARRAYSIZE(vertices), vertexShaderByteCode, vertexShaderSize);
+    if (!this->vertexBuffer) {
+        throw std::exception("Failed to create vertexBuffer!");
         return;
     }
-    MyGraphicsEngine::GetInstance()->ReleaseCompiledShader();
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
 
     // Compile and create pixel shader
     void* pixelShaderByteCode = nullptr;
     size_t pixelShaderSize = 0;
-    if (!MyGraphicsEngine::GetInstance()->CompilePixelShader(
+    if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompilePixelShader(
         PIXEL_SHADER_DIRECTORY.c_str(), "main", &pixelShaderByteCode, &pixelShaderSize)) {
-        std::cout << "[ERROR] : Failed to compile pixel shader!" << std::endl;
+        throw std::exception("Failed to compile pixel shader!");
         return;
     }
-    this->pixelShader = MyGraphicsEngine::GetInstance()->CreatePixelShader(pixelShaderByteCode, pixelShaderSize);
+    this->pixelShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreatePixelShader(pixelShaderByteCode, pixelShaderSize);
     if (!this->pixelShader) {
-        std::cout << "[ERROR] : Failed to create pixelShader!" << std::endl;
+        throw std::exception("Failed to create pixelShader!");
         return;
     }
-    MyGraphicsEngine::GetInstance()->ReleaseCompiledShader();
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
 
-    if (LOG_INFO_CONSTANTBUFFER) std::cout << "[INFO] : Setting constant buffer" << std::endl;
+    if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO] : Setting constant buffer" << std::endl;
     this->constantData.time = 0;
     this->constantData.world.Translate(MyVec3(0.0f, 0.0f, 0.0f));
     this->constantData.view.SetIdentity();
@@ -427,13 +423,9 @@ void MyAppWindow::OnCreate() {
         0.1f, // Near plane
         100.0f // Far plane
     );
-    this->constantBuffer = MyGraphicsEngine::GetInstance()->CreateConstantBuffer();
+    this->constantBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateConstantBuffer(&constantData, sizeof(MyConstant));
     if (!this->constantBuffer) {
-        std::cout << "[ERROR] : Failed to create constantBuffer!" << std::endl;
-        return;
-    }
-    if (!this->constantBuffer->Load(&constantData, sizeof(MyConstant))) {
-        std::cout << "[ERROR] : constantBuffer->Load failed!" << std::endl;
+        throw std::exception("Failed to create constantBuffer!");
         return;
     }
 }
@@ -443,34 +435,34 @@ void MyAppWindow::OnUpdate() {
 
     MyWindow::OnUpdate();
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : OnUpdate called" << std::endl;
-    if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Updating input system in MyAppWindow::OnUpdate" << std::endl;
+    if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Updating input system in MyAppWindow::OnUpdate" << std::endl;
     MyInputSystem::GetInstance()->Update();
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : OnUpdate called" << std::endl;
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVec4(0.0f, 0.3f, 0.4f, 1.0f));
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVec4(0.0f, 0.3f, 0.4f, 1.0f));
 
     RECT windowRectangle = this->GetWindowRect();
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetViewPortSize(windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->SetViewPortSize(windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
 
 
     this->UpdateObjects();
 
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetConstantBuffer(this->vertexShader, this->constantBuffer);
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetConstantBuffer(this->pixelShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->SetConstantBuffer(this->vertexShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->SetConstantBuffer(this->pixelShader, this->constantBuffer);
 
     // Set shaders before drawing
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : Setting vertex and pixel shaders" << std::endl;
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetVertexShader(this->vertexShader);
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetPixelShader(this->pixelShader);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->SetVertexShader(this->vertexShader);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->SetPixelShader(this->pixelShader);
 
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : Setting vertex buffer: " << this->vertexBuffer << std::endl;
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetVertexBuffer(this->vertexBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->SetVertexBuffer(this->vertexBuffer);
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : Setting index buffer: " << this->indexBuffer << std::endl;
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetIndexBuffer(this->indexBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->SetIndexBuffer(this->indexBuffer);
 
     // Draw non-indexed
-    // MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->DrawTriangles(this->vertexBuffer->GetVertexCount(), 0);
+    // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->DrawTriangles(this->vertexBuffer->GetVertexCount(), 0);
     // Draw indexed
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->DrawIndexedTriangles(this->indexBuffer->GetIndexCount(), 0, 0);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmedieateDeviceContext()->DrawIndexedTriangles(this->indexBuffer->GetIndexCount(), 0, 0);
 
     if (this->swapChain) {
         if (LOG_INFO_WINDOW) std::cout << "[INFO] : Presenting swap chain" << std::endl;
@@ -483,41 +475,35 @@ void MyAppWindow::OnUpdate() {
 void MyAppWindow::OnDestroy() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnDestroy called" << std::endl;
 
-    if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Removing MyAppWindow as input listener" << std::endl;
+    if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Removing MyAppWindow as input listener" << std::endl;
     MyInputSystem::GetInstance()->RemoveListener(this);
 
     MyWindow::OnDestroy();
     if (this->vertexBuffer) {
-        this->vertexBuffer->Release();
         delete this->vertexBuffer;
         this->vertexBuffer = nullptr;
     }
     if (this->indexBuffer) {
-        this->indexBuffer->Release();
         delete this->indexBuffer;
         this->indexBuffer = nullptr;
     }
     if (this->constantBuffer) {
-        this->constantBuffer->Release();
         delete this->constantBuffer;
         this->constantBuffer = nullptr;
     }
     if (this->vertexShader) {
-        this->vertexShader->Release();
         delete this->vertexShader;
         this->vertexShader = nullptr;
     }
     if (this->pixelShader) {
-        this->pixelShader->Release();
         delete this->pixelShader;
         this->pixelShader = nullptr;
     }
     if (this->swapChain) {
-        this->swapChain->Release();
         delete this->swapChain;
         this->swapChain = nullptr;
     }
-    MyGraphicsEngine::GetInstance()->Release();
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->Release();
 }
 void MyAppWindow::OnSetFocus() {
     MyInputSystem::GetInstance()->AddListener(this);
@@ -532,19 +518,19 @@ void MyAppWindow::OnKeyDown(int keyCode) {
     // Handle key down events here
     switch (keyCode) {
     case 'W':
-        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : W pressed, xRotation increased" << std::endl;
+        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : W pressed, xRotation increased" << std::endl;
         break;
     case 'A':
-        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : A pressed, yRotation decreased" << std::endl;
+        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : A pressed, yRotation decreased" << std::endl;
         break;
     case 'S':
-        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : S pressed, xRotation decreased" << std::endl;
+        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : S pressed, xRotation decreased" << std::endl;
         break;
     case 'D':
-        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : D pressed, yRotation increased" << std::endl;
+        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : D pressed, yRotation increased" << std::endl;
         break;
     default:
-        if (LOG_INFO_INPUTSYSTEM_KEYBOARD) std::cout << "[INFO] : Unhandled key down: " << keyCode << std::endl;
+        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Unhandled key down: " << keyCode << std::endl;
         break;
     }
 }
@@ -614,7 +600,7 @@ void MyAppWindow::OnKeyUp(int keyCode) {
 }
 
 void MyAppWindow::OnMouseMove(const MyScreenPoint& deltaMousePosition) {
-    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnMouseMove called with deltaMousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnMouseMove called with deltaMousePosition: ("
         << deltaMousePosition.x << ", " << deltaMousePosition.y << ")" << std::endl;
 
     // this->xRotation += deltaMousePosition.y * this->rotationSpeed * this->deltaTime;
@@ -630,24 +616,24 @@ void MyAppWindow::OnMouseMove(const MyScreenPoint& deltaMousePosition) {
 }
 
 void MyAppWindow::OnLMBDown(const MyScreenPoint& mousePosition) {
-    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnLMBDown called with mousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnLMBDown called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 void MyAppWindow::OnLMBHold(const MyScreenPoint& deltaMousePosition) {
     this->cameraRotation.x += (float)((deltaMousePosition.y - (this->GetWindowRect().bottom - this->GetWindowRect().top) / 2.0f) * this->rotationSpeed * this->deltaTime);
 }
 void MyAppWindow::OnLMBUp(const MyScreenPoint& mousePosition) {
-    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnLMBUp called with mousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnLMBUp called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 void MyAppWindow::OnRMBDown(const MyScreenPoint& mousePosition) {
-    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnRMBDown called with mousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnRMBDown called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 void MyAppWindow::OnRMBHold(const MyScreenPoint& deltaMousePosition) {
     this->cameraRotation.y += (float)((deltaMousePosition.x - ((this->GetWindowRect().right - this->GetWindowRect().left) / 2.0)) * this->rotationSpeed * this->deltaTime);
 }
 void MyAppWindow::OnRMBUp(const MyScreenPoint& mousePosition) {
-    if (LOG_INFO_INPUTSYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnRMBUp called with mousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO] : MyAppWindow::OnRMBUp called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }

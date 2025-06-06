@@ -1,30 +1,31 @@
 #pragma once
 #include <d3d11.h>
+#include <exception>
+#include "Core/Prerequisites.hpp"
+#include "Core/MyRenderSystem.hpp"
 #include "Math/MyVec4.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
+#include "Core/MyRenderSystem.hpp"
 #include "Graphics/MySwapChain.hpp"
 #include "Graphics/Buffers/MyConstantBuffer.hpp"
 
 namespace DX3D {
-    class MySwapChain;
-    class MyVertexBuffer;
-    class MyIndexBuffer;
-    class MyVertexShader;
-    class MyPixelShader; // Forward declaration of MyPixelShader
     class MyDeviceContext {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        MyRenderSystem* renderSystem { nullptr };
+        
         ID3D11DeviceContext* D3DDeviceContext{ nullptr };
-        friend class MyGraphicsEngine;
+        
+        friend class MyRenderSystem;
         friend class MyConstantBuffer;
     public:
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyDeviceContext(ID3D11DeviceContext* D3DDeviceContext);
+        MyDeviceContext(ID3D11DeviceContext* D3DDeviceContex, MyRenderSystem* renderSystem);
         ~MyDeviceContext();
 
         //* ╔═══════════╗
@@ -43,7 +44,6 @@ namespace DX3D {
 
         void DrawTriangles(UINT vertexCount, UINT startVertexIndex);
         void DrawIndexedTriangles(UINT indexCount, UINT startVertexIndex, UINT startIndexLocation) ;
-        bool Release();
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

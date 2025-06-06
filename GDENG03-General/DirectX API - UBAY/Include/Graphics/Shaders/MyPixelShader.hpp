@@ -1,5 +1,8 @@
 #pragma once
 #include <d3d11.h>
+#include <exception>
+#include "Core/Prerequisites.hpp"
+#include "Core/MyRenderSystem.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 
@@ -9,9 +12,11 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        MyRenderSystem* renderSystem { nullptr };
+
         ID3D11PixelShader* D3DPixelShader{ nullptr };
 
-        friend class MyGraphicsEngine;
+        friend class MyRenderSystem;
         friend class MyDeviceContext;
     public:
 
@@ -19,16 +24,14 @@ namespace DX3D {
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyPixelShader();
+        MyPixelShader(const void* shaderByteCode, size_t shaderSize, MyRenderSystem* renderSystem);
         ~MyPixelShader();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
-    private:
-        bool Initialize(const void* shaderByteCode, size_t shaderSize);
     public:
-        bool Release();
+        
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝

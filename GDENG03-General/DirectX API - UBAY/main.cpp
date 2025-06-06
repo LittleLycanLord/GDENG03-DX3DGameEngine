@@ -5,16 +5,18 @@
 
 // Logging toggles
 bool LOG_INFO_WINDOW = false;
-bool LOG_INFO_GRAPHICS_ENGINE = false;
-bool LOG_INFO_SWAPCHAIN = false;
-bool LOG_INFO_DEVICECONTEXT = false;
-bool LOG_INFO_VERTEXBUFFER = false;
-bool LOG_INFO_CONSTANTBUFFER = false;
-bool LOG_INFO_INDEXBUFFER = true;
-bool LOG_INFO_VERTEXSHADER = false;
-bool LOG_INFO_PIXELSHADER = false;
-bool LOG_INFO_INPUTSYSTEM_KEYBOARD = false;
-bool LOG_INFO_INPUTSYSTEM_MOUSE = false;
+bool LOG_INFO_RENDER_SYSTEM = true;
+bool LOG_INFO_SWAP_CHAIN = false;
+bool LOG_INFO_DEVICE_CONTEXT = false;
+bool LOG_INFO_VERTEX_BUFFER = false;
+bool LOG_INFO_CONSTANT_BUFFER = false;
+bool LOG_INFO_INDEX_BUFFER = true;
+bool LOG_INFO_VERTEX_SHADER = false;
+bool LOG_INFO_PIXEL_SHADER = false;
+bool LOG_INFO_INPUT_SYSTEM_KEYBOARD = false;
+bool LOG_INFO_INPUT_SYSTEM_MOUSE = false;
+bool LOG_WARNING_GENERAL = true;
+bool LOG_ERROR_GENERAL = true;
 
 // Directory for shader files
 extern const std::wstring VERTEX_SHADER_DIRECTORY = L"Shaders/Vertex/RainbowCubeVertexShader.hlsl";
@@ -23,16 +25,23 @@ extern const std::wstring PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/RainbowCubePi
 using namespace DX3D;
 
 int main() {
-    std::cout << "[INFO] : Application started" << std::endl;
+    std::cout << "[INFO] Application started" << std::endl;
     MyAppWindow appWindow;
-    if (!appWindow.Initialize()) {
-        std::cout << "[ERROR] : Failed to initialize application window" << std::endl;
+    try {
+        if (!appWindow.Initialize()) {
+            std::cerr << "[ERROR] Failed to initialize application window" << std::endl;
+            throw std::exception("Failed to initialize application window");
+            return -1;
+        }
+        while (appWindow.IsRunning()) {
+            appWindow.Broadcast();
+        }
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "[ERROR] Exception: " << ex.what() << std::endl;
         return -1;
     }
-    while (appWindow.IsRunning()) {
-        appWindow.Broadcast();
-    }
-    std::cout << "[INFO] : Application exiting" << std::endl;
+    std::cout << "[INFO] Application exiting" << std::endl;
     return 0;
 }
 

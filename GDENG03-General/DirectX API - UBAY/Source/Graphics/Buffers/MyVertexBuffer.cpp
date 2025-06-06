@@ -2,26 +2,17 @@
 
 using namespace DX3D;
 
-extern bool LOG_INFO_VERTEXBUFFER;
+extern bool LOG_INFO_VERTEX_BUFFER;
 
-MyVertexBuffer::MyVertexBuffer() {
-    if (LOG_INFO_VERTEXBUFFER) std::cout << "[INFO] : MyVertexBuffer constructed" << std::endl;
-}
-MyVertexBuffer::~MyVertexBuffer() {
-    if (LOG_INFO_VERTEXBUFFER) std::cout << "[INFO] : MyVertexBuffer destructed" << std::endl;
-}
+MyVertexBuffer::MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
+    if (LOG_INFO_VERTEX_BUFFER) std::cout << "[INFO] : MyVertexBuffer constructed" << std::endl;
 
-bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize) {
-    if (LOG_INFO_VERTEXBUFFER) std::cout << "[INFO] : MyVertexBuffer::Load called" << std::endl;
-
-    if (this->D3DInputLayout) this->D3DInputLayout->Release();
-    if (this->D3DVertexBuffer) this->D3DVertexBuffer->Release();
-
-    ID3D11Device* D3DDevice = MyGraphicsEngine::GetInstance()->D3DDevice;
+    ID3D11Device* D3DDevice = this->renderSystem->D3DDevice;
 
     if (!D3DDevice) {
-        std::cout << "[ERROR] : D3DDevice is null in MyVertexBuffer::Load" << std::endl;
-        return false;
+        std::cerr << "[ERROR] D3DDevice is null in MyVertexBuffer::Load" << std::endl;
+        throw std::exception("D3DDevice is null in MyVertexBuffer::Load");
+        return;
     }
 
     D3D11_BUFFER_DESC bufferDescription = {};
@@ -44,10 +35,10 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
     );
 
     if (FAILED(result)) {
-        std::cout << "[ERROR] : CreateBuffer failed in MyVertexBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
+        std::cout << "CreateBuffer failed in MyVertexBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
-        return false;
+        return;
     }
 
     D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -70,22 +61,19 @@ bool MyVertexBuffer::Load(void* vertexList, UINT vertexSize, UINT vertexCount, v
     );
 
     if (FAILED(result)) {
-        std::cout << "[ERROR] : CreateInputLayout failed in MyVertexBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
+        std::cout << "CreateInputLayout failed in MyVertexBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
-        return false;
+        return;
     }
 
-    if (LOG_INFO_VERTEXBUFFER)
+    if (LOG_INFO_VERTEX_BUFFER)
         std::cout << "[INFO] : Vertex buffer and input layout created successfully" << std::endl;
 
-    return SUCCEEDED(result);
 }
-bool MyVertexBuffer::Release() {
-    if (LOG_INFO_VERTEXBUFFER) std::cout << "[INFO] : MyVertexBuffer::Release called" << std::endl;
+MyVertexBuffer::~MyVertexBuffer() {
+    if (LOG_INFO_VERTEX_BUFFER) std::cout << "[INFO] : MyVertexBuffer destructed" << std::endl;
 
     if (this->D3DInputLayout) this->D3DInputLayout->Release();
     if (this->D3DVertexBuffer) this->D3DVertexBuffer->Release();
-    return true;
 }
-

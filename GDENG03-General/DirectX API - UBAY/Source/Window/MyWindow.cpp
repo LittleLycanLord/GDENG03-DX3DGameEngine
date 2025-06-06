@@ -71,7 +71,7 @@ bool MyWindow::Initialize() {
     windowClass.lpfnWndProc = WindowProcedure;
 
     if (!::RegisterClassEx(&windowClass)) {
-        if (LOG_INFO_WINDOW) std::cout << "[ERROR] : RegisterClassEx failed" << std::endl;
+        if (LOG_INFO_WINDOW) throw std::exception("RegisterClassEx failed");
         return false;
     }
 
@@ -81,7 +81,7 @@ bool MyWindow::Initialize() {
         NULL, this);
 
     if (!windowHandle) {
-        if (LOG_INFO_WINDOW) std::cout << "[ERROR] : CreateWindowEx failed" << std::endl;
+        if (LOG_INFO_WINDOW) throw std::exception("CreateWindowEx failed");
         return false;
     }
 
@@ -109,7 +109,7 @@ bool MyWindow::Broadcast() {
 bool MyWindow::Release() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::Release called" << std::endl;
     if (!::DestroyWindow(windowHandle)) {
-        if (LOG_INFO_WINDOW) std::cout << "[ERROR] : DestroyWindow failed" << std::endl;
+        if (LOG_INFO_WINDOW) throw std::exception("DestroyWindow failed");
         return false;
     }
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : Window destroyed" << std::endl;

@@ -1,36 +1,22 @@
 #include "Graphics/Buffers/MyConstantBuffer.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
-#include <iostream>
-#include <comdef.h>
 
 using namespace DX3D;
 
-extern bool LOG_INFO_VERTEXBUFFER;
-extern bool LOG_INFO_CONSTANTBUFFER;
+extern bool LOG_INFO_VERTEX_BUFFER;
+extern bool LOG_INFO_CONSTANT_BUFFER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyConstantBuffer::MyConstantBuffer() {
-    if (LOG_INFO_CONSTANTBUFFER) std::cout << "[INFO] : MyConstantBuffer constructed" << std::endl;
-}
-MyConstantBuffer::~MyConstantBuffer() {
-    if (LOG_INFO_CONSTANTBUFFER) std::cout << "[INFO] : MyConstantBuffer destructed" << std::endl;
-}
+MyConstantBuffer::MyConstantBuffer(void* buffer, UINT bufferSize, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
+    if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO] : MyConstantBuffer constructed" << std::endl;
 
-//* ╔═══════════╗
-//* ║ Functions ║
-//* ╚═══════════╝
-bool MyConstantBuffer::Load(void* buffer, UINT bufferSize) {
-    if (LOG_INFO_CONSTANTBUFFER) std::cout << "[INFO] : MyConstantBuffer::Load called" << std::endl;
-
-    if (this->D3DConstantBuffer) this->D3DConstantBuffer->Release();
-
-    ID3D11Device* D3DDevice = MyGraphicsEngine::GetInstance()->D3DDevice;
+    ID3D11Device* D3DDevice = this->renderSystem->D3DDevice;
 
     if (!D3DDevice) {
-        std::cout << "[ERROR] : D3DDevice is null in MyConstantBuffer::Load" << std::endl;
-        return false;
+        std::cerr << "[ERROR] D3DDevice is null in MyConstantBuffer::Load" << std::endl;
+        throw std::exception("D3DDevice is null in MyConstantBuffer::Load");
     }
 
     D3D11_BUFFER_DESC bufferDescription = {};
@@ -50,19 +36,31 @@ bool MyConstantBuffer::Load(void* buffer, UINT bufferSize) {
     );
 
     if (FAILED(result)) {
-        std::cout << "[ERROR] : CreateBuffer failed in MyConstantBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
+        std::cout << "CreateBuffer failed in MyConstantBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
         std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
-        return false;
     }
 
-    if (LOG_INFO_CONSTANTBUFFER)
+    if (LOG_INFO_CONSTANT_BUFFER)
         std::cout << "[INFO] : Constant buffer created successfully" << std::endl;
 
-    return SUCCEEDED(result);
 }
+MyConstantBuffer::~MyConstantBuffer() {
+    if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO] : MyConstantBuffer destructed" << std::endl;
+
+    if (this->D3DConstantBuffer) {
+        this->D3DConstantBuffer->Release();
+        this->D3DConstantBuffer = nullptr;
+        if (LOG_INFO_CONSTANT_BUFFER)
+            std::cout << "[INFO] : Constant buffer released" << std::endl;
+    }
+}
+
+//* ╔═══════════╗
+//* ║ Functions ║
+//* ╚═══════════╝
 void MyConstantBuffer::Update(MyDeviceContext* deviceContext, void* buffer) {
-    if (LOG_INFO_CONSTANTBUFFER)
+    if (LOG_INFO_CONSTANT_BUFFER)
         std::cout << "[INFO] : Updating constant buffer..." << std::endl;
     deviceContext->D3DDeviceContext->UpdateSubresource(
         this->D3DConstantBuffer,
@@ -72,17 +70,6 @@ void MyConstantBuffer::Update(MyDeviceContext* deviceContext, void* buffer) {
         NULL,
         NULL
     );
-}
-bool MyConstantBuffer::Release() {
-    if (LOG_INFO_CONSTANTBUFFER) std::cout << "[INFO] : MyConstantBuffer::Release called" << std::endl;
-
-    if (this->D3DConstantBuffer) {
-        this->D3DConstantBuffer->Release();
-        this->D3DConstantBuffer = nullptr;
-        if (LOG_INFO_CONSTANTBUFFER)
-            std::cout << "[INFO] : Constant buffer released" << std::endl;
-    }
-    return true;
 }
 
 //* ╔════════════════════════════════╗
