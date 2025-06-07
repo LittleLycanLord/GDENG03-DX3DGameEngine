@@ -1,60 +1,48 @@
 #pragma once
-#include <d3d11.h>
-#include <d3dcompiler.h>
+#include <string>
 #include <iostream>
 #include <comdef.h>
 #include <exception>
 #include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
-#include "Core/Resource System/Managers/MyTextureManager.hpp"
+#include "Core/Resource System/MyResourceSystem.hpp"
+#include "Core/Resource System/MyResource.hpp"
+#include "Core/Resource System/Managers/MyTexture.hpp"
 
 namespace DX3D {
-    class MyGraphicsEngine {
+    class MyTextureManager : public MyResourceSystem {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        static MyGraphicsEngine* instance;
-        
-        MyRenderSystem* renderSystem{ nullptr };
-        MyTextureManager* textureManager{ nullptr };
-
-        //* ╔═════════════════════════════╗
-        //* ║ Singleton Instance Accessor ║
-        //* ╚═════════════════════════════╝
     public:
-        static MyGraphicsEngine* GetInstance() {
-            static MyGraphicsEngine graphicsEngine;
-            return &graphicsEngine;
-        }
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
-    private:
-        MyGraphicsEngine();
-        ~MyGraphicsEngine();
     public:
+        MyTextureManager();
+        ~MyTextureManager();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        static void Create();
-        static void Release();
+        MyTexturePtr CreateTextureFromFile(const wchar_t* resourcePath) {
+            return std::static_pointer_cast<MyTexture>(CreateResourceFromFile(resourcePath));
+        }
+
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
+        virtual MyResource* CreateResourceFromFileConcrete(const wchar_t* resourcePath);
     public:
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyRenderSystem* GetRenderSystem() const { return this->renderSystem; }
-        MyTextureManager* GetTextureManager() const { return this->textureManager; }
     };
 } // namespace DX3D
 

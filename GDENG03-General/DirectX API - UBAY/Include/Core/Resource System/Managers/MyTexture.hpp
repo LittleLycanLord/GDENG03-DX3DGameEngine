@@ -1,48 +1,37 @@
 #pragma once
-#include <d3d11.h>
-#include <d3dcompiler.h>
+#include <string>
 #include <iostream>
 #include <comdef.h>
 #include <exception>
+#include <d3d11.h>
+#include <DirectXTex.h>
 #include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
-#include "Core/Resource System/Managers/MyTextureManager.hpp"
+#include "Core/Resource System/MyResource.hpp"
+#include "Graphics/MyGraphicsEngine.hpp"
 
 namespace DX3D {
-    class MyGraphicsEngine {
+    class MyTexture : public MyResource {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        static MyGraphicsEngine* instance;
-        
-        MyRenderSystem* renderSystem{ nullptr };
-        MyTextureManager* textureManager{ nullptr };
+        ID3D11Resource* D3DTexture{ nullptr };
+        ID3D11ShaderResourceView* D3DShaderResourceView{ nullptr };
 
-        //* ╔═════════════════════════════╗
-        //* ║ Singleton Instance Accessor ║
-        //* ╚═════════════════════════════╝
-    public:
-        static MyGraphicsEngine* GetInstance() {
-            static MyGraphicsEngine graphicsEngine;
-            return &graphicsEngine;
-        }
-
+        friend class MyDeviceContext;
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
-    private:
-        MyGraphicsEngine();
-        ~MyGraphicsEngine();
     public:
+        MyTexture(const wchar_t* resourcePath);
+        ~MyTexture();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        static void Create();
-        static void Release();
+
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -53,8 +42,6 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyRenderSystem* GetRenderSystem() const { return this->renderSystem; }
-        MyTextureManager* GetTextureManager() const { return this->textureManager; }
     };
 } // namespace DX3D
 

@@ -5,11 +5,11 @@ using namespace DX3D;
 extern bool LOG_INFO_INDEX_BUFFER;
 
 MyIndexBuffer::MyIndexBuffer(void* indices, UINT indexCount, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
-    if (LOG_INFO_INDEX_BUFFER) std::cout << "[INFO] : MyIndexBuffer constructed" << std::endl;
+    if (LOG_INFO_INDEX_BUFFER) std::cout << "[INFO]: MyIndexBuffer constructed" << std::endl;
 
 
     if (this->D3DIndexBuffer) {
-        if (LOG_INFO_INDEX_BUFFER) std::cout << "[INFO] : Releasing previous D3DIndexBuffer in MyIndexBuffer::Load" << std::endl;
+        if (LOG_INFO_INDEX_BUFFER) std::cout << "[INFO]: Releasing previous D3DIndexBuffer in MyIndexBuffer::Load" << std::endl;
         this->D3DIndexBuffer->Release();
         this->D3DIndexBuffer = nullptr;
     }
@@ -17,17 +17,17 @@ MyIndexBuffer::MyIndexBuffer(void* indices, UINT indexCount, MyRenderSystem* ren
     ID3D11Device* D3DDevice = this->renderSystem->D3DDevice;
 
     if (!D3DDevice) {
-        std::cerr << "[ERROR] D3DDevice is null in MyIndexBuffer::Load" << std::endl;
+        std::cerr << "[ERROR]: D3DDevice is null in MyIndexBuffer::Load" << std::endl;
         throw std::exception("D3DDevice is null in MyIndexBuffer::Load");
         return;
     }
     if (!indices) {
-        std::cerr << "[ERROR] indices pointer is null in MyIndexBuffer::Load" << std::endl;
+        std::cerr << "[ERROR]: indices pointer is null in MyIndexBuffer::Load" << std::endl;
         throw std::exception("indices pointer is null in MyIndexBuffer::Load");
         return;
     }
     if (indexCount == 0) {
-        std::cerr << "[ERROR] indexCount is zero in MyIndexBuffer::Load" << std::endl;
+        std::cerr << "[ERROR]: indexCount is zero in MyIndexBuffer::Load" << std::endl;
         throw std::exception("indexCount is zero in MyIndexBuffer::Load");
         return;
     }
@@ -52,21 +52,21 @@ MyIndexBuffer::MyIndexBuffer(void* indices, UINT indexCount, MyRenderSystem* ren
     if (FAILED(result)) {
         std::cout << "CreateBuffer failed in MyIndexBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
-        std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
+        std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
         return;
     }
 
     if (LOG_INFO_INDEX_BUFFER)
-        std::cout << "[INFO] : Index buffer created successfully" << std::endl;
+        std::cout << "[INFO]: Index buffer created successfully" << std::endl;
 }
 MyIndexBuffer::~MyIndexBuffer() {
-    if (LOG_INFO_INDEX_BUFFER) std::cout << "[INFO] : MyIndexBuffer destructed" << std::endl;
+    if (LOG_INFO_INDEX_BUFFER) std::cout << "[INFO]: MyIndexBuffer destructed" << std::endl;
 
 
     if (this->D3DIndexBuffer) {
         this->D3DIndexBuffer->Release();
         this->D3DIndexBuffer = nullptr;
         if (LOG_INFO_INDEX_BUFFER)
-            std::cout << "[INFO] : Index buffer released" << std::endl;
+            std::cout << "[INFO]: Index buffer released" << std::endl;
     }
 }

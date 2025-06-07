@@ -1,48 +1,46 @@
 #pragma once
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#include <iostream>
-#include <comdef.h>
-#include <exception>
-#include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
-#include "Core/Resource System/Managers/MyTextureManager.hpp"
 
 namespace DX3D {
-    class MyGraphicsEngine {
+    class MyVector2 {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        static MyGraphicsEngine* instance;
-        
-        MyRenderSystem* renderSystem{ nullptr };
-        MyTextureManager* textureManager{ nullptr };
-
-        //* ╔═════════════════════════════╗
-        //* ║ Singleton Instance Accessor ║
-        //* ╚═════════════════════════════╝
     public:
-        static MyGraphicsEngine* GetInstance() {
-            static MyGraphicsEngine graphicsEngine;
-            return &graphicsEngine;
-        }
+        float x, y;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
-    private:
-        MyGraphicsEngine();
-        ~MyGraphicsEngine();
     public:
+        MyVector2() : x(0), y(0) {}
+        MyVector2(float all) : x(all), y(all) {}
+        MyVector2(float x, float y) : x(x), y(y) {}
+        MyVector2(const MyVector2& other) : x(other.x), y(other.y) {}
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        static void Create();
-        static void Release();
+        MyVector2 operator * (float scalar) const {
+            return MyVector2(this->x * scalar, this->y * scalar);
+        }
+        MyVector2 operator + (MyVector2 other) const {
+            return MyVector2(this->x + other.x, this->y + other.y);
+        }
+        MyVector2& operator += (const MyVector2& other) {
+            this->x += other.x;
+            this->y += other.y;
+            return *this;
+        }
+        static MyVector2 Lerp(const MyVector2& start, const MyVector2& end, float delta) {
+            MyVector2 returnVector;
+            returnVector.x = start.x * (1.0f - delta) + end.x * (delta);
+            returnVector.y = start.y * (1.0f - delta) + end.y * (delta);
+            return returnVector;
+        }
+
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -53,8 +51,7 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyRenderSystem* GetRenderSystem() const { return this->renderSystem; }
-        MyTextureManager* GetTextureManager() const { return this->textureManager; }
     };
 } // namespace DX3D
+
 

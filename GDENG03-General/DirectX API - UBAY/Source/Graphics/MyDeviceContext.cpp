@@ -10,10 +10,14 @@ extern bool LOG_INFO_DEVICE_CONTEXT;
 //* ╚════════════════════════════╝
 MyDeviceContext::MyDeviceContext(ID3D11DeviceContext* D3DDeviceContext, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
     this->D3DDeviceContext = D3DDeviceContext;
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext constructed" << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext constructed" << std::endl;
 }
 MyDeviceContext::~MyDeviceContext() {
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext destructed" << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext destructed" << std::endl;
+    if (this->D3DSamplerState) {
+        this->D3DSamplerState->Release();
+        this->D3DSamplerState = nullptr;
+    }
 
     if (this->D3DDeviceContext) {
         this->D3DDeviceContext->Release();
@@ -24,15 +28,15 @@ MyDeviceContext::~MyDeviceContext() {
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-bool MyDeviceContext::ClearRenderTargetColor(MySwapChainPtr swapChain, MyVec4 color) {
+bool MyDeviceContext::ClearRenderTargetColor(MySwapChainPtr swapChain, MyVector4 color) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] MyDeviceContext::ClearRenderTargetColor called" << std::endl;
     if (!swapChain || !swapChain->D3D11RenderTargetView) {
-        std::cerr << "[ERROR] swapChain or D3D11RenderTargetView is null in MyDeviceContext::ClearRenderTargetColor" << std::endl;
+        std::cerr << "[ERROR]: swapChain or D3D11RenderTargetView is null in MyDeviceContext::ClearRenderTargetColor" << std::endl;
         throw std::exception("swapChain or D3D11RenderTargetView is null in MyDeviceContext::ClearRenderTargetColor");
         return false;
     }
     if (!this->D3DDeviceContext) {
-        std::cerr << "[ERROR] D3DDeviceContext is null in MyDeviceContext::ClearRenderTargetColor" << std::endl;
+        std::cerr << "[ERROR]: D3DDeviceContext is null in MyDeviceContext::ClearRenderTargetColor" << std::endl;
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::ClearRenderTargetColor");
         return false;
     }
@@ -50,7 +54,7 @@ bool MyDeviceContext::ClearRenderTargetColor(MySwapChainPtr swapChain, MyVec4 co
 }
 
 void MyDeviceContext::SetVertexBuffer(MyVertexBufferPtr vertexBuffer) {
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetVertexBuffer called" << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetVertexBuffer called" << std::endl;
     if (!vertexBuffer || !vertexBuffer->D3DVertexBuffer || !vertexBuffer->D3DInputLayout) {
         throw std::exception("vertexBuffer, vertexBuffer->vertexBuffer, or inputLayout is null in MyDeviceContext::SetVertexBuffer");
         return;
@@ -72,7 +76,7 @@ void MyDeviceContext::SetVertexBuffer(MyVertexBufferPtr vertexBuffer) {
 }
 
 void MyDeviceContext::SetIndexBuffer(MyIndexBufferPtr indexBuffer) {
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetIndexBuffer called" << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetIndexBuffer called" << std::endl;
     if (!indexBuffer || !indexBuffer->D3DIndexBuffer) {
         throw std::exception("indexBuffer, indexBuffer->D3DIndexBuffer, is null in MyDeviceContext::SetIndexBuffer");
         return;
@@ -89,7 +93,7 @@ void MyDeviceContext::SetIndexBuffer(MyIndexBufferPtr indexBuffer) {
 }
 
 void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetViewPortSize called" << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetViewPortSize called" << std::endl;
     if (!this->D3DDeviceContext) {
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::SetViewPortSize");
         return;
@@ -105,7 +109,7 @@ void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
 }
 
 void MyDeviceContext::SetVertexShader(MyVertexShaderPtr vertexShader) {
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetVertexShader called" << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetVertexShader called" << std::endl;
     if (!vertexShader || !vertexShader->D3DVertexShader) {
         throw std::exception("vertexShader or D3DVertexShader is null in MyDeviceContext::SetVertexShader");
         return;
@@ -122,7 +126,7 @@ void MyDeviceContext::SetVertexShader(MyVertexShaderPtr vertexShader) {
 }
 
 void MyDeviceContext::SetPixelShader(MyPixelShaderPtr pixelShader) {
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::SetPixelShader called" << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetPixelShader called" << std::endl;
     if (!pixelShader || !pixelShader->D3DPixelShader) {
         throw std::exception("pixelShader or D3DPixelShader is null in MyDeviceContext::SetPixelShader");
         return;
@@ -152,7 +156,7 @@ void MyDeviceContext::SetConstantBuffer(MyPixelShaderPtr pixelShader, MyConstant
     );
 }
 void MyDeviceContext::DrawTriangles(UINT vertexCount, UINT startVertexIndex) {
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::DrawTriangles called with vertexCount=" << vertexCount << ", startVertexIndex=" << startVertexIndex << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::DrawTriangles called with vertexCount=" << vertexCount << ", startVertexIndex=" << startVertexIndex << std::endl;
     if (!this->D3DDeviceContext) {
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::DrawTriangles");
         return;
@@ -162,13 +166,48 @@ void MyDeviceContext::DrawTriangles(UINT vertexCount, UINT startVertexIndex) {
 }
 
 void MyDeviceContext::DrawIndexedTriangles(UINT indexCount, UINT startVertexIndex, UINT startIndexLocation) {
-    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO] : MyDeviceContext::DrawIndexedTriangles called with indexCount=" << indexCount << ", startVertexIndex=" << startVertexIndex << ", startIndexLocation=" << startIndexLocation << std::endl;
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::DrawIndexedTriangles called with indexCount=" << indexCount << ", startVertexIndex=" << startVertexIndex << ", startIndexLocation=" << startIndexLocation << std::endl;
     if (!this->D3DDeviceContext) {
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::DrawIndexedTriangles");
         return;
     }
     this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     this->D3DDeviceContext->DrawIndexed(indexCount, startIndexLocation, startVertexIndex);
+}
+
+void MyDeviceContext::SetTexture(MyVertexShaderPtr vertexShader, MyTexturePtr texture) {
+    this->D3DDeviceContext->VSSetShaderResources(
+        0,
+        1,
+        &texture->D3DShaderResourceView
+    );
+}
+
+void MyDeviceContext::SetTexture(MyPixelShaderPtr pixelShader, MyTexturePtr texture) {
+    this->D3DDeviceContext->PSSetShaderResources(
+        0,
+        1,
+        &texture->D3DShaderResourceView
+    );
+}
+
+void MyDeviceContext::SetSamplerState() {
+    if (!this->D3DSamplerState) {
+        D3D11_SAMPLER_DESC samplerDesc = {};
+        samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        samplerDesc.MinLOD = 0;
+        samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+        HRESULT result = MyGraphicsEngine::GetInstance()->GetRenderSystem()->D3DDevice->CreateSamplerState(&samplerDesc, &this->D3DSamplerState);
+        if (FAILED(result)) {
+            std::cerr << "[ERROR]: Failed to create sampler state" << std::endl;
+            throw std::runtime_error("Failed to create sampler state");
+        }
+    }
+    this->D3DDeviceContext->PSSetSamplers(0, 1, &this->D3DSamplerState);
 }
 
 //* ╔════════════════════════════════╗

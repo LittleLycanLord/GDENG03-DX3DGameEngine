@@ -1,50 +1,40 @@
 #pragma once
+#include <map>
+#include <string>
+#include <iostream>
+#include <comdef.h>
+#include <exception>
+#include <filesystem>
+#include "Core/Prerequisites.hpp"
+#include "Core/Resource System/MyResource.hpp"
 
 namespace DX3D {
-    class MyVec2 {
+    class MyResourceSystem {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-    public:
-        float x, y;
+        std::map<std::wstring, MyResourcePtr> resources;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyVec2() : x(0), y(0) {}
-        MyVec2(float all) : x(all), y(all) {}
-        MyVec2(float x, float y) : x(x), y(y) {}
-        MyVec2(const MyVec2& other) : x(other.x), y(other.y) {}
+        MyResourceSystem();
+        ~MyResourceSystem();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        MyVec2 operator * (float scalar) const {
-            return MyVec2(this->x * scalar, this->y * scalar);
-        }
-        MyVec2 operator + (MyVec2 other) const {
-            return MyVec2(this->x + other.x, this->y + other.y);
-        }
-        MyVec2& operator += (const MyVec2& other) {
-            this->x += other.x;
-            this->y += other.y;
-            return *this;
-        }
-        static MyVec2 Lerp(const MyVec2& start, const MyVec2& end, float delta) {
-            MyVec2 returnVector;
-            returnVector.x = start.x * (1.0f - delta) + end.x * (delta);
-            returnVector.y = start.y * (1.0f - delta) + end.y * (delta);
-            return returnVector;
-        }
+        MyResourcePtr CreateResourceFromFile(const wchar_t* resourcePath);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
+        virtual MyResource* CreateResourceFromFileConcrete(const wchar_t* resourcePath) = 0;
     public:
 
         //* ╔═══════════════════╗
@@ -53,5 +43,4 @@ namespace DX3D {
     public:
     };
 } // namespace DX3D
-
 

@@ -10,12 +10,12 @@ extern bool LOG_INFO_CONSTANT_BUFFER;
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 MyConstantBuffer::MyConstantBuffer(void* buffer, UINT bufferSize, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
-    if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO] : MyConstantBuffer constructed" << std::endl;
+    if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO]: MyConstantBuffer constructed" << std::endl;
 
     ID3D11Device* D3DDevice = this->renderSystem->D3DDevice;
 
     if (!D3DDevice) {
-        std::cerr << "[ERROR] D3DDevice is null in MyConstantBuffer::Load" << std::endl;
+        std::cerr << "[ERROR]: D3DDevice is null in MyConstantBuffer::Load" << std::endl;
         throw std::exception("D3DDevice is null in MyConstantBuffer::Load");
     }
 
@@ -38,21 +38,21 @@ MyConstantBuffer::MyConstantBuffer(void* buffer, UINT bufferSize, MyRenderSystem
     if (FAILED(result)) {
         std::cout << "CreateBuffer failed in MyConstantBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
-        std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
+        std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
     }
 
     if (LOG_INFO_CONSTANT_BUFFER)
-        std::cout << "[INFO] : Constant buffer created successfully" << std::endl;
+        std::cout << "[INFO]: Constant buffer created successfully" << std::endl;
 
 }
 MyConstantBuffer::~MyConstantBuffer() {
-    if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO] : MyConstantBuffer destructed" << std::endl;
+    if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO]: MyConstantBuffer destructed" << std::endl;
 
     if (this->D3DConstantBuffer) {
         this->D3DConstantBuffer->Release();
         this->D3DConstantBuffer = nullptr;
         if (LOG_INFO_CONSTANT_BUFFER)
-            std::cout << "[INFO] : Constant buffer released" << std::endl;
+            std::cout << "[INFO]: Constant buffer released" << std::endl;
     }
 }
 
@@ -61,7 +61,7 @@ MyConstantBuffer::~MyConstantBuffer() {
 //* ╚═══════════╝
 void MyConstantBuffer::Update(MyDeviceContextPtr deviceContext, void* buffer) {
     if (LOG_INFO_CONSTANT_BUFFER)
-        std::cout << "[INFO] : Updating constant buffer..." << std::endl;
+        std::cout << "[INFO]: Updating constant buffer..." << std::endl;
     deviceContext->D3DDeviceContext->UpdateSubresource(
         this->D3DConstantBuffer,
         NULL,

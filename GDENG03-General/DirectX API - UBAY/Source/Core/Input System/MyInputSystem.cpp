@@ -23,7 +23,7 @@ void MyInputSystem::Release() {
     if (MyInputSystem::instance) {
         delete MyInputSystem::instance;
         MyInputSystem::instance = nullptr;
-        if (LOG_INFO_INPUT_SYSTEM_MOUSE || LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : MyInputSystem released" << std::endl;
+        if (LOG_INFO_INPUT_SYSTEM_MOUSE || LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: MyInputSystem released" << std::endl;
     }
     else {
         throw std::exception("MyGraphicsEngine is already null in MyGraphicsEngine::Release");
@@ -51,7 +51,7 @@ void MyInputSystem::Update() {
             MyInputListener* listener = listenerPair.first;
             if (listener != nullptr) {
                 listener->OnMouseMove(this->deltaMousePosition);
-                if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO] : Mouse moved to (" << this->newMousePosition.x << ", " << this->newMousePosition.y << ") in MyInputSystem::Update" << std::endl;
+                if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: Mouse moved to (" << this->newMousePosition.x << ", " << this->newMousePosition.y << ") in MyInputSystem::Update" << std::endl;
             }
         }
     }
@@ -59,7 +59,7 @@ void MyInputSystem::Update() {
     this->oldMousePosition = this->newMousePosition;
 
 
-    if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : MyInputSystem::Update called" << std::endl;
+    if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: MyInputSystem::Update called" << std::endl;
     if (GetKeyboardState(this->newKeyStates)) {
         for (int key = 0; key < 256; key++) {
             if (this->newKeyStates[key] & 0x80) {
@@ -72,7 +72,7 @@ void MyInputSystem::Update() {
                             if (key == VK_RBUTTON)
                                 listener->OnRMBDown(this->newMousePosition);
                             listener->OnKeyDown(key);
-                            if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Key " << key << " pressed in MyInputSystem::Update" << std::endl;
+                            if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Key " << key << " pressed in MyInputSystem::Update" << std::endl;
                         }
                     }
                 }
@@ -84,7 +84,7 @@ void MyInputSystem::Update() {
                         if (key == VK_RBUTTON)
                             listener->OnRMBHold(this->newMousePosition);
                         listener->OnKeyHold(key);
-                        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Key " << key << " being held in MyInputSystem::Update" << std::endl;
+                        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Key " << key << " being held in MyInputSystem::Update" << std::endl;
                     }
                 }
             }
@@ -98,7 +98,7 @@ void MyInputSystem::Update() {
                             if (key == VK_RBUTTON)
                                 listener->OnRMBUp(this->newMousePosition);
                             listener->OnKeyUp(key);
-                            if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Key " << key << " released in MyInputSystem::Update" << std::endl;
+                            if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Key " << key << " released in MyInputSystem::Update" << std::endl;
                         }
                     }
                 }
@@ -107,14 +107,14 @@ void MyInputSystem::Update() {
         memcpy(this->oldKeyStates, this->newKeyStates, sizeof(this->newKeyStates));
     }
     else {
-        std::cerr << "[ERROR] Failed to get keyboard state in MyInputSystem::Update" << std::endl;
+        std::cerr << "[ERROR]: Failed to get keyboard state in MyInputSystem::Update" << std::endl;
         throw std::exception("Failed to get keyboard state in MyInputSystem::Update");
         return;
     }
 }
 void MyInputSystem::AddListener(MyInputListener* inputListener) {
     if (inputListener == nullptr) {
-        std::cerr << "[ERROR] inputListener is null in MyInputSystem::AddListener" << std::endl;
+        std::cerr << "[ERROR]: inputListener is null in MyInputSystem::AddListener" << std::endl;
         throw std::exception("inputListener is null in MyInputSystem::AddListener");
         return;
     }
@@ -124,19 +124,19 @@ void MyInputSystem::AddListener(MyInputListener* inputListener) {
     }
     else {
         this->inputListeners.insert(std::make_pair<MyInputListener*, MyInputListener*>(std::forward<MyInputListener*>(inputListener), std::forward<MyInputListener*>(inputListener)));
-        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Listener added successfully in MyInputSystem::AddListener" << std::endl;
+        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Listener added successfully in MyInputSystem::AddListener" << std::endl;
     }
 }
 void MyInputSystem::RemoveListener(MyInputListener* inputListener) {
     if (inputListener == nullptr) {
-        std::cerr << "[ERROR] inputListener is null in MyInputSystem::RemoveListener" << std::endl;
+        std::cerr << "[ERROR]: inputListener is null in MyInputSystem::RemoveListener" << std::endl;
         throw std::exception("inputListener is null in MyInputSystem::RemoveListener");
         return;
     }
     auto iterator = this->inputListeners.find(inputListener);
     if (iterator != this->inputListeners.end()) {
         this->inputListeners.erase(iterator);
-        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO] : Listener removed successfully in MyInputSystem::RemoveListener" << std::endl;
+        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Listener removed successfully in MyInputSystem::RemoveListener" << std::endl;
     }
     else {
         if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[WARNING] : Listener not found in MyInputSystem::RemoveListener" << std::endl;

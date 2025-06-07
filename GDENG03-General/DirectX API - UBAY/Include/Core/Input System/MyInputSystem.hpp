@@ -23,6 +23,9 @@ namespace DX3D {
         MyScreenPoint oldMousePosition = { 0, 0 };
         MyScreenPoint deltaMousePosition = { 0, 0 };
 
+        //* ╔═════════════════════════════╗
+        //* ║ Singleton Instance Accessor ║
+        //* ╚═════════════════════════════╝
     public:
         static MyInputSystem* GetInstance() {
             static MyInputSystem instance;

@@ -5,12 +5,12 @@ using namespace DX3D;
 extern bool LOG_INFO_VERTEX_BUFFER;
 
 MyVertexBuffer::MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
-    if (LOG_INFO_VERTEX_BUFFER) std::cout << "[INFO] : MyVertexBuffer constructed" << std::endl;
+    if (LOG_INFO_VERTEX_BUFFER) std::cout << "[INFO]: MyVertexBuffer constructed" << std::endl;
 
     ID3D11Device* D3DDevice = this->renderSystem->D3DDevice;
 
     if (!D3DDevice) {
-        std::cerr << "[ERROR] D3DDevice is null in MyVertexBuffer::Load" << std::endl;
+        std::cerr << "[ERROR]: D3DDevice is null in MyVertexBuffer::Load" << std::endl;
         throw std::exception("D3DDevice is null in MyVertexBuffer::Load");
         return;
     }
@@ -37,7 +37,7 @@ MyVertexBuffer::MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCou
     if (FAILED(result)) {
         std::cout << "CreateBuffer failed in MyVertexBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
-        std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
+        std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
         return;
     }
 
@@ -47,9 +47,13 @@ MyVertexBuffer::MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCou
         // { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 color (offset 24)
         // { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 nextColor (offset 36)
 
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
-        { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },  // float3 nextPosition (offset 12)
-        { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 color (offset 24)
+        // { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
+        // { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },  // float3 nextPosition (offset 12)
+        // { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 color (offset 24)
+
+        { "POSITION",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
+        { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },  // float3 nextPosition (offset 12)
+
     };
 
     result = D3DDevice->CreateInputLayout(
@@ -63,16 +67,16 @@ MyVertexBuffer::MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCou
     if (FAILED(result)) {
         std::cout << "CreateInputLayout failed in MyVertexBuffer::Load. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
-        std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
+        std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
         return;
     }
 
     if (LOG_INFO_VERTEX_BUFFER)
-        std::cout << "[INFO] : Vertex buffer and input layout created successfully" << std::endl;
+        std::cout << "[INFO]: Vertex buffer and input layout created successfully" << std::endl;
 
 }
 MyVertexBuffer::~MyVertexBuffer() {
-    if (LOG_INFO_VERTEX_BUFFER) std::cout << "[INFO] : MyVertexBuffer destructed" << std::endl;
+    if (LOG_INFO_VERTEX_BUFFER) std::cout << "[INFO]: MyVertexBuffer destructed" << std::endl;
 
     if (this->D3DInputLayout) this->D3DInputLayout->Release();
     if (this->D3DVertexBuffer) this->D3DVertexBuffer->Release();

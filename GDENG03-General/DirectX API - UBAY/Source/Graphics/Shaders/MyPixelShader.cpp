@@ -19,11 +19,11 @@ MyPixelShader::MyPixelShader(const void* shaderByteCode, size_t shaderSize, MyRe
     if (FAILED(result)) {
         std::cout << "CreatePixelShader failed in MyPixelShader::Initialize. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
-        std::wcout << L"[ERROR] : " << err.ErrorMessage() << std::endl;
+        std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
         return;
     }
     if (LOG_INFO_PIXEL_SHADER)
-        std::cout << "[INFO] : Pixel shader created successfully" << std::endl;
+        std::cout << "[INFO]: Pixel shader created successfully" << std::endl;
 
 }
 MyPixelShader::~MyPixelShader() {
@@ -31,7 +31,7 @@ MyPixelShader::~MyPixelShader() {
         this->D3DPixelShader->Release();
         this->D3DPixelShader = nullptr;
         if (LOG_INFO_PIXEL_SHADER)
-            std::cout << "[INFO] : Pixel shader released" << std::endl;
+            std::cout << "[INFO]: Pixel shader released" << std::endl;
     }
 }
 

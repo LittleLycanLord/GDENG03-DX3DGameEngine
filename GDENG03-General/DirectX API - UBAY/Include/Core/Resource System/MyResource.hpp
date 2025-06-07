@@ -1,48 +1,32 @@
 #pragma once
-#include <d3d11.h>
-#include <d3dcompiler.h>
+#include <string>
 #include <iostream>
 #include <comdef.h>
 #include <exception>
+#include <filesystem>
 #include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
-#include "Core/Resource System/Managers/MyTextureManager.hpp"
 
 namespace DX3D {
-    class MyGraphicsEngine {
+    class MyResource {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        static MyGraphicsEngine* instance;
-        
-        MyRenderSystem* renderSystem{ nullptr };
-        MyTextureManager* textureManager{ nullptr };
-
-        //* ╔═════════════════════════════╗
-        //* ║ Singleton Instance Accessor ║
-        //* ╚═════════════════════════════╝
-    public:
-        static MyGraphicsEngine* GetInstance() {
-            static MyGraphicsEngine graphicsEngine;
-            return &graphicsEngine;
-        }
+        std::wstring resourcePath;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
-    private:
-        MyGraphicsEngine();
-        ~MyGraphicsEngine();
     public:
+        MyResource(const wchar_t* resourcePath);
+        virtual ~MyResource();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        static void Create();
-        static void Release();
+
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -53,8 +37,6 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyRenderSystem* GetRenderSystem() const { return this->renderSystem; }
-        MyTextureManager* GetTextureManager() const { return this->textureManager; }
     };
 } // namespace DX3D
 

@@ -11,6 +11,7 @@
 #include "Graphics/Buffers/MyIndexBuffer.hpp"
 #include "Graphics/Shaders/MyVertexShader.hpp"
 #include "Graphics/Shaders/MyPixelShader.hpp"
+#include "Core/Resource System/Managers/MyTexture.hpp"
 
 namespace DX3D {
     class MyRenderSystem {
@@ -38,6 +39,8 @@ namespace DX3D {
         friend class MyIndexBuffer;
         friend class MyVertexShader;
         friend class MyPixelShader;
+        friend class MyTexture;
+        friend class MyDeviceContext;
     public:
 
         //* ╔════════════════════════════╗
@@ -72,7 +75,8 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyDeviceContextPtr GetImmedieateDeviceContext() const { return this->immediateDeviceContext; }
+        MyDeviceContextPtr GetImmediateDeviceContext() const { return this->immediateDeviceContext; }
+        ID3D11Device* GetD3DDevice() const { return this->D3DDevice; }
     };
 } // namespace DX3D
 

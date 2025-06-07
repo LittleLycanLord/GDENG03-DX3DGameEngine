@@ -4,8 +4,8 @@
 #include <exception>
 #include "Window/MyWindow.hpp"
 #include "Math/MyMatrix4x4.hpp"
-#include "Math/MyVec3.hpp"
-#include "Math/MyVec2.hpp"
+#include "Math/MyVector3.hpp"
+#include "Math/MyVector2.hpp"
 #include "Math/MyConstant.hpp"
 #include "Math/MyVertex.hpp"
 #include "Core/Primitives/MyTriangle.hpp"
@@ -27,6 +27,7 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        bool lockMouse = true;
         MySwapChainPtr swapChain{ nullptr };
         MyVertexBufferPtr vertexBuffer{ nullptr };
         MyConstantBufferPtr constantBuffer{ nullptr };
@@ -38,7 +39,7 @@ namespace DX3D {
         ULONGLONG newTime = 0;
         float deltaTime = 0;
 
-        bool lockMouse = true;
+        MyConstant constantData;
 
         //* Experimental variables
         float experimentalDelta = 0;
@@ -48,11 +49,12 @@ namespace DX3D {
 
         float moveSpeed = 1.0f;
 
-        MyConstant constantData;
+        MyTexturePtr sampleTexture{ nullptr };
+
         MyMatrix4x4 cameraMatrix;
-        MyVec3 cameraMoveInput;
-        MyVec3 cameraPosition;
-        MyVec3 cameraRotation;
+        MyVector3 cameraMoveInput;
+        MyVector3 cameraPosition;
+        MyVector3 cameraRotation;
 
 
         //* ╔════════════════════════════╗

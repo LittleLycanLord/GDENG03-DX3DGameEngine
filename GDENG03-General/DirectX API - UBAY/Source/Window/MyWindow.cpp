@@ -42,7 +42,7 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 MyWindow::MyWindow() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow constructed" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow constructed" << std::endl;
 
     WNDCLASSEX windowClass = {};
     windowClass.cbClsExtra = NULL;
@@ -74,21 +74,21 @@ MyWindow::MyWindow() {
         UpdateWindow(windowHandle);
     }
 
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Window created and shown" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Window created and shown" << std::endl;
     this->running = true;
 }
 MyWindow::~MyWindow() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow destructed" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow destructed" << std::endl;
 
     DestroyWindow(windowHandle);
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : Window destroyed" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Window destroyed" << std::endl;
 }
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
 bool MyWindow::Broadcast() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::Broadcast called" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::Broadcast called" << std::endl;
 
     MSG message;
 
@@ -113,20 +113,20 @@ bool MyWindow::Broadcast() {
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
 void MyWindow::OnCreate() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnCreate called" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnCreate called" << std::endl;
 }
 
 void MyWindow::OnUpdate() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnUpdate called" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnUpdate called" << std::endl;
 }
 
 void MyWindow::OnDestroy() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnDestroy called" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnDestroy called" << std::endl;
     this->running = false;
 }
 void MyWindow::OnSetFocus() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnSetFocus called" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnSetFocus called" << std::endl;
 }
 void MyWindow::OnKillFocus() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyWindow::OnUnfocus called" << std::endl;
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnUnfocus called" << std::endl;
 }

@@ -12,29 +12,43 @@ extern bool LOG_INFO_PIXEL_SHADER;
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 MyGraphicsEngine::MyGraphicsEngine() {
-    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyGraphicsEngine constructed" << std::endl;
+    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO]: MyGraphicsEngine constructed" << std::endl;
 
     try {
         this->renderSystem = new MyRenderSystem();
         if (!this->renderSystem) {
-            std::cerr << "[ERROR] Failed to allocate MyRenderSystem in MyGraphicsEngine::Initialize" << std::endl;
+            std::cerr << "[ERROR]: Failed to allocate MyRenderSystem in MyGraphicsEngine::Initialize" << std::endl;
             throw std::exception("Failed to allocate MyRenderSystem in MyGraphicsEngine::Initialize");
         }
-
     }
     catch (const std::exception& ex) {
-        std::cerr << "[ERROR] Exception in MyGraphicsEngine: " << ex.what() << std::endl;
-
+        std::cerr << "[ERROR]: Exception in MyGraphicsEngine: " << ex.what() << std::endl;
+    }
+    try {
+        this->textureManager = new MyTextureManager();
+        if (!this->textureManager) {
+            std::cerr << "[ERROR]: Failed to allocate MyTextureManager in MyGraphicsEngine::Initialize" << std::endl;
+            throw std::exception("Failed to allocate MyTextureManager in MyGraphicsEngine::Initialize");
+        }
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "[ERROR]: Exception in MyGraphicsEngine: " << ex.what() << std::endl;
     }
 }
 MyGraphicsEngine::~MyGraphicsEngine() {
-    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyGraphicsEngine destructed" << std::endl;
+    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO]: MyGraphicsEngine destructed" << std::endl;
 
     MyGraphicsEngine::instance = nullptr;
 
     if (this->renderSystem) {
+        delete this->renderSystem;
         this->renderSystem = nullptr;
-        if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyRenderSystem released" << std::endl;
+        if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO]: MyRenderSystem released" << std::endl;
+    }
+    if (this->textureManager) {
+        delete this->textureManager;
+        this->textureManager = nullptr;
+        if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO]: MyTextureManager released" << std::endl;
     }
 }
 
@@ -52,7 +66,7 @@ void MyGraphicsEngine::Release() {
     if (MyGraphicsEngine::instance) {
         delete MyGraphicsEngine::instance;
         MyGraphicsEngine::instance = nullptr;
-        if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] : MyGraphicsEngine released" << std::endl;
+        if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO]: MyGraphicsEngine released" << std::endl;
     }
     else {
         throw std::exception("MyGraphicsEngine is already null in MyGraphicsEngine::Release");

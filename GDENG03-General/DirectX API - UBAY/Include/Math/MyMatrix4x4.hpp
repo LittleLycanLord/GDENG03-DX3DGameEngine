@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
-#include "Math/MyVec3.hpp"
-#include "Math/MyVec4.hpp"
+#include "Math/MyVector3.hpp"
+#include "Math/MyVector4.hpp"
 #include "memory"
 
 namespace DX3D {
@@ -44,12 +44,12 @@ namespace DX3D {
 
         // Static Constructors
         static MyMatrix4x4 Identity() { MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity(); return returnMatrix; }
-        static MyMatrix4x4 Translation(const MyVec3& translation) {
+        static MyMatrix4x4 Translation(const MyVector3& translation) {
             MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
             returnMatrix.matrix[3][0] = translation.x; returnMatrix.matrix[3][1] = translation.y; returnMatrix.matrix[3][2] = translation.z;
             return returnMatrix;
         }
-        static MyMatrix4x4 Scaling(const MyVec3& sinAngle) {
+        static MyMatrix4x4 Scaling(const MyVector3& sinAngle) {
             MyMatrix4x4 returnMatrix; returnMatrix.SetIdentity();
             returnMatrix.matrix[0][0] = sinAngle.x; returnMatrix.matrix[1][1] = sinAngle.y; returnMatrix.matrix[2][2] = sinAngle.z;
             return returnMatrix;
@@ -96,11 +96,11 @@ namespace DX3D {
         }
 
         // Transformation Helpers (in-place)
-        void Translate(const MyVec3& translation) {
+        void Translate(const MyVector3& translation) {
             SetIdentity();
             this->matrix[3][0] = translation.x; this->matrix[3][1] = translation.y; this->matrix[3][2] = translation.z;
         }
-        void Scale(const MyVec3& scale) {
+        void Scale(const MyVector3& scale) {
             SetIdentity();
             this->matrix[0][0] = scale.x; this->matrix[1][1] = scale.y; this->matrix[2][2] = scale.z;
         }
@@ -145,7 +145,7 @@ namespace DX3D {
         MyMatrix4x4 Inverse() {
             MyMatrix4x4 inverse;
             int a;
-            MyVec4 vector, vectors[3];
+            MyVector4 vector, vectors[3];
             float determinant = this->GetDeterminant();
             if (determinant == 0.0f) return inverse; // Return identity if not invertible
             for (int row = 0; row < 4; row++) {
@@ -168,26 +168,26 @@ namespace DX3D {
             return inverse;
         }
         float GetDeterminant() {
-            MyVec4 minor;
-            MyVec4 A = { this->matrix[0][0], this->matrix[0][1], this->matrix[0][2], this->matrix[0][3] };
-            MyVec4 B = { this->matrix[1][0], this->matrix[1][1], this->matrix[1][2], this->matrix[1][3] };
-            MyVec4 C = { this->matrix[2][0], this->matrix[2][1], this->matrix[2][2], this->matrix[2][3] };
+            MyVector4 minor;
+            MyVector4 A = { this->matrix[0][0], this->matrix[0][1], this->matrix[0][2], this->matrix[0][3] };
+            MyVector4 B = { this->matrix[1][0], this->matrix[1][1], this->matrix[1][2], this->matrix[1][3] };
+            MyVector4 C = { this->matrix[2][0], this->matrix[2][1], this->matrix[2][2], this->matrix[2][3] };
             minor.Cross(A, B, C);
             return -(this->matrix[3][0] * minor.x
                 + this->matrix[3][1] * minor.y
                 + this->matrix[3][2] * minor.z
                 + this->matrix[3][3] * minor.w);
         }
-        MyVec3 GetDotProduct(const MyVec3& vector) const {
+        MyVector3 GetDotProduct(const MyVector3& vector) const {
             float x = vector.x * this->matrix[0][0] + vector.y * this->matrix[1][0] + vector.z * this->matrix[2][0] + this->matrix[3][0];
             float y = vector.x * this->matrix[0][1] + vector.y * this->matrix[1][1] + vector.z * this->matrix[2][1] + this->matrix[3][1];
             float z = vector.x * this->matrix[0][2] + vector.y * this->matrix[1][2] + vector.z * this->matrix[2][2] + this->matrix[3][2];
-            return MyVec3(x, y, z);
+            return MyVector3(x, y, z);
         }
-        MyVec3 GetXDirection() { return MyVec3(this->matrix[0][0], this->matrix[0][1], this->matrix[0][2]); }
-        MyVec3 GetYDirection() { return MyVec3(this->matrix[1][0], this->matrix[1][1], this->matrix[1][2]); }
-        MyVec3 GetZDirection() { return MyVec3(this->matrix[2][0], this->matrix[2][1], this->matrix[2][2]); }
-        MyVec3 GetTranslation() { return MyVec3(this->matrix[3][0], this->matrix[3][1], this->matrix[3][2]); }
+        MyVector3 GetXDirection() { return MyVector3(this->matrix[0][0], this->matrix[0][1], this->matrix[0][2]); }
+        MyVector3 GetYDirection() { return MyVector3(this->matrix[1][0], this->matrix[1][1], this->matrix[1][2]); }
+        MyVector3 GetZDirection() { return MyVector3(this->matrix[2][0], this->matrix[2][1], this->matrix[2][2]); }
+        MyVector3 GetTranslation() { return MyVector3(this->matrix[3][0], this->matrix[3][1], this->matrix[3][2]); }
     };
 } // namespace DX3D
 
