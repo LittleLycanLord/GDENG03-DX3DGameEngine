@@ -160,7 +160,7 @@ void MyAppWindow::OnCreate() {
         ), // Top-left
         MyVertex(
              0.5f,  0.5f, 0.0f,    // position
-             0.88f, 0.77f, 0.0f,   // nextPosition
+             0.0f, 0.0f, 0.0f,   // nextPosition
              1.0f,  1.0f, 0.0f,    // color
              0.0f,  1.0f, 0.0f     // nextColor
         ), // Top-right
@@ -179,7 +179,7 @@ void MyAppWindow::OnCreate() {
         ), // Bottom-left
         MyVertex(
              0.5f,  0.5f, 0.0f,    // position
-             0.88f, 0.77f, 0.0f,   // nextPosition
+             0.0f, 0.0f, 0.0f,   // nextPosition
              1.0f,  1.0f, 0.0f,    // color
              0.0f,  1.0f, 0.0f     // nextColor
         ), // Top-right
