@@ -11,6 +11,7 @@ extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
 extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY;
+extern const std::wstring SAMPLE_MESH_DIRECTORY;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
@@ -93,6 +94,12 @@ void MyAppWindow::OnCreate() {
 
     RECT windowRectangle = this->GetWindowRect();
     swapChain = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateSwapChain(this->windowHandle, windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
+
+    //* Experimental
+    //* Texture Application
+    this->sampleTexture = MyGraphicsEngine::GetInstance()->GetTextureManager()->CreateTextureFromFile(SAMPLE_TEXTURE_DIRECTORY.c_str());
+    //* Mesh Application
+    this->sampleMesh = MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str());
 
     //! Note: Define vertices in a CLOCKWISE MANNER
     // // * Single Color Triangle
@@ -365,9 +372,6 @@ void MyAppWindow::OnCreate() {
     // };
 
     //* Textured Cube
-//* Texture Application
-    this->sampleTexture = MyGraphicsEngine::GetInstance()->GetTextureManager()->CreateTextureFromFile(SAMPLE_TEXTURE_DIRECTORY.c_str());
-
     MyVector3 vertexPositions[] = {
         MyVector3(
            -0.5f,  -0.5f, -0.5f
@@ -514,8 +518,8 @@ void MyAppWindow::OnCreate() {
     this->constantData.projection.SetPerspectiveLeftHand(
         45.0f * 3.14159265f / 180.0f, // FOV in radians
         (this->GetWindowRect().right - this->GetWindowRect().left) / (float)(this->GetWindowRect().bottom - this->GetWindowRect().top),
-        0.1f, // Near plane
-        100.0f // Far plane
+        0.001f, // Near plane
+        10000.0f // Far plane
     );
     this->constantBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateConstantBuffer(&constantData, sizeof(MyConstant));
     if (!this->constantBuffer) {
@@ -532,7 +536,7 @@ void MyAppWindow::OnUpdate() {
     if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Updating input system in MyAppWindow::OnUpdate" << std::endl;
     MyInputSystem::GetInstance()->Update();
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: OnUpdate called" << std::endl;
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVector4(0.0f, 0.3f, 0.4f, 1.0f));
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVector4(0.3f, 0.3f, 0.3f, 1.0f));
 
     RECT windowRectangle = this->GetWindowRect();
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetViewPortSize(windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
@@ -556,14 +560,21 @@ void MyAppWindow::OnUpdate() {
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetSamplerState();
 
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: Setting vertex buffer: " << this->vertexBuffer << std::endl;
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexBuffer(this->vertexBuffer);
+    //! Using this->sampleMesh's vertex buffer
+    // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexBuffer(this->vertexBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexBuffer(this->sampleMesh->GetVertexBuffer());
+
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: Setting index buffer: " << this->indexBuffer << std::endl;
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetIndexBuffer(this->indexBuffer);
+    //! Using this->sampleMesh's index buffer
+    // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetIndexBuffer(this->indexBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetIndexBuffer(this->sampleMesh->GetIndexBuffer());
 
     // Draw non-indexed
     // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawTriangles(this->vertexBuffer->GetVertexCount(), 0);
     // Draw indexed
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawIndexedTriangles(this->indexBuffer->GetIndexCount(), 0, 0);
+    //! Using this->sampleMesh's index buffer
+    // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawIndexedTriangles(this->indexBuffer->GetIndexCount(), 0, 0);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawIndexedTriangles(this->sampleMesh->GetIndexBuffer()->GetIndexCount(), 0, 0);
 
     if (this->swapChain) {
         if (LOG_INFO_WINDOW) std::cout << "[INFO]: Presenting swap chain" << std::endl;

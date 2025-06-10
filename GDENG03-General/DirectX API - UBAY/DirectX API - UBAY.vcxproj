@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/DirectX API - UBAY/Include;$(SolutionDir)/DirectX API - UBAY/Source;$(SolutionDir)/DirectX API - UBAY/Include/Libs/DirectXTex/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/DirectX API - UBAY/Include;$(SolutionDir)/DirectX API - UBAY/Source;$(SolutionDir)/DirectX API - UBAY/Include/Libs/DirectXTex/include;$(SolutionDir)/DirectX API - UBAY/Include/Libs/tinyobjloader/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -94,7 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/DirectX API - UBAY/Include;$(SolutionDir)/DirectX API - UBAY/Source;$(SolutionDir)/DirectX API - UBAY/Include/Libs/DirectXTex/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/DirectX API - UBAY/Include;$(SolutionDir)/DirectX API - UBAY/Source;$(SolutionDir)/DirectX API - UBAY/Include/Libs/DirectXTex/include;$(SolutionDir)/DirectX API - UBAY/Include/Libs/tinyobjloader/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/DirectX API - UBAY/Include;$(SolutionDir)/DirectX API - UBAY/Source;$(SolutionDir)/DirectX API - UBAY/Include/Libs/DirectXTex/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/DirectX API - UBAY/Include;$(SolutionDir)/DirectX API - UBAY/Source;$(SolutionDir)/DirectX API - UBAY/Include/Libs/DirectXTex/include;$(SolutionDir)/DirectX API - UBAY/Include/Libs/tinyobjloader/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/DirectX API - UBAY/Include;$(SolutionDir)/DirectX API - UBAY/Source;$(SolutionDir)/DirectX API - UBAY/Include/Libs/DirectXTex/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/DirectX API - UBAY/Include;$(SolutionDir)/DirectX API - UBAY/Source;$(SolutionDir)/DirectX API - UBAY/Include/Libs/DirectXTex/include;$(SolutionDir)/DirectX API - UBAY/Include/Libs/tinyobjloader/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,6 +149,8 @@
     <ClCompile Include="Source\Core\MyRenderSystem.cpp" />
     <ClCompile Include="Source\Core\Primitives\MyQuad.cpp" />
     <ClCompile Include="Source\Core\Primitives\MyTriangle.cpp" />
+    <ClCompile Include="Source\Core\Resource System\Managers\MyMesh.cpp" />
+    <ClCompile Include="Source\Core\Resource System\Managers\MyMeshManager.cpp" />
     <ClCompile Include="Source\Core\Resource System\Managers\MyTexture.cpp" />
     <ClCompile Include="Source\Core\Resource System\Managers\MyTextureManager.cpp" />
     <ClCompile Include="Source\Core\Resource System\MyResource.cpp" />
@@ -163,6 +165,7 @@
     <ClCompile Include="Source\Graphics\Shaders\MyVertexShader.cpp" />
     <ClCompile Include="Source\Window\MyAppWindow.cpp" />
     <ClCompile Include="Source\Window\MyWindow.cpp" />
+    <ClCompile Include="tinyobjimplementation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Core\Input System\MyInputListener.hpp" />
@@ -171,6 +174,8 @@
     <ClInclude Include="Include\Core\Prerequisites.hpp" />
     <ClInclude Include="Include\Core\Primitives\MyQuad.hpp" />
     <ClInclude Include="Include\Core\Primitives\MyTriangle.hpp" />
+    <ClInclude Include="Include\Core\Resource System\Managers\MyMesh.hpp" />
+    <ClInclude Include="Include\Core\Resource System\Managers\MyMeshManager.hpp" />
     <ClInclude Include="Include\Core\Resource System\Managers\MyTexture.hpp" />
     <ClInclude Include="Include\Core\Resource System\Managers\MyTextureManager.hpp" />
     <ClInclude Include="Include\Core\Resource System\MyResource.hpp" />
@@ -183,8 +188,10 @@
     <ClInclude Include="Include\Graphics\Buffers\MyVertexBuffer.hpp" />
     <ClInclude Include="Include\Graphics\Shaders\MyPixelShader.hpp" />
     <ClInclude Include="Include\Graphics\Shaders\MyVertexShader.hpp" />
+    <ClInclude Include="Include\Libs\tinyobjloader\include\tiny_obj_loader.h" />
     <ClInclude Include="Include\Math\MyConstant.hpp" />
     <ClInclude Include="Include\Math\MyMatrix4x4.hpp" />
+    <ClInclude Include="Include\Math\MyMeshVertex.hpp" />
     <ClInclude Include="Include\Math\MyScreenPoint.hpp" />
     <ClInclude Include="Include\Math\MyVector2.hpp" />
     <ClInclude Include="Include\Math\MyVector3.hpp" />

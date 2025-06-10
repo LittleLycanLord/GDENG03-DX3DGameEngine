@@ -7,6 +7,7 @@
 #include "Core/Prerequisites.hpp"
 #include "Core/MyRenderSystem.hpp"
 #include "Core/Resource System/Managers/MyTextureManager.hpp"
+#include "Core/Resource System/Managers/MyMeshManager.hpp"
 
 namespace DX3D {
     class MyGraphicsEngine {
@@ -15,9 +16,13 @@ namespace DX3D {
         //* ╚════════════╝
     private:
         static MyGraphicsEngine* instance;
-        
+
         MyRenderSystem* renderSystem{ nullptr };
         MyTextureManager* textureManager{ nullptr };
+        MyMeshManager* meshManager{ nullptr };
+
+        unsigned char layoutShaderByteCode[1024];
+        size_t layoutShaderSize = 0;
 
         //* ╔═════════════════════════════╗
         //* ║ Singleton Instance Accessor ║
@@ -43,6 +48,8 @@ namespace DX3D {
     public:
         static void Create();
         static void Release();
+
+        void GetShaderByteCodeAndSize(void** shaderByteCode, size_t* shaderSize);
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -55,6 +62,7 @@ namespace DX3D {
     public:
         MyRenderSystem* GetRenderSystem() const { return this->renderSystem; }
         MyTextureManager* GetTextureManager() const { return this->textureManager; }
+        MyMeshManager* GetMeshManager() const { return this->meshManager; }
     };
 } // namespace DX3D
 

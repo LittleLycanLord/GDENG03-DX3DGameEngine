@@ -35,16 +35,16 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
-        bool ClearRenderTargetColor(MySwapChainPtr swapChain, MyVector4 color);
-        void SetVertexBuffer(MyVertexBufferPtr vertexBuffer);
-        void SetIndexBuffer(MyIndexBufferPtr indexBuffer);
+        bool ClearRenderTargetColor(const MySwapChainPtr& swapChain, MyVector4 color);
+        void SetVertexBuffer(const MyVertexBufferPtr& vertexBuffer);
+        void SetIndexBuffer(const MyIndexBufferPtr& indexBuffer);
         void SetViewPortSize(UINT width, UINT height);
-        void SetVertexShader(MyVertexShaderPtr vertexShader);
-        void SetPixelShader(MyPixelShaderPtr pixelShader);
-        void SetConstantBuffer(MyVertexShaderPtr vertexShader, MyConstantBufferPtr constantBuffer);
-        void SetConstantBuffer(MyPixelShaderPtr pixelShader, MyConstantBufferPtr constantBuffer);
-        void SetTexture(MyVertexShaderPtr vertexShader, MyTexturePtr texture);
-        void SetTexture(MyPixelShaderPtr pixelShader, MyTexturePtr texture);
+        void SetVertexShader(const MyVertexShaderPtr& vertexShader);
+        void SetPixelShader(const MyPixelShaderPtr& pixelShader);
+        void SetConstantBuffer(const MyVertexShaderPtr& vertexShader, const MyConstantBufferPtr& constantBuffer);
+        void SetConstantBuffer(const MyPixelShaderPtr& pixelShader, const MyConstantBufferPtr& constantBuffer);
+        void SetTexture(const MyVertexShaderPtr& vertexShader, const MyTexturePtr& texture);
+        void SetTexture(const MyPixelShaderPtr& pixelShader, const MyTexturePtr& texture);
         void SetSamplerState();
 
         void DrawTriangles(UINT vertexCount, UINT startVertexIndex);

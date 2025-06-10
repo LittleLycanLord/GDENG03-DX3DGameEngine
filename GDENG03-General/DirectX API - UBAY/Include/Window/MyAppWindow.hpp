@@ -12,6 +12,8 @@
 #include "Core/Primitives/MyQuad.hpp"
 #include "Core/Input System/MyInputSystem.hpp"
 #include "Core/Input System/MyInputListener.hpp"
+// #include "Core/Resource System/Managers/MyTexture.hpp"
+#include "Core/Resource System/Managers/MyMesh.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MySwapChain.hpp"
@@ -50,6 +52,7 @@ namespace DX3D {
         float moveSpeed = 1.0f;
 
         MyTexturePtr sampleTexture{ nullptr };
+        MyMeshPtr sampleMesh{ nullptr };
 
         MyMatrix4x4 cameraMatrix;
         MyVector3 cameraMoveInput;

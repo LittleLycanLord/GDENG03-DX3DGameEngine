@@ -81,6 +81,40 @@ MySwapChain::MySwapChain(HWND windowHandle, UINT width, UINT height, MyRenderSys
         return;
     }
 
+    D3D11_TEXTURE2D_DESC textureDescription = {};
+    textureDescription.Width = width;
+    textureDescription.Height = height;
+    textureDescription.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    textureDescription.Usage = D3D11_USAGE_DEFAULT;
+    textureDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    textureDescription.MipLevels = 1;
+    textureDescription.SampleDesc.Count = 1;
+    textureDescription.SampleDesc.Quality = 0;
+    textureDescription.MiscFlags = 0;
+    textureDescription.ArraySize = 1;
+    textureDescription.CPUAccessFlags = 0;
+
+    result = MyGraphicsEngine::GetInstance()->GetRenderSystem()->D3DDevice->CreateTexture2D(&textureDescription, nullptr, &backBuffer);
+    if (FAILED(result)) {
+        std::cout << "[ERROR]: Failed to create depth buffer in MySwapChain::Initialize" << std::hex << result << std::endl;
+        _com_error err(result);
+        std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
+        return;
+    }
+
+    result = D3DDevice->CreateDepthStencilView(
+        backBuffer,
+        NULL,
+        &this->D3D11DepthStencilView
+    );
+    backBuffer->Release();
+
+    if (FAILED(result)) {
+        std::cout << "[ERROR]: Failed to create depth stencil view in MySwapChain::Initialize" << std::hex << result << std::endl;
+        _com_error err(result);
+        std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
+        return;
+    }
 }
 MySwapChain::~MySwapChain() {
     if (LOG_INFO_SWAP_CHAIN) std::cout << "[INFO]: MySwapChain destructed" << std::endl;

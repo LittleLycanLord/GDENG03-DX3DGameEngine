@@ -1,42 +1,35 @@
 #pragma once
-#include <d3d11.h>
-#include <Windows.h>
-#include <iostream>
-#include <comdef.h>
-#include <exception>
-#include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
+#include "Math/MyVector3.hpp"
+#include "Math/MyVector2.hpp"
 
 namespace DX3D {
-    class MySwapChain {
+    class MyMeshVertex {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyRenderSystem* renderSystem{ nullptr };
-
-        IDXGISwapChain* DXGISwapChain;
-        ID3D11RenderTargetView* D3D11RenderTargetView{ nullptr };
-        ID3D11DepthStencilView* D3D11DepthStencilView{ nullptr };
-
-        friend class MyDeviceContext;
     public:
+        MyVector3 position;
+        MyVector2 textureCoordinates;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MySwapChain(HWND windowHandle, UINT width, UINT height, MyRenderSystem* renderSystem);
-        ~MySwapChain();
+        MyMeshVertex() : position(),
+            textureCoordinates() {
+        }
+        MyMeshVertex(MyVector3 position,
+            MyVector2 textureCoordinates) : position(position),
+            textureCoordinates(textureCoordinates) {
+        }
+        MyMeshVertex(const MyMeshVertex& other) : position(other.position), textureCoordinates(other.textureCoordinates) {}
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        bool Present(bool vsync);
-
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
@@ -50,4 +43,5 @@ namespace DX3D {
     public:
     };
 } // namespace DX3D
+
 

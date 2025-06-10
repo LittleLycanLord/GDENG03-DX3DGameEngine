@@ -1,47 +1,42 @@
 #pragma once
-#include <d3d11.h>
-#include <Windows.h>
+#include <string>
 #include <iostream>
 #include <comdef.h>
 #include <exception>
 #include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
+#include "Core/Resource System/MyResourceSystem.hpp"
+#include "Core/Resource System/MyResource.hpp"
+#include "Core/Resource System/Managers/MyMesh.hpp"
 
 namespace DX3D {
-    class MySwapChain {
+    class MyMeshManager : public MyResourceSystem {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyRenderSystem* renderSystem{ nullptr };
-
-        IDXGISwapChain* DXGISwapChain;
-        ID3D11RenderTargetView* D3D11RenderTargetView{ nullptr };
-        ID3D11DepthStencilView* D3D11DepthStencilView{ nullptr };
-
-        friend class MyDeviceContext;
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MySwapChain(HWND windowHandle, UINT width, UINT height, MyRenderSystem* renderSystem);
-        ~MySwapChain();
+        MyMeshManager();
+        ~MyMeshManager();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        bool Present(bool vsync);
-
+        MyMeshPtr CreateMeshFromFile(const wchar_t* resourcePath) {
+            return std::static_pointer_cast<MyMesh>(CreateResourceFromFile(resourcePath));
+        }
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
+        virtual MyResource* CreateResourceFromFileConcrete(const wchar_t* resourcePath);
     public:
 
         //* ╔═══════════════════╗

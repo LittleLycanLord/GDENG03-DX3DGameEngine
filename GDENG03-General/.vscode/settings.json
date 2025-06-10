@@ -65,6 +65,10 @@
         "ratio": "cpp",
         "sstream": "cpp",
         "unordered_map": "cpp",
-        "xhash": "cpp"
+        "xhash": "cpp",
+        "array": "cpp",
+        "set": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }

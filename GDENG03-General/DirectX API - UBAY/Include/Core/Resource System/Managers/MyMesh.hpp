@@ -1,41 +1,56 @@
 #pragma once
-#include <d3d11.h>
-#include <Windows.h>
+
+#include <tiny_obj_loader.h>
 #include <iostream>
 #include <comdef.h>
+#include <filesystem>
+#include <vector>
 #include <exception>
+#include <d3d11.h>
+#include <DirectXTex.h>
+#include <windows.h>
 #include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
+#include "Core/Resource System/MyResource.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
+#include "Graphics/Buffers/MyVertexBuffer.hpp"
+#include "Graphics/Buffers/MyIndexBuffer.hpp"
+#include "Math/MyMeshVertex.hpp"
+#include "Math/MyVector3.hpp"
+#include "Math/MyVector2.hpp"
 
 namespace DX3D {
-    class MySwapChain {
+    class MyMesh : public MyResource {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyRenderSystem* renderSystem{ nullptr };
+        MyVertexBufferPtr vertexBuffer;
+        MyIndexBufferPtr indexBuffer;
 
-        IDXGISwapChain* DXGISwapChain;
-        ID3D11RenderTargetView* D3D11RenderTargetView{ nullptr };
-        ID3D11DepthStencilView* D3D11DepthStencilView{ nullptr };
+        tinyobj::attrib_t attributes;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warning = "";
+        std::string error = "";
+        std::vector<MyMeshVertex> vertices;
+        std::vector<unsigned int> indices;
+
+        void* layoutShaderByteCode;
+        size_t layoutShaderSize = 0;
 
         friend class MyDeviceContext;
-    public:
-
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MySwapChain(HWND windowHandle, UINT width, UINT height, MyRenderSystem* renderSystem);
-        ~MySwapChain();
+        MyMesh(const wchar_t* resourcePath);
+        ~MyMesh();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        bool Present(bool vsync);
 
 
         //* ╔════════════════════════════════╗
@@ -48,6 +63,8 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
+        const MyVertexBufferPtr& GetVertexBuffer() { return this->vertexBuffer; }
+        const MyIndexBufferPtr& GetIndexBuffer() { return this->indexBuffer; }
     };
 } // namespace DX3D
 

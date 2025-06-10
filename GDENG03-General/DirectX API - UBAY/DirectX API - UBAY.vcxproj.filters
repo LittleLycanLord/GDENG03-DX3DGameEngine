@@ -75,6 +75,15 @@
     <ClCompile Include="Source\Core\Resource System\MyResourceSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Resource System\Managers\MyMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Resource System\Managers\MyMeshManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyobjimplementation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Window\MyAppWindow.hpp">
@@ -147,6 +156,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Resource System\MyResourceSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\MyVector2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\MyVector3.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\MyVector4.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Resource System\Managers\MyMesh.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Resource System\Managers\MyMeshManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\MyMeshVertex.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Libs\tinyobjloader\include\tiny_obj_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
