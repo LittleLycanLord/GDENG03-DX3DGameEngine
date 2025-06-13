@@ -18,6 +18,7 @@ namespace DX3D {
         MyRenderSystem* renderSystem{ nullptr };
 
         ID3D11DeviceContext* D3DDeviceContext{ nullptr };
+        ID3D11RasterizerState* D3DRasterizerState{ nullptr };
         ID3D11SamplerState* D3DSamplerState{ nullptr };
 
         friend class MyRenderSystem;
@@ -43,6 +44,8 @@ namespace DX3D {
         void SetDomainShader(const MyDomainShaderPtr& domainShader);
         void SetVertexShader(const MyVertexShaderPtr& vertexShader);
         void SetPixelShader(const MyPixelShaderPtr& pixelShader);
+        void SetConstantBuffer(const MyHullShaderPtr& hullShader, const MyConstantBufferPtr& constantBuffer);
+        void SetConstantBuffer(const MyDomainShaderPtr& domainShader, const MyConstantBufferPtr& constantBuffer);
         void SetConstantBuffer(const MyVertexShaderPtr& vertexShader, const MyConstantBufferPtr& constantBuffer);
         void SetConstantBuffer(const MyPixelShaderPtr& pixelShader, const MyConstantBufferPtr& constantBuffer);
         void SetTexture(const MyVertexShaderPtr& vertexShader, const MyTexturePtr& texture);

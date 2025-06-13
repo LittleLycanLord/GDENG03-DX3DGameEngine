@@ -140,7 +140,6 @@ void MyDeviceContext::SetDomainShader(const MyDomainShaderPtr& domainShader) {
     );
 }
 
-
 void MyDeviceContext::SetVertexShader(const MyVertexShaderPtr& vertexShader) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetVertexShader called" << std::endl;
     if (!vertexShader || !vertexShader->D3DVertexShader) {
@@ -174,6 +173,23 @@ void MyDeviceContext::SetPixelShader(const MyPixelShaderPtr& pixelShader) {
         0
     );
 }
+
+void MyDeviceContext::SetConstantBuffer(const MyHullShaderPtr& hullShader, const MyConstantBufferPtr& constantBuffer) {
+    this->D3DDeviceContext->HSSetConstantBuffers(
+        0,
+        1,
+        &constantBuffer->D3DConstantBuffer
+    );
+}
+
+void MyDeviceContext::SetConstantBuffer(const MyDomainShaderPtr& domainShader, const MyConstantBufferPtr& constantBuffer) {
+    this->D3DDeviceContext->DSSetConstantBuffers(
+        0,
+        1,
+        &constantBuffer->D3DConstantBuffer
+    );
+}
+
 void MyDeviceContext::SetConstantBuffer(const MyVertexShaderPtr& vertexShader, const MyConstantBufferPtr& constantBuffer) {
     this->D3DDeviceContext->VSSetConstantBuffers(
         0,
@@ -181,6 +197,7 @@ void MyDeviceContext::SetConstantBuffer(const MyVertexShaderPtr& vertexShader, c
         &constantBuffer->D3DConstantBuffer
     );
 }
+
 void MyDeviceContext::SetConstantBuffer(const MyPixelShaderPtr& pixelShader, const MyConstantBufferPtr& constantBuffer) {
     this->D3DDeviceContext->PSSetConstantBuffers(
         0,
@@ -188,13 +205,14 @@ void MyDeviceContext::SetConstantBuffer(const MyPixelShaderPtr& pixelShader, con
         &constantBuffer->D3DConstantBuffer
     );
 }
+
 void MyDeviceContext::DrawTriangles(UINT vertexCount, UINT startVertexIndex) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::DrawTriangles called with vertexCount=" << vertexCount << ", startVertexIndex=" << startVertexIndex << std::endl;
     if (!this->D3DDeviceContext) {
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::DrawTriangles");
         return;
     }
-    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST );
+    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
     this->D3DDeviceContext->Draw(vertexCount, startVertexIndex);
 }
 

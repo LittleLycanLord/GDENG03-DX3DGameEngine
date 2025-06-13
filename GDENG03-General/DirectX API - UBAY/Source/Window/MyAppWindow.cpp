@@ -35,7 +35,7 @@ void MyAppWindow::UpdateDeltaTime() {
 }
 void MyAppWindow::UpdateObjects() {
     this->constantData.time += this->deltaTime;
-
+    
     float speedMultiplier = 1.0f;
     this->experimentalDelta += this->deltaTime * speedMultiplier;
 
@@ -576,6 +576,8 @@ void MyAppWindow::OnUpdate() {
 
     this->UpdateObjects();
 
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->hullShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->domainShader, this->constantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->vertexShader, this->constantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->pixelShader, this->constantBuffer);
 
@@ -632,9 +634,11 @@ void MyAppWindow::OnDestroy() {
     this->pixelShader = nullptr;
     this->swapChain = nullptr;
 }
+
 void MyAppWindow::OnSetFocus() {
     MyInputSystem::GetInstance()->AddListener(this);
 }
+
 void MyAppWindow::OnKillFocus() {
     MyInputSystem::GetInstance()->RemoveListener(this);
 }
@@ -644,23 +648,20 @@ void MyAppWindow::OnKeyDown(int keyCode) {
 
     // Handle key down events here
     switch (keyCode) {
-    case 'W':
-        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: W pressed, xRotation increased" << std::endl;
+    case 'M':
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: M pressed, wireframe mode enabled" << std::endl;
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->ToggleWireframeMode(true);
         break;
-    case 'A':
-        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: A pressed, yRotation decreased" << std::endl;
-        break;
-    case 'S':
-        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: S pressed, xRotation decreased" << std::endl;
-        break;
-    case 'D':
-        if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: D pressed, yRotation increased" << std::endl;
+    case 'N':
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: N pressed, wireframe mode disabled" << std::endl;
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->ToggleWireframeMode(false);
         break;
     default:
         if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Unhandled key down: " << keyCode << std::endl;
         break;
     }
 }
+
 void MyAppWindow::OnKeyHold(int keyCode) {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyAppWindow::OnKeyDown called with keyCode: " << keyCode << std::endl;
 
@@ -746,20 +747,25 @@ void MyAppWindow::OnLMBDown(const MyScreenPoint& mousePosition) {
     if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnLMBDown called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
+
 void MyAppWindow::OnLMBHold(const MyScreenPoint& deltaMousePosition) {
     this->cameraRotation.x += (float)((deltaMousePosition.y - (this->GetWindowRect().bottom - this->GetWindowRect().top) / 2.0f) * this->rotationSpeed * this->deltaTime);
 }
+
 void MyAppWindow::OnLMBUp(const MyScreenPoint& mousePosition) {
     if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnLMBUp called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
+
 void MyAppWindow::OnRMBDown(const MyScreenPoint& mousePosition) {
     if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnRMBDown called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
+
 void MyAppWindow::OnRMBHold(const MyScreenPoint& deltaMousePosition) {
     this->cameraRotation.y += (float)((deltaMousePosition.x - ((this->GetWindowRect().right - this->GetWindowRect().left) / 2.0)) * this->rotationSpeed * this->deltaTime);
 }
+
 void MyAppWindow::OnRMBUp(const MyScreenPoint& mousePosition) {
     if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnRMBUp called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
