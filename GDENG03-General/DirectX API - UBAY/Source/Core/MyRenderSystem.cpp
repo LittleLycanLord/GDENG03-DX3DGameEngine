@@ -153,6 +153,7 @@ MyVertexBufferPtr MyRenderSystem::CreateVertexBuffer(void* vertexList, UINT vert
         return nullptr;
     }
 }
+
 MyConstantBufferPtr MyRenderSystem::CreateConstantBuffer(void* buffer, UINT bufferSize) {
     try {
         MyConstantBufferPtr constantBuffer = std::make_shared<MyConstantBuffer>(buffer, bufferSize, this);
@@ -167,6 +168,7 @@ MyConstantBufferPtr MyRenderSystem::CreateConstantBuffer(void* buffer, UINT buff
         return nullptr;
     }
 }
+
 MyIndexBufferPtr MyRenderSystem::CreateIndexBuffer(void* indices, UINT indexCount) {
     try {
         MyIndexBufferPtr indexBuffer = std::make_shared<MyIndexBuffer>(indices, indexCount, this);
@@ -242,8 +244,6 @@ MyPixelShaderPtr MyRenderSystem::CreatePixelShader(const void* shaderByteCode, s
     }
 }
 
-
-
 bool MyRenderSystem::CompileHullShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize) {
     ID3DBlob* errorBlob = nullptr;
 
@@ -276,8 +276,6 @@ bool MyRenderSystem::CompileHullShader(const wchar_t* fileName, const char* entr
 
     return SUCCEEDED(result);
 }
-
-
 
 bool MyRenderSystem::CompileDomainShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize) {
     ID3DBlob* errorBlob = nullptr;
@@ -385,6 +383,23 @@ bool MyRenderSystem::ReleaseCompiledShader() {
     }
     return true;
 }
+
+
+void MyRenderSystem::ToggleWireframeMode(bool enable) {
+    D3D11_RASTERIZER_DESC rasterizerDesciption = {};
+    if (enable) {
+        rasterizerDesciption.FillMode = D3D11_FILL_WIREFRAME;
+        rasterizerDesciption.CullMode = D3D11_CULL_NONE;
+    }
+    else {
+        rasterizerDesciption.FillMode = D3D11_FILL_SOLID;
+        rasterizerDesciption.CullMode = D3D11_CULL_BACK;
+    }
+    this->D3DDevice->CreateRasterizerState(&rasterizerDesciption, &this->immediateDeviceContext->D3DRasterizerState);
+    this->immediateDeviceContext->D3DDeviceContext->RSSetState(this->immediateDeviceContext->D3DRasterizerState);
+
+}
+
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝

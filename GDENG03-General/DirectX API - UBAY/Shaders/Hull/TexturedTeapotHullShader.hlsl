@@ -28,7 +28,10 @@ HS_CONSTANT_DATA_OUTPUT PatchConstants(InputPatch<VS_TEXTURED_OUTPUT, NUM_CONTRO
     HS_CONSTANT_DATA_OUTPUT output;
 
     // Dynamic tessellation factor, can be animated
-    float tessFactor = 5.0f + sin(time) * 2.0f;
+    // float tessFactor = 5.0f + sin(time) * 2.0f;
+    // float tessFactor = tessFactor = 1.0 + sin(time) * 5.0;
+    float tessFactor = 3.0 + sin(time * 2.0) * 2.0;
+    
 
     output.edges[0] = tessFactor;
     output.edges[1] = tessFactor;

@@ -9,7 +9,6 @@ extern bool LOG_INFO_WINDOW;
 //* ╔═════════════════════════════════╗
 //* ║ Magical Shit I Don't Understand ║
 //* ╚═════════════════════════════════╝
-
 LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParameters, LPARAM lParameters) {
     switch (message) {
     case WM_CREATE: {
@@ -77,6 +76,7 @@ MyWindow::MyWindow() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: Window created and shown" << std::endl;
     this->running = true;
 }
+
 MyWindow::~MyWindow() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow destructed" << std::endl;
 
@@ -124,9 +124,11 @@ void MyWindow::OnDestroy() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnDestroy called" << std::endl;
     this->running = false;
 }
+
 void MyWindow::OnSetFocus() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnSetFocus called" << std::endl;
 }
+
 void MyWindow::OnKillFocus() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnUnfocus called" << std::endl;
 }
