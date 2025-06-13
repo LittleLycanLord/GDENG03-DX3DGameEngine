@@ -39,6 +39,8 @@ namespace DX3D {
         void SetVertexBuffer(const MyVertexBufferPtr& vertexBuffer);
         void SetIndexBuffer(const MyIndexBufferPtr& indexBuffer);
         void SetViewPortSize(UINT width, UINT height);
+        void SetHullShader(const MyHullShaderPtr& hullShader);
+        void SetDomainShader(const MyDomainShaderPtr& domainShader);
         void SetVertexShader(const MyVertexShaderPtr& vertexShader);
         void SetPixelShader(const MyPixelShaderPtr& pixelShader);
         void SetConstantBuffer(const MyVertexShaderPtr& vertexShader, const MyConstantBufferPtr& constantBuffer);

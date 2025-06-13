@@ -7,6 +7,8 @@ namespace DX3D {
     class MyVertexBuffer;
     class MyConstantBuffer;
     class MyIndexBuffer;
+    class MyHullShader;
+    class MyDomainShader;
     class MyVertexShader;
     class MyPixelShader;
     class MyRenderSystem;
@@ -23,6 +25,8 @@ namespace DX3D {
     typedef std::shared_ptr<MyVertexBuffer> MyVertexBufferPtr;
     typedef std::shared_ptr<MyConstantBuffer> MyConstantBufferPtr;
     typedef std::shared_ptr<MyIndexBuffer> MyIndexBufferPtr;
+    typedef std::shared_ptr<MyHullShader> MyHullShaderPtr;
+    typedef std::shared_ptr<MyDomainShader> MyDomainShaderPtr;
     typedef std::shared_ptr<MyVertexShader> MyVertexShaderPtr;
     typedef std::shared_ptr<MyPixelShader> MyPixelShaderPtr;
     typedef std::shared_ptr<MyResource> MyResourcePtr;

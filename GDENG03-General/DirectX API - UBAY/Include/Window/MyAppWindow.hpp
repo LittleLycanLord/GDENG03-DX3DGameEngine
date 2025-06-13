@@ -34,6 +34,8 @@ namespace DX3D {
         MyVertexBufferPtr vertexBuffer{ nullptr };
         MyConstantBufferPtr constantBuffer{ nullptr };
         MyIndexBufferPtr indexBuffer{ nullptr };
+        MyHullShaderPtr hullShader{ nullptr };
+        MyDomainShaderPtr domainShader{ nullptr };
         MyVertexShaderPtr vertexShader{ nullptr };
         MyPixelShaderPtr pixelShader{ nullptr };
 

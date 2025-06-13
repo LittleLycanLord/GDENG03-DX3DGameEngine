@@ -161,6 +161,8 @@
     <ClCompile Include="Source\Graphics\MyGraphicsEngine.cpp" />
     <ClCompile Include="Source\Graphics\MySwapChain.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyVertexBuffer.cpp" />
+    <ClCompile Include="Source\Graphics\Shaders\MyDomainShader.cpp" />
+    <ClCompile Include="Source\Graphics\Shaders\MyHullShader.cpp" />
     <ClCompile Include="Source\Graphics\Shaders\MyPixelShader.cpp" />
     <ClCompile Include="Source\Graphics\Shaders\MyVertexShader.cpp" />
     <ClCompile Include="Source\Window\MyAppWindow.cpp" />
@@ -186,6 +188,8 @@
     <ClInclude Include="Include\Graphics\MyGraphicsEngine.hpp" />
     <ClInclude Include="Include\Graphics\MySwapChain.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyVertexBuffer.hpp" />
+    <ClInclude Include="Include\Graphics\Shaders\MyDomainShader.hpp" />
+    <ClInclude Include="Include\Graphics\Shaders\MyHullShader.hpp" />
     <ClInclude Include="Include\Graphics\Shaders\MyPixelShader.hpp" />
     <ClInclude Include="Include\Graphics\Shaders\MyVertexShader.hpp" />
     <ClInclude Include="Include\Libs\tinyobjloader\include\tiny_obj_loader.h" />

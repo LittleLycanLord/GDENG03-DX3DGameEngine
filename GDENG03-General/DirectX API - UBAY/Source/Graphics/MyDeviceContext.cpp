@@ -106,6 +106,41 @@ void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
     this->D3DDeviceContext->RSSetViewports(1, &viewport);
 }
 
+void MyDeviceContext::SetHullShader(const MyHullShaderPtr& hullShader) {
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetHullShader called" << std::endl;
+    if (!hullShader || !hullShader->D3DHullShader) {
+        throw std::exception("hullShader or D3DHullShader is null in MyDeviceContext::SetHullShader");
+        return;
+    }
+    if (!this->D3DDeviceContext) {
+        throw std::exception("D3DDeviceContext is null in MyDeviceContext::SetHullShader");
+        return;
+    }
+    this->D3DDeviceContext->HSSetShader(
+        hullShader->D3DHullShader,
+        nullptr,
+        0
+    );
+}
+
+void MyDeviceContext::SetDomainShader(const MyDomainShaderPtr& domainShader) {
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetDomainShader called" << std::endl;
+    if (!domainShader || !domainShader->D3DDomainShader) {
+        throw std::exception("domainShader or D3DDomainShader is null in MyDeviceContext::SetDomainShader");
+        return;
+    }
+    if (!this->D3DDeviceContext) {
+        throw std::exception("D3DDeviceContext is null in MyDeviceContext::SetDomainShader");
+        return;
+    }
+    this->D3DDeviceContext->DSSetShader(
+        domainShader->D3DDomainShader,
+        nullptr,
+        0
+    );
+}
+
+
 void MyDeviceContext::SetVertexShader(const MyVertexShaderPtr& vertexShader) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetVertexShader called" << std::endl;
     if (!vertexShader || !vertexShader->D3DVertexShader) {
@@ -159,7 +194,7 @@ void MyDeviceContext::DrawTriangles(UINT vertexCount, UINT startVertexIndex) {
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::DrawTriangles");
         return;
     }
-    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST );
     this->D3DDeviceContext->Draw(vertexCount, startVertexIndex);
 }
 
@@ -169,7 +204,7 @@ void MyDeviceContext::DrawIndexedTriangles(UINT indexCount, UINT startVertexInde
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::DrawIndexedTriangles");
         return;
     }
-    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
     this->D3DDeviceContext->DrawIndexed(indexCount, startIndexLocation, startVertexIndex);
 }
 

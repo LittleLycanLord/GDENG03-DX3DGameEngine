@@ -9,6 +9,8 @@
 #include "Graphics/Buffers/MyVertexBuffer.hpp"
 #include "Graphics/Buffers/MyConstantBuffer.hpp"
 #include "Graphics/Buffers/MyIndexBuffer.hpp"
+#include "Graphics/Shaders/MyHullShader.hpp"
+#include "Graphics/Shaders/MyDomainShader.hpp"
 #include "Graphics/Shaders/MyVertexShader.hpp"
 #include "Graphics/Shaders/MyPixelShader.hpp"
 #include "Core/Resource System/Managers/MyTexture.hpp"
@@ -30,6 +32,8 @@ namespace DX3D {
         ID3DBlob* temporaryBlob{ nullptr };
         ID3DBlob* vertexShaderBlob{ nullptr };
         ID3DBlob* pixelShaderBlob{ nullptr };
+        ID3D11HullShader* D3DHullShader{ nullptr };
+        ID3D11DomainShader* D3DDomainShader{ nullptr };
         ID3D11VertexShader* D3DVertexShader{ nullptr };
         ID3D11PixelShader* D3DPixelShader{ nullptr };
 
@@ -37,6 +41,8 @@ namespace DX3D {
         friend class MyVertexBuffer;
         friend class MyConstantBuffer;
         friend class MyIndexBuffer;
+        friend class MyHullShader;
+        friend class MyDomainShader;
         friend class MyVertexShader;
         friend class MyPixelShader;
         friend class MyTexture;
@@ -59,9 +65,13 @@ namespace DX3D {
         MyVertexBufferPtr CreateVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize);
         MyConstantBufferPtr CreateConstantBuffer(void* buffer, UINT bufferSize);
         MyIndexBufferPtr CreateIndexBuffer(void* indices, UINT indexCount);
+        MyHullShaderPtr CreateHullShader(const void* shaderByteCode, size_t shaderSize);
+        MyDomainShaderPtr CreateDomainShader(const void* shaderByteCode, size_t shaderSize);
         MyVertexShaderPtr CreateVertexShader(const void* shaderByteCode, size_t shaderSize);
         MyPixelShaderPtr CreatePixelShader(const void* shaderByteCode, size_t shaderSize);
 
+        bool CompileHullShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize);
+        bool CompileDomainShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize);
         bool CompileVertexShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize);
         bool CompilePixelShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize);
         bool ReleaseCompiledShader();

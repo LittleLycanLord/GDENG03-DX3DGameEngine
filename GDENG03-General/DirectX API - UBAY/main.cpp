@@ -17,6 +17,8 @@ bool LOG_INFO_VERTEX_BUFFER = false;
 bool LOG_INFO_CONSTANT_BUFFER = false;
 bool LOG_INFO_INDEX_BUFFER = false;
 
+bool LOG_INFO_HULL_SHADER = false;
+bool LOG_INFO_DOMAIN_SHADER = false;
 bool LOG_INFO_VERTEX_SHADER = false;
 bool LOG_INFO_PIXEL_SHADER = false;
 
@@ -31,6 +33,8 @@ bool LOG_INFO_MESH_MANAGER = true;
 bool LOG_INFO_MESH = true;
 
 extern const std::wstring LAYOUT_SHADER_DIRECTORY = L"Shaders/Layout/MeshVertexLayoutShader.hlsl";
+extern const std::wstring HULL_SHADER_DIRECTORY = L"Shaders/Hull/TexturedTeapotHullShader.hlsl";
+extern const std::wstring DOMAIN_SHADER_DIRECTORY = L"Shaders/Domain/TexturedTeapotDomainShader.hlsl";
 extern const std::wstring VERTEX_SHADER_DIRECTORY = L"Shaders/Vertex/TexturedTeapotVertexShader.hlsl";
 extern const std::wstring PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/TexturedTeapotPixelShader.hlsl";
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY = L"Assets/Textures/Wooden Box.jpg";

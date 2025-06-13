@@ -182,6 +182,36 @@ MyIndexBufferPtr MyRenderSystem::CreateIndexBuffer(void* indices, UINT indexCoun
     }
 }
 
+MyHullShaderPtr MyRenderSystem::CreateHullShader(const void* shaderByteCode, size_t shaderSize) {
+    try {
+        MyHullShaderPtr hullShader = std::make_shared<MyHullShader>(shaderByteCode, shaderSize, this);
+        if (!hullShader) {
+            std::cerr << "[ERROR]: Failed to allocate MyHullShader in MyRenderSystem::CreateHullShader" << std::endl;
+            throw std::exception("Failed to allocate MyHullShader in MyRenderSystem::CreateHullShader");
+        }
+        return hullShader;
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "[ERROR]: Exception in CreateHullShader: " << ex.what() << std::endl;
+        return nullptr;
+    }
+}
+
+MyDomainShaderPtr MyRenderSystem::CreateDomainShader(const void* shaderByteCode, size_t shaderSize) {
+    try {
+        MyDomainShaderPtr domainShader = std::make_shared<MyDomainShader>(shaderByteCode, shaderSize, this);
+        if (!domainShader) {
+            std::cerr << "[ERROR]: Failed to allocate MyDomainShader in MyRenderSystem::CreateDomainShader" << std::endl;
+            throw std::exception("Failed to allocate MyDomainShader in MyRenderSystem::CreateDomainShader");
+        }
+        return domainShader;
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "[ERROR]: Exception in CreateDomainShader: " << ex.what() << std::endl;
+        return nullptr;
+    }
+}
+
 MyVertexShaderPtr MyRenderSystem::CreateVertexShader(const void* shaderByteCode, size_t shaderSize) {
     try {
         MyVertexShaderPtr vertexShader = std::make_shared<MyVertexShader>(shaderByteCode, shaderSize, this);
@@ -210,6 +240,76 @@ MyPixelShaderPtr MyRenderSystem::CreatePixelShader(const void* shaderByteCode, s
         std::cerr << "[ERROR]: Exception in CreatePixelShader: " << ex.what() << std::endl;
         return nullptr;
     }
+}
+
+
+
+bool MyRenderSystem::CompileHullShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize) {
+    ID3DBlob* errorBlob = nullptr;
+
+    HRESULT result = D3DCompileFromFile(
+        fileName,
+        nullptr,
+        nullptr,
+        entryPoint,
+        "hs_5_0",
+        0,
+        0,
+        &this->temporaryBlob,
+        &errorBlob
+    );
+
+    if (FAILED(result)) {
+        std::cout << "D3DCompileFromFile failed in MyRenderSystem::CompileHullShader. HRESULT: 0x" << std::hex << result << std::endl;
+        if (errorBlob) {
+            std::cout << "" << (char*)errorBlob->GetBufferPointer() << std::endl;
+            errorBlob->Release();
+        }
+        return false;
+    }
+
+    if (LOG_INFO_VERTEX_SHADER)
+        std::wcout << L"[INFO]: Hull shader compiled successfully: " << fileName << std::endl;
+
+    *shaderByteCode = this->temporaryBlob->GetBufferPointer();
+    *shaderSize = this->temporaryBlob->GetBufferSize();
+
+    return SUCCEEDED(result);
+}
+
+
+
+bool MyRenderSystem::CompileDomainShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize) {
+    ID3DBlob* errorBlob = nullptr;
+
+    HRESULT result = D3DCompileFromFile(
+        fileName,
+        nullptr,
+        nullptr,
+        entryPoint,
+        "ds_5_0",
+        0,
+        0,
+        &this->temporaryBlob,
+        &errorBlob
+    );
+
+    if (FAILED(result)) {
+        std::cout << "D3DCompileFromFile failed in MyRenderSystem::CompileDomainShader. HRESULT: 0x" << std::hex << result << std::endl;
+        if (errorBlob) {
+            std::cout << "" << (char*)errorBlob->GetBufferPointer() << std::endl;
+            errorBlob->Release();
+        }
+        return false;
+    }
+
+    if (LOG_INFO_VERTEX_SHADER)
+        std::wcout << L"[INFO]: Domain shader compiled successfully: " << fileName << std::endl;
+
+    *shaderByteCode = this->temporaryBlob->GetBufferPointer();
+    *shaderSize = this->temporaryBlob->GetBufferSize();
+
+    return SUCCEEDED(result);
 }
 
 bool MyRenderSystem::CompileVertexShader(const wchar_t* fileName, const char* entryPoint, void** shaderByteCode, size_t* shaderSize) {

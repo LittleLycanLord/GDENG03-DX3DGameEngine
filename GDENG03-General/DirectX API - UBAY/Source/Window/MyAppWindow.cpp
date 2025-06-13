@@ -8,6 +8,8 @@ extern bool LOG_INFO_CONSTANT_BUFFER;
 extern bool LOG_INFO_INPUT_SYSTEM_KEYBOARD;
 extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
 // Add extern declarations for shader path constants
+extern const std::wstring HULL_SHADER_DIRECTORY;
+extern const std::wstring DOMAIN_SHADER_DIRECTORY;
 extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY;
@@ -489,6 +491,36 @@ void MyAppWindow::OnCreate() {
     }
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
 
+    //* Hull Shader Application
+    void* hullShaderByteCode = nullptr;
+    size_t hullShaderSize = 0;
+    if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompileHullShader(
+        HULL_SHADER_DIRECTORY.c_str(), "main", &hullShaderByteCode, &hullShaderSize)) {
+        throw std::exception("Failed to compile hull shader!");
+        return;
+    }
+    this->hullShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateHullShader(hullShaderByteCode, hullShaderSize);
+    if (!this->hullShader) {
+        throw std::exception("Failed to create hullShader!");
+        return;
+    }
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
+
+    //* Domain Shader Application
+    void* domainShaderByteCode = nullptr;
+    size_t domainShaderSize = 0;
+    if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompileDomainShader(
+        DOMAIN_SHADER_DIRECTORY.c_str(), "main", &domainShaderByteCode, &domainShaderSize)) {
+        throw std::exception("Failed to compile domain shader!");
+        return;
+    }
+    this->domainShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateDomainShader(domainShaderByteCode, domainShaderSize);
+    if (!this->domainShader) {
+        throw std::exception("Failed to create domainShader!");
+        return;
+    }
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
+
     //* Pixel Shader Application
     void* pixelShaderByteCode = nullptr;
     size_t pixelShaderSize = 0;
@@ -549,6 +581,8 @@ void MyAppWindow::OnUpdate() {
 
     // Set shaders before drawing
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: Setting vertex and pixel shaders" << std::endl;
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->hullShader);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->domainShader);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexShader(this->vertexShader);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->pixelShader);
 
