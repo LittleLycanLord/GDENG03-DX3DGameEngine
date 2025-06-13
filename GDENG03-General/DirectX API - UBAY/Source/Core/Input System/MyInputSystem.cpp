@@ -33,6 +33,7 @@ void MyInputSystem::Update() {
 
     POINT currentMousePosition = {};
     GetCursorPos(&currentMousePosition);
+    ScreenToClient(this->windowHandle, &currentMousePosition);
 
     if (this->firstFrame) {
         this->oldMousePosition.x = currentMousePosition.x;
@@ -56,9 +57,6 @@ void MyInputSystem::Update() {
         }
     }
 
-    this->oldMousePosition = this->newMousePosition;
-
-
     if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: MyInputSystem::Update called" << std::endl;
     if (GetKeyboardState(this->newKeyStates)) {
         for (int key = 0; key < 256; key++) {
@@ -80,9 +78,9 @@ void MyInputSystem::Update() {
                     MyInputListener* listener = listenerPair.first;
                     if (listener != nullptr) {
                         if (key == VK_LBUTTON)
-                            listener->OnLMBHold(this->newMousePosition);
+                            listener->OnLMBHold(this->deltaMousePosition);
                         if (key == VK_RBUTTON)
-                            listener->OnRMBHold(this->newMousePosition);
+                            listener->OnRMBHold(this->deltaMousePosition);
                         listener->OnKeyHold(key);
                         if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Key " << key << " being held in MyInputSystem::Update" << std::endl;
                     }
@@ -111,6 +109,8 @@ void MyInputSystem::Update() {
         throw std::exception("Failed to get keyboard state in MyInputSystem::Update");
         return;
     }
+
+    this->oldMousePosition = this->newMousePosition;
 }
 void MyInputSystem::AddListener(MyInputListener* inputListener) {
     if (inputListener == nullptr) {
@@ -143,7 +143,9 @@ void MyInputSystem::RemoveListener(MyInputListener* inputListener) {
     }
 }
 void MyInputSystem::SetCursorPosition(const MyScreenPoint& position) {
-    SetCursorPos(position.x, position.y);
+    POINT point = { position.x, position.y };
+    ClientToScreen(this->windowHandle, &point);
+    SetCursorPos(point.x, point.y);
 }
 void MyInputSystem::SetCursorVisibility(bool showCursor) {
     ShowCursor(showCursor);

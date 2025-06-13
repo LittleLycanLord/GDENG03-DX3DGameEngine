@@ -27,6 +27,7 @@ namespace DX3D {
         //* ║ Singleton Instance Accessor ║
         //* ╚═════════════════════════════╝
     public:
+        HWND windowHandle;
         static MyInputSystem* GetInstance() {
             static MyInputSystem instance;
             return &instance;

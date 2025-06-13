@@ -155,6 +155,7 @@
     <ClCompile Include="Source\Core\Resource System\Managers\MyTextureManager.cpp" />
     <ClCompile Include="Source\Core\Resource System\MyResource.cpp" />
     <ClCompile Include="Source\Core\Resource System\MyResourceSystem.cpp" />
+    <ClCompile Include="Source\Game\MyCamera.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyConstantBuffer.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyIndexBuffer.cpp" />
     <ClCompile Include="Source\Graphics\MyDeviceContext.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="Include\Core\Resource System\Managers\MyTextureManager.hpp" />
     <ClInclude Include="Include\Core\Resource System\MyResource.hpp" />
     <ClInclude Include="Include\Core\Resource System\MyResourceSystem.hpp" />
+    <ClInclude Include="Include\Game\MyCamera.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyConstantBuffer.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyIndexBuffer.hpp" />
     <ClInclude Include="Include\Graphics\MyDeviceContext.hpp" />

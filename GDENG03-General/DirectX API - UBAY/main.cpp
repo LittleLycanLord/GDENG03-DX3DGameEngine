@@ -9,7 +9,8 @@ bool LOG_ERROR_GENERAL = true;
 
 // Logging toggles
 bool LOG_INFO_WINDOW = false;
-bool LOG_INFO_GRAPHICS_ENGINE = true;
+bool LOG_INFO_CAMERA = false;
+bool LOG_INFO_GRAPHICS_ENGINE = false;
 bool LOG_INFO_RENDER_SYSTEM = false;
 bool LOG_INFO_SWAP_CHAIN = false;
 bool LOG_INFO_DEVICE_CONTEXT = false;
@@ -27,10 +28,10 @@ bool LOG_INFO_INPUT_SYSTEM_MOUSE = false;
 
 bool LOG_INFO_RESOURCE_SYSTEM = false;
 bool LOG_INFO_RESOURCE = false;
-bool LOG_INFO_TEXTURE_MANAGER = true;
-bool LOG_INFO_TEXTURE = true;
-bool LOG_INFO_MESH_MANAGER = true;
-bool LOG_INFO_MESH = true;
+bool LOG_INFO_TEXTURE_MANAGER = false;
+bool LOG_INFO_TEXTURE = false;
+bool LOG_INFO_MESH_MANAGER = false;
+bool LOG_INFO_MESH = false;
 
 extern const std::wstring LAYOUT_SHADER_DIRECTORY = L"Shaders/Layout/MeshVertexLayoutShader.hlsl";
 extern const std::wstring HULL_SHADER_DIRECTORY = L"Shaders/Hull/TexturedTeapotHullShader.hlsl";
@@ -61,7 +62,7 @@ int main() {
 
     try {
         MyAppWindow appWindow;
-
+        MyInputSystem::GetInstance()->windowHandle = appWindow.windowHandle;
         while (appWindow.IsRunning());
     }
     catch (const std::exception& ex) {

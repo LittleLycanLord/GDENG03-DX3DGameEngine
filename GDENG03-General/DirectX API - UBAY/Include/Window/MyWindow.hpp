@@ -12,8 +12,8 @@ namespace DX3D {
         bool running{ false };
         bool initialized{ false };
     protected:
-        HWND windowHandle{ nullptr };
     public:
+        HWND windowHandle{ nullptr };
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║

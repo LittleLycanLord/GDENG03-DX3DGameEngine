@@ -1,86 +1,54 @@
 #pragma once
-#include <Windows.h>
-#include <vector>
+
+#include <iostream>
+#include <comdef.h>
 #include <exception>
-#include "Window/MyWindow.hpp"
+#include "Core/Prerequisites.hpp"
 #include "Math/MyMatrix4x4.hpp"
 #include "Math/MyVector3.hpp"
-#include "Math/MyVector2.hpp"
-#include "Math/MyConstant.hpp"
-#include "Math/MyVertex.hpp"
-#include "Game/MyCamera.hpp"
-#include "Core/Primitives/MyTriangle.hpp"
-#include "Core/Primitives/MyQuad.hpp"
 #include "Core/Input System/MyInputSystem.hpp"
 #include "Core/Input System/MyInputListener.hpp"
-// #include "Core/Resource System/Managers/MyTexture.hpp"
-#include "Core/Resource System/Managers/MyMesh.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
-#include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MySwapChain.hpp"
-#include "Graphics/Buffers/MyVertexBuffer.hpp"
-#include "Graphics/Buffers/MyConstantBuffer.hpp"
-#include "Graphics/Buffers/MyIndexBuffer.hpp"
-#include "Graphics/Shaders/MyVertexShader.hpp"
-#include "Graphics/Shaders/MyPixelShader.hpp"
 
 namespace DX3D {
-    class MyAppWindow : public MyWindow, public MyInputListener {
+    class MyCamera : public MyInputListener {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        bool lockMouse = true;
-        MySwapChainPtr swapChain{ nullptr };
-        MyVertexBufferPtr vertexBuffer{ nullptr };
-        MyConstantBufferPtr constantBuffer{ nullptr };
-        MyIndexBufferPtr indexBuffer{ nullptr };
-        MyHullShaderPtr hullShader{ nullptr };
-        MyDomainShaderPtr domainShader{ nullptr };
-        MyVertexShaderPtr vertexShader{ nullptr };
-        MyPixelShaderPtr pixelShader{ nullptr };
+        float windowWidth;
+        float windowHeight;
+    public:
+        MyMatrix4x4 projectionMatrix;
+        MyMatrix4x4 viewMatrix;
+        MyVector3 cameraPosition;
+        MyVector3 rotationInput;
+        float deltaTime;
+        float moveSpeed = 1.0f;
+        float rotationSpeed = 0.1f;
 
-        MyCameraPtr activeCamera{ nullptr };
-
-        ULONGLONG oldTime = 0;
-        ULONGLONG newTime = 0;
-        float deltaTime = 0;
-
-        MyConstant constantData;
-
-        //* Experimental variables
-        float experimentalDelta = 0;
-
-        MyTexturePtr sampleTexture{ nullptr };
-        MyMeshPtr sampleMesh{ nullptr };
+        MyVector3 movementInput;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyAppWindow();
-        ~MyAppWindow();
+        MyCamera(float windowWidth, float WindowHeight);
+        ~MyCamera();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
-        void UpdateDeltaTime();
-        void UpdateObjects();
     public:
+        void Update(float deltaTime);
+        void UpdateTransformation();
+        void SetOrthographicLeftHand(float width, float height, float nearPlane, float farPlane);
+        void SetPerspectiveLeftHand(float fieldOfView, float aspectRatio, float nearPlane, float farPlane);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
-    public:
-        //* MyWindow
-        virtual void OnCreate() override;
-        virtual void OnUpdate() override;
-        virtual void OnDestroy() override;
-        virtual void OnSetFocus() override;
-        virtual void OnKillFocus() override;
-
         //* MyInputListener
         virtual void OnKeyDown(int keyCode) override;
         virtual void OnKeyHold(int keyCode) override;
@@ -92,6 +60,7 @@ namespace DX3D {
         virtual void OnRMBDown(const MyScreenPoint& mousePosition) override;
         virtual void OnRMBHold(const MyScreenPoint& deltaMousePosition) override;
         virtual void OnRMBUp(const MyScreenPoint& mousePosition) override;
+    public:
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║

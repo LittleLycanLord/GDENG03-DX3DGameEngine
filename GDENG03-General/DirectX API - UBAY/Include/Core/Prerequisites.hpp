@@ -19,6 +19,7 @@ namespace DX3D {
     class MyTextureManager;
     class MyMesh;
     class MyMeshManager;
+    class MyCamera;
 
     typedef std::shared_ptr<MySwapChain> MySwapChainPtr;
     typedef std::shared_ptr<MyDeviceContext> MyDeviceContextPtr;
@@ -32,5 +33,6 @@ namespace DX3D {
     typedef std::shared_ptr<MyResource> MyResourcePtr;
     typedef std::shared_ptr<MyTexture> MyTexturePtr;
     typedef std::shared_ptr<MyMesh> MyMeshPtr;
+    typedef std::shared_ptr<MyCamera> MyCameraPtr;
 } // namespace DX3D
 

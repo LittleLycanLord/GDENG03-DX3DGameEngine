@@ -90,6 +90,9 @@
     <ClCompile Include="Source\Graphics\Shaders\MyHullShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Game\MyCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Window\MyAppWindow.hpp">
@@ -189,6 +192,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Graphics\Shaders\MyHullShader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\MyCamera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
