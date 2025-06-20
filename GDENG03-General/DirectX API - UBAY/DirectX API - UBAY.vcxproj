@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Source\Core\Primitives\MyCircle.cpp" />
     <ClCompile Include="Source\Core\Primitives\MyQuad.cpp" />
     <ClCompile Include="Source\Core\Primitives\MyTriangle.cpp" />
     <ClCompile Include="Source\Game\Input System\MyInputListener.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="Source\Window\MyWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Core\Primitives\MyCircle.hpp" />
     <ClInclude Include="Include\Core\Primitives\MyQuad.hpp" />
     <ClInclude Include="Include\Core\Primitives\MyTriangle.hpp" />
     <ClInclude Include="Include\Game\Input System\MyInputListener.hpp" />

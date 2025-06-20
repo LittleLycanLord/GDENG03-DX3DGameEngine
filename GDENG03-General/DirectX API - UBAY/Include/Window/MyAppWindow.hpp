@@ -7,6 +7,7 @@
 #include "Math/MyConstant.hpp"
 #include "Math/MyVertex.hpp"
 #include "Core/Primitives/MyTriangle.hpp"
+#include "Core/Primitives/MyCircle.hpp"
 #include "Core/Primitives/MyQuad.hpp"
 #include "Game/Input System/MyInputSystem.hpp"
 #include "Game/Input System/MyInputListener.hpp"
@@ -42,6 +43,10 @@ namespace DX3D {
         float xRotation = 0.0f;
         float yRotation = 0.0f;
 
+        //* Bouncing Circles
+        std::vector<MyCircle*> circles;
+        MyCircle* mostRecentCircle;
+
         MyConstant constantData;
 
         //* ╔════════════════════════════╗
@@ -58,6 +63,9 @@ namespace DX3D {
         void UpdateDeltaTime();
         void UpdateObjects();
     public:
+        void SpawnCircle();
+        void DeleteMostRecentCircle();
+        void DeleteAllCircles();
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

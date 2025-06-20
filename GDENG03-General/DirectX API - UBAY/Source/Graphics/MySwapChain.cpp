@@ -5,6 +5,7 @@
 using namespace DX3D;
 
 extern bool LOG_INFO_SWAPCHAIN;
+extern int WINDOW_REFRESH_RATE;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
@@ -30,7 +31,7 @@ bool MySwapChain::Initialize(HWND windowHandle, UINT width, UINT height) {
     description.BufferDesc.Width = width;
     description.BufferDesc.Height = height;
     description.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    description.BufferDesc.RefreshRate.Numerator = 60;
+    description.BufferDesc.RefreshRate.Numerator = WINDOW_REFRESH_RATE;
     description.BufferDesc.RefreshRate.Denominator = 1;
     description.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     description.OutputWindow = windowHandle;

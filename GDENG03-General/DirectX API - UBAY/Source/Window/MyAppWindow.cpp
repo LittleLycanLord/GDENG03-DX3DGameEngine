@@ -6,6 +6,8 @@ using namespace DX3D;
 extern bool LOG_INFO_WINDOW;
 extern bool LOG_INFO_CONSTANTBUFFER;
 extern bool LOG_INFO_INPUTSYSTEM;
+
+extern bool LOG_BALL_CONTROLS;
 // Add extern declarations for shader path constants
 extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
@@ -25,7 +27,7 @@ MyAppWindow::~MyAppWindow() {}
 //* ╚═══════════╝
 void MyAppWindow::UpdateDeltaTime() {
     this->oldTime = this->newTime;
-    this->newTime = ::GetTickCount();
+    this->newTime = ::GetTickCount64();
     this->deltaTime = this->oldTime ? (this->newTime - this->oldTime) / 1000.0f : 0.0f;
 }
 void MyAppWindow::UpdateObjects() {
@@ -55,10 +57,10 @@ void MyAppWindow::UpdateObjects() {
     // this->constantData.world *= MyMatrix4x4::RotationY(this->experimentalDelta * 0.55f);
     // this->constantData.world *= MyMatrix4x4::RotationX(this->experimentalDelta * 0.55f);
 
-    //* WASD Rotation
-    this->constantData.world *= MyMatrix4x4::RotationZ(0.0f);
-    this->constantData.world *= MyMatrix4x4::RotationY(this->yRotation);
-    this->constantData.world *= MyMatrix4x4::RotationX(this->xRotation);
+    // //* WASD Rotation
+    // this->constantData.world *= MyMatrix4x4::RotationZ(0.0f);
+    // this->constantData.world *= MyMatrix4x4::RotationY(this->yRotation);
+    // this->constantData.world *= MyMatrix4x4::RotationX(this->xRotation);
 
     // this->constantData.view.SetIdentity();
     // this->constantData.projection.SetOrthographicLeftHand(
@@ -67,6 +69,110 @@ void MyAppWindow::UpdateObjects() {
     //     -4.0f,
     //     4.0f
     // );
+
+    //* Bouncing Circles
+    if (this->vertexBuffer) {
+        this->vertexBuffer->Release();
+        delete this->vertexBuffer;
+        this->vertexBuffer = nullptr;
+    }
+    if (this->indexBuffer) {
+        this->indexBuffer->Release();
+        delete this->indexBuffer;
+        this->indexBuffer = nullptr;
+    }
+    if (this->vertexShader) {
+        this->vertexShader->Release();
+        delete this->vertexShader;
+        this->vertexShader = nullptr;
+    }
+
+    if (this->circles.size() == 0) {
+        MyVertex vertices[1000];
+        this->vertexBuffer = MyGraphicsEngine::GetInstance()->CreateVertexBuffer();
+        if (!this->vertexBuffer) {
+            std::cout << "[ERROR] : Failed to create vertexBuffer!" << std::endl;
+            return;
+        }
+
+        unsigned int indices[1];
+        this->indexBuffer = MyGraphicsEngine::GetInstance()->CreateIndexBuffer();
+        this->indexBuffer->Load(indices, ARRAYSIZE(indices));
+        if (!this->indexBuffer) {
+            std::cout << "[ERROR] : Failed to create indexBuffer!" << std::endl;
+            return;
+        }
+
+        // Compile and create vertex shader
+        void* vertexShaderByteCode = nullptr;
+        size_t vertexShaderSize = 0;
+        if (!MyGraphicsEngine::GetInstance()->CompileVertexShader(
+            VERTEX_SHADER_DIRECTORY.c_str(), "main", &vertexShaderByteCode, &vertexShaderSize)) {
+            std::cout << "[ERROR] : Failed to compile vertex shader!" << std::endl;
+            return;
+        }
+        this->vertexShader = MyGraphicsEngine::GetInstance()->CreateVertexShader(vertexShaderByteCode, vertexShaderSize);
+        if (!this->vertexShader) {
+            std::cout << "[ERROR] : Failed to create vertexShader!" << std::endl;
+            return;
+        }
+        if (!this->vertexBuffer->Load(vertices, sizeof(MyVertex), ARRAYSIZE(vertices), vertexShaderByteCode, vertexShaderSize)) {
+            std::cout << "[ERROR] : vertexBuffer->Load failed!" << std::endl;
+            return;
+        }
+        MyGraphicsEngine::GetInstance()->ReleaseCompiledShader();
+        return;
+    }
+
+
+    MyVertex vertices[10000];
+    int i = 0;
+    for (MyCircle* circle : this->circles) {
+        circle->Update(this->deltaTime);
+        for (MyVertex vertex : circle->GetVertices()) {
+            vertices[i] = vertex;
+            i++;
+        }
+    }
+
+    this->vertexBuffer = MyGraphicsEngine::GetInstance()->CreateVertexBuffer();
+    if (!this->vertexBuffer) {
+        std::cout << "[ERROR] : Failed to create vertexBuffer!" << std::endl;
+        return;
+    }
+
+    unsigned int* indices = new unsigned int[this->circles.size() * 48];
+
+    for (int i = 0; i <= this->circles.size() * 48; ++i) {
+        indices[i] = i;
+    }
+
+    this->indexBuffer = MyGraphicsEngine::GetInstance()->CreateIndexBuffer();
+    this->indexBuffer->Load(indices, (UINT)this->circles.size() * 48);
+    if (!this->indexBuffer) {
+        std::cout << "[ERROR] : Failed to create indexBuffer!" << std::endl;
+        return;
+    }
+
+    // Compile and create vertex shader
+    void* vertexShaderByteCode = nullptr;
+    size_t vertexShaderSize = 0;
+    if (!MyGraphicsEngine::GetInstance()->CompileVertexShader(
+        VERTEX_SHADER_DIRECTORY.c_str(), "main", &vertexShaderByteCode, &vertexShaderSize)) {
+        std::cout << "[ERROR] : Failed to compile vertex shader!" << std::endl;
+        return;
+    }
+    this->vertexShader = MyGraphicsEngine::GetInstance()->CreateVertexShader(vertexShaderByteCode, vertexShaderSize);
+    if (!this->vertexShader) {
+        std::cout << "[ERROR] : Failed to create vertexShader!" << std::endl;
+        return;
+    }
+    if (!this->vertexBuffer->Load(vertices, sizeof(MyVertex), ARRAYSIZE(vertices), vertexShaderByteCode, vertexShaderSize)) {
+        std::cout << "[ERROR] : vertexBuffer->Load failed!" << std::endl;
+        return;
+    }
+    MyGraphicsEngine::GetInstance()->ReleaseCompiledShader();
+
     this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext(), &this->constantData);
 }
 
@@ -289,83 +395,75 @@ void MyAppWindow::OnCreate() {
     //     i++;
     // }
 
-     //* Rainbow Cube
-    MyVertex vertices[] = {
-        MyVertex(
-           -0.5f,  -0.5f, -0.5f, // position
-            1.0f,  0.0f, 0.0f,   // color
-            1.0f,  0.0f, 0.0f    // nextColor
-        ), // Bottom-left-back
-        MyVertex(
-            -0.5f,  0.5f, -0.5f, // position
-            0.0f,  1.0f, 0.0f,   // color
-            0.0f,  1.0f, 0.0f    // nextColor
-        ), // Top-left-back
-        MyVertex(
-            0.5f,  0.5f, -0.5f, // position
-            0.0f,  0.0f, 1.0f, // color
-            0.0f,  0.0f, 1.0f  // nextColor
-        ), // Top-right-front
-        MyVertex(
-            0.5f,  -0.5f, -0.5f, // position
-            1.0f,  1.0f, 0.0f,   // color
-            1.0f,  1.0f, 0.0f    // nextColor
-        ), // Bottom-right-back
-        MyVertex(
-            0.5f, -0.5f, 0.5f,  // position
-            1.0f,  0.0f, 1.0f,  // color
-            1.0f,  0.0f, 1.0f   // nextColor
-        ), // Bottom-right-front
-        MyVertex(
-            0.5f,  0.5f, 0.5f,  // position
-            0.0f,  1.0f, 1.0f,  // color
-            0.0f,  1.0f, 1.0f   // nextColor
-        ), // Top-right-front
-        MyVertex(
-            -0.5f,  0.5f, 0.5f, // position
-            1.0f,  1.0f, 1.0f,  // color
-            1.0f,  1.0f, 1.0f   // nextColor
-        ), // Top-left-front
-        MyVertex(
-            -0.5f,  -0.5f, 0.5f, // position
-            0.0f,  0.0f, 0.0f,   // color
-            0.0f,  0.0f, 0.0f    // nextColor
-        ), // Bottom-left-front
-    };
+    //  //* Rainbow Cube
+    // MyVertex vertices[] = {
+    //     MyVertex(
+    //        -0.5f,  -0.5f, -0.5f, // position
+    //         1.0f,  0.0f, 0.0f,   // color
+    //         1.0f,  0.0f, 0.0f    // nextColor
+    //     ), // Bottom-left-back
+    //     MyVertex(
+    //         -0.5f,  0.5f, -0.5f, // position
+    //         0.0f,  1.0f, 0.0f,   // color
+    //         0.0f,  1.0f, 0.0f    // nextColor
+    //     ), // Top-left-back
+    //     MyVertex(
+    //         0.5f,  0.5f, -0.5f, // position
+    //         0.0f,  0.0f, 1.0f, // color
+    //         0.0f,  0.0f, 1.0f  // nextColor
+    //     ), // Top-right-front
+    //     MyVertex(
+    //         0.5f,  -0.5f, -0.5f, // position
+    //         1.0f,  1.0f, 0.0f,   // color
+    //         1.0f,  1.0f, 0.0f    // nextColor
+    //     ), // Bottom-right-back
+    //     MyVertex(
+    //         0.5f, -0.5f, 0.5f,  // position
+    //         1.0f,  0.0f, 1.0f,  // color
+    //         1.0f,  0.0f, 1.0f   // nextColor
+    //     ), // Bottom-right-front
+    //     MyVertex(
+    //         0.5f,  0.5f, 0.5f,  // position
+    //         0.0f,  1.0f, 1.0f,  // color
+    //         0.0f,  1.0f, 1.0f   // nextColor
+    //     ), // Top-right-front
+    //     MyVertex(
+    //         -0.5f,  0.5f, 0.5f, // position
+    //         1.0f,  1.0f, 1.0f,  // color
+    //         1.0f,  1.0f, 1.0f   // nextColor
+    //     ), // Top-left-front
+    //     MyVertex(
+    //         -0.5f,  -0.5f, 0.5f, // position
+    //         0.0f,  0.0f, 0.0f,   // color
+    //         0.0f,  0.0f, 0.0f    // nextColor
+    //     ), // Bottom-left-front
+    // };
 
+
+    // * White Circle
+    // this->circles.push_back(MyCircle());
+    // MyCircle circleA;
+    // MyVertex vertices[1000];
+    // int i = 0;
+    // for (MyVertex vertex : circleA.GetVertices()) {
+    //     vertices[i] = vertex;
+    //     i++;
+    // }
+
+    MyVertex vertices[1000];
     this->vertexBuffer = MyGraphicsEngine::GetInstance()->CreateVertexBuffer();
     if (!this->vertexBuffer) {
         std::cout << "[ERROR] : Failed to create vertexBuffer!" << std::endl;
         return;
     }
 
-    unsigned int indices[] = {
-        //* FRONT
-        0, 1, 2,
-        2, 3, 0,
-        //* BACK
-        4, 5, 6,
-        6, 7, 4,
-        //* TOP
-        1, 6, 5,
-        5, 2, 1,
-        //* BOTTOM
-        7, 0, 3,
-        3, 4, 7,
-        //* RIGHT
-        3, 2, 5,
-        5, 4, 3,
-        //* LEFT
-        7, 6, 1,
-        1, 0, 7,
-    };
+    unsigned int indices[1];
     this->indexBuffer = MyGraphicsEngine::GetInstance()->CreateIndexBuffer();
     this->indexBuffer->Load(indices, ARRAYSIZE(indices));
     if (!this->indexBuffer) {
         std::cout << "[ERROR] : Failed to create indexBuffer!" << std::endl;
         return;
     }
-
 
     // Compile and create vertex shader
     void* vertexShaderByteCode = nullptr;
@@ -430,11 +528,11 @@ void MyAppWindow::OnUpdate() {
     if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Updating input system in MyAppWindow::OnUpdate" << std::endl;
     MyInputSystem::GetInstance()->Update();
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : OnUpdate called" << std::endl;
-    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVec4(0.0f, 0.3f, 0.4f, 1.0f));
+    // MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVec4(0.0f, 0.3f, 0.4f, 1.0f));
+    MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVec4(0.0f, 0.0f, 0.0f, 1.0f));
 
     RECT windowRectangle = this->GetWindowRect();
     MyGraphicsEngine::GetInstance()->GetImmedieateDeviceContext()->SetViewPortSize(windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
-
 
     this->UpdateObjects();
 
@@ -462,6 +560,9 @@ void MyAppWindow::OnUpdate() {
     }
 
     this->UpdateDeltaTime();
+
+    if (toBeDestroyed)
+        this->OnDestroy();
 }
 
 void MyAppWindow::OnDestroy() {
@@ -508,39 +609,35 @@ void MyAppWindow::OnKeyDown(int keyCode) {
 
     // Handle key down events here
     switch (keyCode) {
-    case 'W':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : W pressed, xRotation increased" << std::endl;
+    case VK_BACK:
+        this->DeleteMostRecentCircle();
         break;
-    case 'A':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : A pressed, yRotation decreased" << std::endl;
+    case VK_SPACE:
+        this->SpawnCircle();
         break;
-    case 'S':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : S pressed, xRotation decreased" << std::endl;
+    case VK_DELETE:
+        this->DeleteAllCircles();
         break;
-    case 'D':
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : D pressed, yRotation increased" << std::endl;
+    case VK_ESCAPE:
+        this->toBeDestroyed = true;
         break;
     default:
-        if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Unhandled key down: " << keyCode << std::endl;
         break;
     }
 }
+
 void MyAppWindow::OnKeyHold(int keyCode) {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnKeyDown called with keyCode: " << keyCode << std::endl;
 
     // Handle key down events here
     switch (keyCode) {
     case 'W':
-        this->xRotation += this->rotationSpeed * this->deltaTime;
         break;
     case 'A':
-        this->yRotation -= this->rotationSpeed * this->deltaTime;
         break;
     case 'S':
-        this->xRotation -= this->rotationSpeed * this->deltaTime;
         break;
     case 'D':
-        this->yRotation += this->rotationSpeed * this->deltaTime;
         break;
     default:
         break;
@@ -562,4 +659,26 @@ void MyAppWindow::OnKeyUp(int keyCode) {
         if (LOG_INFO_INPUTSYSTEM) std::cout << "[INFO] : Unhandled key up: " << keyCode << std::endl;
         break;
     }
+}
+
+void MyAppWindow::SpawnCircle() {
+    this->circles.push_back(new MyCircle());
+    if (LOG_BALL_CONTROLS)
+        std::cout << "Ball spawned: " << this->circles.size() << std::endl;
+}
+void MyAppWindow::DeleteMostRecentCircle() {
+    if (this->circles.empty()) {
+        if (LOG_BALL_CONTROLS)
+            std::cout << "There are no more balls to delete: " << this->circles.size() << std::endl;
+        return;
+    }
+    this->circles.pop_back();
+    if (LOG_BALL_CONTROLS)
+        std::cout << "Most recent ball deleted: " << this->circles.size() << std::endl;
+}
+void MyAppWindow::DeleteAllCircles() {
+    int balls = this->circles.size();
+    this->circles.clear();
+    if (LOG_BALL_CONTROLS)
+        std::cout << "All " << balls << " balls deleted: " << this->circles.size() << std::endl;
 }

@@ -5,6 +5,8 @@
 using namespace DX3D;
 
 extern bool LOG_INFO_WINDOW;
+extern int WINDOW_WIDTH;
+extern int WINDOW_HEIGHT;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
@@ -67,7 +69,7 @@ bool MyWindow::Initialize() {
 
     windowHandle = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"Conrad Ubay | DirectX 3D Engine Window",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-        1280, 720, NULL, NULL,
+        WINDOW_WIDTH, WINDOW_HEIGHT, NULL, NULL,
         NULL, this);
 
     if (!windowHandle) {

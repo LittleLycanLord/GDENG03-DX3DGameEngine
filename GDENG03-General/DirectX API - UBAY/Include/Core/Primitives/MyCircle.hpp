@@ -1,55 +1,64 @@
 #pragma once
-#include <Windows.h>
-#include <WinUser.h>
+#include <vector>
+#include <random>
+#include <chrono>
+#include <iostream>
+#include "Core/Primitives/MyTriangle.hpp"
+#include "Math/MyVertex.hpp"
 
 namespace DX3D {
-    class MyWindow {
+    class MyCircle {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        bool running{ false };
-    protected:
-        bool toBeDestroyed{ false };
-        HWND windowHandle{ nullptr };
+        MyTriangle triangles[16];
+        MyVec3 bounceDirection;
+        MyVec3 centerDelta;
+        float radius = 0.1f;
+        float xSpeed = 0.0f;
+        float ySpeed = 0.0f;
+        MyVertex top;
+        MyVertex bottom;
+        MyVertex left;
+        MyVertex right;
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyWindow();
-        ~MyWindow();
+        MyCircle();
+        ~MyCircle();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        bool Initialize();
-        bool Broadcast();
-        bool Release();
+        void Update(float deltaTime);
+
+        std::vector<MyVertex> GetVertices() {
+            std::vector<MyVertex> vertices;
+            for (MyTriangle triangle : this->triangles)
+                for (MyVertex vertex : triangle.GetVertices()) {
+                    vertex.position *= this->radius;
+                    vertex.position += this->centerDelta;
+                    vertices.push_back(vertex);
+                }
+            return vertices;
+        }
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate();
-        virtual void OnUpdate();
-        virtual void OnDestroy();
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        bool IsRunning() const { return running; }
-        RECT GetWindowRect() const {
-            RECT rect;
-            GetClientRect(windowHandle, &rect);
-            return rect;
-        }
-        void SetWindowHandle(HWND windowHandle) { this->windowHandle = windowHandle; }
     };
 } // namespace DX3D
 

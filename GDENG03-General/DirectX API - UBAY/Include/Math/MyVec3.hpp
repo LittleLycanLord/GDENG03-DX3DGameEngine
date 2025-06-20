@@ -30,6 +30,19 @@ namespace DX3D {
             returnVector.z = start.z * (1.0f - delta) + end.z * (delta);
             return returnVector;
         }
+        MyVec3& operator*=(const float& scalar) {
+            this->x *= scalar;
+            this->y *= scalar;
+            this->z *= scalar;
+            return *this;
+        }
+
+        MyVec3& operator+=(const MyVec3& other) {
+            this->x += other.x;
+            this->y += other.y;
+            this->z += other.z;
+            return *this;
+        }
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
