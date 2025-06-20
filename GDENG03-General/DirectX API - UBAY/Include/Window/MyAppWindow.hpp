@@ -8,6 +8,7 @@
 #include "Math/MyVertex.hpp"
 #include "Core/Primitives/MyTriangle.hpp"
 #include "Core/Primitives/MyCircle.hpp"
+#include "Core/Primitives/MyCube.hpp"
 #include "Core/Primitives/MyQuad.hpp"
 #include "Game/Input System/MyInputSystem.hpp"
 #include "Game/Input System/MyInputListener.hpp"
@@ -45,7 +46,7 @@ namespace DX3D {
 
         //* Bouncing Circles
         std::vector<MyCircle*> circles;
-        MyCircle* mostRecentCircle;
+        std::vector<MyCube*> cubes;
 
         MyConstant constantData;
 
@@ -64,6 +65,7 @@ namespace DX3D {
         void UpdateObjects();
     public:
         void SpawnCircle();
+        void SpawnCube();
         void DeleteMostRecentCircle();
         void DeleteAllCircles();
 

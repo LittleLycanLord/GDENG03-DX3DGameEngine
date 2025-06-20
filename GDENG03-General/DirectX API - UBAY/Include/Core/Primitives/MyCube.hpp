@@ -3,49 +3,42 @@
 #include <random>
 #include <chrono>
 #include <iostream>
-#include "Core/Primitives/MyTriangle.hpp"
+#include "Core/Primitives/MyQuad.hpp"
 #include "Math/MyVertex.hpp"
 
 namespace DX3D {
-    class MyCircle {
+    class MyCube {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyTriangle triangles[16];
-        MyVec3 bounceDirection;
+        MyQuad faces[6];
+        float size = 0.5f;
         MyVec3 position;
-        float radius = 0.1f;
-        float xSpeed = 0.0f;
-        float ySpeed = 0.0f;
-        MyVertex top;
-        MyVertex bottom;
-        MyVertex left;
-        MyVertex right;
+        MyVec3 rotation;
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyCircle();
-        ~MyCircle();
+        MyCube();
+        ~MyCube();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
     public:
-        void Update(float deltaTime);
-
         std::vector<MyVertex> GetVertices() {
             std::vector<MyVertex> vertices;
-            for (MyTriangle triangle : this->triangles)
-                for (MyVertex vertex : triangle.GetVertices()) {
-                    vertex.position *= this->radius;
+            for (MyQuad face : this->faces)
+                for (MyVertex vertex : face.GetVertices()) {
+                    vertex.position *= this->size;
                     vertex.position += this->position;
                     vertices.push_back(vertex);
                 }
+
             return vertices;
         }
 

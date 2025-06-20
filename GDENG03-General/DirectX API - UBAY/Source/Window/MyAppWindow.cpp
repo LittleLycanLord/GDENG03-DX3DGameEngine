@@ -30,6 +30,7 @@ void MyAppWindow::UpdateDeltaTime() {
     this->newTime = ::GetTickCount64();
     this->deltaTime = this->oldTime ? (this->newTime - this->oldTime) / 1000.0f : 0.0f;
 }
+
 void MyAppWindow::UpdateObjects() {
     this->constantData.time += this->deltaTime;
 
@@ -87,7 +88,7 @@ void MyAppWindow::UpdateObjects() {
         this->vertexShader = nullptr;
     }
 
-    if (this->circles.size() == 0) {
+    if (this->cubes.size() == 0) {
         MyVertex vertices[1000];
         this->vertexBuffer = MyGraphicsEngine::GetInstance()->CreateVertexBuffer();
         if (!this->vertexBuffer) {
@@ -124,12 +125,10 @@ void MyAppWindow::UpdateObjects() {
         return;
     }
 
-
     MyVertex vertices[10000];
     int i = 0;
-    for (MyCircle* circle : this->circles) {
-        circle->Update(this->deltaTime);
-        for (MyVertex vertex : circle->GetVertices()) {
+    for (MyCube* cube : this->cubes) {
+        for (MyVertex vertex : cube->GetVertices()) {
             vertices[i] = vertex;
             i++;
         }
@@ -141,14 +140,16 @@ void MyAppWindow::UpdateObjects() {
         return;
     }
 
-    unsigned int* indices = new unsigned int[this->circles.size() * 48];
+    // int indexSize = this->circles.size() * 48;
+    int indexSize = this->cubes.size() * 36;
+    unsigned int* indices = new unsigned int[indexSize];
 
-    for (int i = 0; i <= this->circles.size() * 48; ++i) {
+    for (int i = 0; i <= indexSize; ++i) {
         indices[i] = i;
     }
 
     this->indexBuffer = MyGraphicsEngine::GetInstance()->CreateIndexBuffer();
-    this->indexBuffer->Load(indices, (UINT)this->circles.size() * 48);
+    this->indexBuffer->Load(indices, (UINT)indexSize);
     if (!this->indexBuffer) {
         std::cout << "[ERROR] : Failed to create indexBuffer!" << std::endl;
         return;
@@ -484,6 +485,8 @@ void MyAppWindow::OnCreate() {
     }
     MyGraphicsEngine::GetInstance()->ReleaseCompiledShader();
 
+    this->SpawnCube();
+
     // Compile and create pixel shader
     void* pixelShaderByteCode = nullptr;
     size_t pixelShaderSize = 0;
@@ -604,22 +607,19 @@ void MyAppWindow::OnDestroy() {
     }
     MyGraphicsEngine::GetInstance()->Release();
 }
+
 void MyAppWindow::OnKeyDown(int keyCode) {
     if (LOG_INFO_WINDOW) std::cout << "[INFO] : MyAppWindow::OnKeyDown called with keyCode: " << keyCode << std::endl;
 
     // Handle key down events here
     switch (keyCode) {
-    case VK_BACK:
-        this->DeleteMostRecentCircle();
+    case 'W':
         break;
-    case VK_SPACE:
-        this->SpawnCircle();
+    case 'A':
         break;
-    case VK_DELETE:
-        this->DeleteAllCircles();
+    case 'S':
         break;
-    case VK_ESCAPE:
-        this->toBeDestroyed = true;
+    case 'D':
         break;
     default:
         break;
@@ -666,6 +666,7 @@ void MyAppWindow::SpawnCircle() {
     if (LOG_BALL_CONTROLS)
         std::cout << "Ball spawned: " << this->circles.size() << std::endl;
 }
+
 void MyAppWindow::DeleteMostRecentCircle() {
     if (this->circles.empty()) {
         if (LOG_BALL_CONTROLS)
@@ -676,9 +677,16 @@ void MyAppWindow::DeleteMostRecentCircle() {
     if (LOG_BALL_CONTROLS)
         std::cout << "Most recent ball deleted: " << this->circles.size() << std::endl;
 }
+
 void MyAppWindow::DeleteAllCircles() {
     int balls = this->circles.size();
     this->circles.clear();
     if (LOG_BALL_CONTROLS)
         std::cout << "All " << balls << " balls deleted: " << this->circles.size() << std::endl;
+}
+
+void MyAppWindow::SpawnCube() {
+    this->cubes.push_back(new MyCube());
+    if (LOG_BALL_CONTROLS)
+        std::cout << "Cube spawned: " << this->cubes.size() << std::endl;
 }

@@ -236,7 +236,7 @@ MyTriangle(
         1.0f, 1.0f, 1.0f
     ) // Bottom-right
 )
-}, bounceDirection(MyVec3(0.0f)), centerDelta(MyVec3(0.0f)) {
+}, bounceDirection(MyVec3(0.0f)), position(MyVec3(0.0f)) {
     std::random_device randomDevice;
     std::mt19937 numberGenerator(randomDevice());
     std::uniform_real_distribution<float> randomSpeed(MINIMUM_BALL_SPEED, MAXIMUM_BALL_SPEED);
@@ -274,10 +274,10 @@ void MyCircle::Update(float deltaTime) {
         this->bounceDirection.y = 1;
     }
 
-    this->centerDelta += MyVec3((this->xSpeed * this->bounceDirection.x) * deltaTime,
+    this->position += MyVec3((this->xSpeed * this->bounceDirection.x) * deltaTime,
         (this->ySpeed * this->bounceDirection.y) * deltaTime,
         0.0f);
-    // std::cout << "centerDelta: (" << centerDelta.x << ", " << centerDelta.y << ", " << centerDelta.z << ")" << std::endl;
+    // std::cout << "position: (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
 }
 
 //* ╔═══════════╗
