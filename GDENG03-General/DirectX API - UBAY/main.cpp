@@ -39,7 +39,7 @@ extern const std::wstring DOMAIN_SHADER_DIRECTORY = L"Shaders/Domain/TexturedTea
 extern const std::wstring VERTEX_SHADER_DIRECTORY = L"Shaders/Vertex/TexturedTeapotVertexShader.hlsl";
 extern const std::wstring PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/TexturedTeapotPixelShader.hlsl";
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY = L"Assets/Textures/CheckerBoard.jpg";
-extern const std::wstring SAMPLE_MESH_DIRECTORY = L"Assets/Meshes/Teapot.obj";
+extern const std::wstring SAMPLE_MESH_DIRECTORY = L"Assets/Meshes/Statue.obj";
 using namespace DX3D;
 
 int main() {

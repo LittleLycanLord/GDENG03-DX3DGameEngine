@@ -24,7 +24,7 @@ namespace DX3D {
         MyVector3 rotationInput;
         float deltaTime;
         float moveSpeed = 1.0f;
-        float rotationSpeed = 0.1f;
+        float sensitivity = 0.5f;
 
         MyVector3 movementInput;
 

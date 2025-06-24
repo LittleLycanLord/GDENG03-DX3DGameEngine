@@ -69,6 +69,7 @@
         "array": "cpp",
         "set": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "random": "cpp"
     }
 }

@@ -30,7 +30,6 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        bool lockMouse = true;
         MySwapChainPtr swapChain{ nullptr };
         MyVertexBufferPtr vertexBuffer{ nullptr };
         MyConstantBufferPtr constantBuffer{ nullptr };

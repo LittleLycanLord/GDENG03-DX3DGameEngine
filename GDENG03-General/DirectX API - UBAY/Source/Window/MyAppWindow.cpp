@@ -94,6 +94,9 @@ void MyAppWindow::OnCreate() {
     MyWindow::OnCreate();
 
     if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Registering MyAppWindow as input listener" << std::endl;
+    MyInputSystem::GetInstance()->windowWidth = this->GetWindowRect().right - this->GetWindowRect().left;
+    MyInputSystem::GetInstance()->windowHeight = this->GetWindowRect().bottom - this->GetWindowRect().top;
+
     MyInputSystem::GetInstance()->AddListener(this);
     MyInputSystem::GetInstance()->SetCursorVisibility(true);
 
@@ -593,6 +596,7 @@ void MyAppWindow::OnUpdate() {
     MyWindow::OnUpdate();
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: OnUpdate called" << std::endl;
     MyInputSystem::GetInstance()->Update();
+    this->UpdateObjects();
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: OnUpdate called" << std::endl;
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVector4(0.3f, 0.3f, 0.3f, 1.0f));
 
@@ -600,7 +604,6 @@ void MyAppWindow::OnUpdate() {
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetViewPortSize(windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
 
 
-    this->UpdateObjects();
 
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->hullShader, this->constantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->domainShader, this->constantBuffer);
@@ -740,20 +743,12 @@ void MyAppWindow::OnKeyUp(int keyCode) {
 }
 
 void MyAppWindow::OnMouseMove(const MyScreenPoint& deltaMousePosition) {
-    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnMouseMove called with deltaMousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE && false) std::cout << "[INFO]: MyAppWindow::OnMouseMove called with deltaMousePosition: ("
         << deltaMousePosition.x << ", " << deltaMousePosition.y << ")" << std::endl;
-
-    if (this->lockMouse)
-        MyInputSystem::GetInstance()->SetCursorPosition(
-            MyScreenPoint(
-                (this->GetWindowRect().right - this->GetWindowRect().left) / 2,
-                (this->GetWindowRect().bottom - this->GetWindowRect().top) / 2
-            )
-        );
 }
 
 void MyAppWindow::OnLMBDown(const MyScreenPoint& mousePosition) {
-    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnLMBDown called with mousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE && false) std::cout << "[INFO]: MyAppWindow::OnLMBDown called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 
@@ -761,12 +756,12 @@ void MyAppWindow::OnLMBHold(const MyScreenPoint& deltaMousePosition) {
 }
 
 void MyAppWindow::OnLMBUp(const MyScreenPoint& mousePosition) {
-    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnLMBUp called with mousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE && false) std::cout << "[INFO]: MyAppWindow::OnLMBUp called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 
 void MyAppWindow::OnRMBDown(const MyScreenPoint& mousePosition) {
-    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnRMBDown called with mousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE && false) std::cout << "[INFO]: MyAppWindow::OnRMBDown called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 
@@ -774,6 +769,6 @@ void MyAppWindow::OnRMBHold(const MyScreenPoint& deltaMousePosition) {
 }
 
 void MyAppWindow::OnRMBUp(const MyScreenPoint& mousePosition) {
-    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyAppWindow::OnRMBUp called with mousePosition: ("
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE && false) std::cout << "[INFO]: MyAppWindow::OnRMBUp called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }

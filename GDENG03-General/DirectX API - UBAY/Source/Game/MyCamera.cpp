@@ -124,8 +124,9 @@ void MyCamera::OnMouseMove(const MyScreenPoint& deltaMousePosition) {
     if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyCamera::OnMouseMove called with deltaMousePosition: ("
         << deltaMousePosition.x << ", " << deltaMousePosition.y << ")" << std::endl;
 
-    // this->xRotation += deltaMousePosition.y * this->rotationSpeed * this->deltaTime;
-    // this->yRotation += deltaMousePosition.x * this->rotationSpeed * this->deltaTime;
+    // Apply mouse delta to camera rotation (FPS style)
+    this->rotationInput.x += static_cast<float>(deltaMousePosition.y) * this->sensitivity * this->deltaTime;
+    this->rotationInput.y += static_cast<float>(deltaMousePosition.x) * this->sensitivity * this->deltaTime;
 }
 
 void MyCamera::OnLMBDown(const MyScreenPoint& mousePosition) {
@@ -134,8 +135,8 @@ void MyCamera::OnLMBDown(const MyScreenPoint& mousePosition) {
 }
 
 void MyCamera::OnLMBHold(const MyScreenPoint& deltaMousePosition) {
-    std::cout << "[INFO]: deltaMousePosition.y -> " << deltaMousePosition.y << std::endl;
-    this->rotationInput.x += (float)(deltaMousePosition.y * (this->rotationSpeed * this->deltaTime));
+    // std::cout << "[INFO]: deltaMousePosition.y -> " << deltaMousePosition.y << std::endl;
+    // this->rotationInput.x += (float)(deltaMousePosition.y * (this->sensitivity * this->deltaTime));
 }
 
 void MyCamera::OnLMBUp(const MyScreenPoint& mousePosition) {
@@ -149,8 +150,8 @@ void MyCamera::OnRMBDown(const MyScreenPoint& mousePosition) {
 }
 
 void MyCamera::OnRMBHold(const MyScreenPoint& deltaMousePosition) {
-    std::cout << "[INFO]: deltaMousePosition.x -> " << deltaMousePosition.x << std::endl;
-    this->rotationInput.y += (float)(deltaMousePosition.x * (this->rotationSpeed * this->deltaTime));
+    // std::cout << "[INFO]: deltaMousePosition.x -> " << deltaMousePosition.x << std::endl;
+    // this->rotationInput.y += (float)(deltaMousePosition.x * (this->sensitivity * this->deltaTime));
 }
 
 void MyCamera::OnRMBUp(const MyScreenPoint& mousePosition) {

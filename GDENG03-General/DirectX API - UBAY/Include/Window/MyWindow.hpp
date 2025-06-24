@@ -2,6 +2,8 @@
 #include <Windows.h>
 #include <WinUser.h>
 #include <exception>
+#include "Graphics/MyGraphicsEngine.hpp"
+#include "Core/Input System/MyInputSystem.hpp"
 
 namespace DX3D {
     class MyWindow {

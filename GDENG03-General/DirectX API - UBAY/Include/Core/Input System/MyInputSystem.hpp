@@ -18,10 +18,17 @@ namespace DX3D {
         unsigned char newKeyStates[256] = { 0 };
         unsigned char oldKeyStates[256] = { 0 };
 
+        bool lockMouse = true;
         bool firstFrame = true;
+        float rawMouseDeltaX = 0.0f;
+        float rawMouseDeltaY = 0.0f;
         MyScreenPoint newMousePosition = { 0, 0 };
         MyScreenPoint oldMousePosition = { 0, 0 };
         MyScreenPoint deltaMousePosition = { 0, 0 };
+    public:
+        bool ignoreNextMouseDelta = false;
+        float windowWidth;
+        float windowHeight;
 
         //* ╔═════════════════════════════╗
         //* ║ Singleton Instance Accessor ║
@@ -51,6 +58,7 @@ namespace DX3D {
         void AddListener(MyInputListener* inputListener);
         void RemoveListener(MyInputListener* inputListener);
 
+        void AddRawMouseDelta(float deltaX, float deltaY);
         void SetCursorPosition(const MyScreenPoint& position);
         void SetCursorVisibility(bool showCursor);
 

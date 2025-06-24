@@ -1,5 +1,4 @@
 #include "Window/MyWindow.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
 #include <iostream>
 
 using namespace DX3D;
@@ -29,6 +28,21 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
             MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
             if (windowInstance) windowInstance->OnDestroy();
             PostQuitMessage(0);
+            break;
+        }
+    case WM_INPUT: {
+            UINT DWordSize = 0;
+            GetRawInputData((HRAWINPUT)lParameters, RID_INPUT, NULL, &DWordSize, sizeof(RAWINPUTHEADER));
+            BYTE* longPointerToBuffer = new BYTE[DWordSize];
+            if (GetRawInputData((HRAWINPUT)lParameters, RID_INPUT, longPointerToBuffer, &DWordSize, sizeof(RAWINPUTHEADER)) == DWordSize) {
+                RAWINPUT* raw = (RAWINPUT*)longPointerToBuffer;
+                if (raw->header.dwType == RIM_TYPEMOUSE) {
+                    float dx = static_cast<float>(raw->data.mouse.lLastX);
+                    float dy = static_cast<float>(raw->data.mouse.lLastY);
+                    DX3D::MyInputSystem::GetInstance()->AddRawMouseDelta(dx, dy);
+                }
+            }
+            delete[] longPointerToBuffer;
             break;
         }
     default:
@@ -68,10 +82,18 @@ MyWindow::MyWindow() {
 
     if (!windowHandle) {
         if (LOG_INFO_WINDOW) throw std::exception("CreateWindowEx failed");
-    } else {
+    }
+    else {
         ShowWindow(windowHandle, SW_SHOW);
         UpdateWindow(windowHandle);
     }
+
+    RAWINPUTDEVICE rawInputDevice;
+    rawInputDevice.usUsagePage = 0x01;
+    rawInputDevice.usUsage = 0x02; // Mouse
+    rawInputDevice.dwFlags = 0;
+    rawInputDevice.hwndTarget = windowHandle;
+    RegisterRawInputDevices(&rawInputDevice, 1, sizeof(rawInputDevice));
 
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: Window created and shown" << std::endl;
     this->running = true;
