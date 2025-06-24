@@ -5,6 +5,7 @@
 #include <exception>
 #include "Core/Input System/MyInputListener.hpp"
 #include "Math/MyScreenPoint.hpp"
+#include "Math/MyVector2.hpp"
 
 namespace DX3D {
     class MyInputSystem {
@@ -18,17 +19,16 @@ namespace DX3D {
         unsigned char newKeyStates[256] = { 0 };
         unsigned char oldKeyStates[256] = { 0 };
 
-        bool lockMouse = true;
         bool firstFrame = true;
-        float rawMouseDeltaX = 0.0f;
-        float rawMouseDeltaY = 0.0f;
+        MyVector2 rawMouseDelta = { 0.0f, 0.0f };
+
         MyScreenPoint newMousePosition = { 0, 0 };
         MyScreenPoint oldMousePosition = { 0, 0 };
-        MyScreenPoint deltaMousePosition = { 0, 0 };
+        MyVector2 deltaMousePosition = { 0.0f, 0.0f };
     public:
-        bool ignoreNextMouseDelta = false;
-        float windowWidth;
-        float windowHeight;
+        bool lockMouse = true;
+        unsigned int windowWidth;
+        unsigned int windowHeight;
 
         //* ╔═════════════════════════════╗
         //* ║ Singleton Instance Accessor ║

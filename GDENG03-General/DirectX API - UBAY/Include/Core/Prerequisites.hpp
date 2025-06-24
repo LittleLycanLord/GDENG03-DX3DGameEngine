@@ -2,6 +2,11 @@
 #include <memory>
 
 namespace DX3D {
+    //* ╔══════════════════════╗
+    //* ║ Forward Declarations ║
+    //* ╚══════════════════════╝
+
+    //* Rendering Module
     class MySwapChain;
     class MyDeviceContext;
     class MyVertexBuffer;
@@ -13,14 +18,24 @@ namespace DX3D {
     class MyPixelShader;
     class MyRenderSystem;
     class MyGraphicsEngine;
+
+    //* Resources
     class MyResource;
     class MyResourceSystem;
     class MyTexture;
     class MyTextureManager;
     class MyMesh;
     class MyMeshManager;
+
+    //* ╔════════════════╗
+    //* ║ Smart Pointers ║
+    //* ╚════════════════╝
+
+    //* Core GameObjects
+    class MyTransform;
     class MyCamera;
 
+    //* Rendering Module
     typedef std::shared_ptr<MySwapChain> MySwapChainPtr;
     typedef std::shared_ptr<MyDeviceContext> MyDeviceContextPtr;
     typedef std::shared_ptr<MyVertexBuffer> MyVertexBufferPtr;
@@ -30,9 +45,20 @@ namespace DX3D {
     typedef std::shared_ptr<MyDomainShader> MyDomainShaderPtr;
     typedef std::shared_ptr<MyVertexShader> MyVertexShaderPtr;
     typedef std::shared_ptr<MyPixelShader> MyPixelShaderPtr;
+    typedef std::shared_ptr<MyRenderSystem> MyRenderSystemPtr;
+    typedef std::shared_ptr<MyGraphicsEngine> MyGraphicsEnginePtr;
+
+    //* Resources
     typedef std::shared_ptr<MyResource> MyResourcePtr;
+    typedef std::shared_ptr<MyResourceSystem> MyResourceSystemPtr;
     typedef std::shared_ptr<MyTexture> MyTexturePtr;
+    typedef std::shared_ptr<MyTextureManager> MyTextureManagerPtr;
     typedef std::shared_ptr<MyMesh> MyMeshPtr;
+    typedef std::shared_ptr<MyMeshManager> MyMeshManagerPtr;
+
+    //* Core GameObjects
+    typedef std::shared_ptr<MyTransform> MyTransformPtr;
     typedef std::shared_ptr<MyCamera> MyCameraPtr;
+
 } // namespace DX3D
 

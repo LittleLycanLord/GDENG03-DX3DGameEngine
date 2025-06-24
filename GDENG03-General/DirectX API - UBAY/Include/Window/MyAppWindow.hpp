@@ -13,7 +13,7 @@
 #include "Core/Primitives/MyQuad.hpp"
 #include "Core/Input System/MyInputSystem.hpp"
 #include "Core/Input System/MyInputListener.hpp"
-// #include "Core/Resource System/Managers/MyTexture.hpp"
+#include "Core/Resource System/Managers/MyTexture.hpp"
 #include "Core/Resource System/Managers/MyMesh.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
@@ -40,6 +40,8 @@ namespace DX3D {
         MyPixelShaderPtr pixelShader{ nullptr };
 
         MyCameraPtr activeCamera{ nullptr };
+        std::vector<MyCameraPtr> cameras;
+        std::vector<MyMeshPtr> meshes;
 
         ULONGLONG oldTime = 0;
         ULONGLONG newTime = 0;
@@ -64,8 +66,16 @@ namespace DX3D {
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
+        //* Initialization
+        void InitializeShaders();
+        void InitializeConstantData();
+        void DebugLaunchFunction();
+
+        //* Runtime
         void UpdateDeltaTime();
         void UpdateObjects();
+        void UpdateConstantBuffer();
+        void UpdateShaders();
     public:
 
         //* ╔════════════════════════════════╗
@@ -84,12 +94,12 @@ namespace DX3D {
         virtual void OnKeyDown(int keyCode) override;
         virtual void OnKeyHold(int keyCode) override;
         virtual void OnKeyUp(int keyCode) override;
-        virtual void OnMouseMove(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnMouseMove(const MyVector2& deltaMousePosition) override;
         virtual void OnLMBDown(const MyScreenPoint& mousePosition) override;
-        virtual void OnLMBHold(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnLMBHold(const MyVector2& deltaMousePosition) override;
         virtual void OnLMBUp(const MyScreenPoint& mousePosition) override;
         virtual void OnRMBDown(const MyScreenPoint& mousePosition) override;
-        virtual void OnRMBHold(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnRMBHold(const MyVector2& deltaMousePosition) override;
         virtual void OnRMBUp(const MyScreenPoint& mousePosition) override;
 
         //* ╔═══════════════════╗

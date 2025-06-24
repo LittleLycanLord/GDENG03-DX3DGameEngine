@@ -6,7 +6,7 @@ extern bool LOG_INFO_MESH;
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyMesh::MyMesh(const wchar_t* resourcePath) : MyResource(resourcePath), attributes(),
+MyMesh::MyMesh(const wchar_t* resourcePath) : transform(std::make_shared<MyTransform>()), MyResource(resourcePath), attributes(),
 shapes(),
 materials(),
 vertices(),
@@ -44,7 +44,7 @@ indices() {
                         tinyobj::real_t v = (tinyobj::real_t)this->attributes.texcoords[index.texcoord_index * 2 + 1];
 
                         this->vertices.push_back(MyMeshVertex(MyVector3(x, y, z), MyVector2(u, v)));
-                        this->indices.push_back(indexOffset + vertex);
+                        this->indices.push_back((unsigned int)indexOffset + vertex);
                     }
                     indexOffset += vertexPerFace;
                 }
@@ -52,7 +52,7 @@ indices() {
         }
 
         MyGraphicsEngine::GetInstance()->GetShaderByteCodeAndSize(&this->layoutShaderByteCode, &this->layoutShaderSize);
-        this->vertexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexBuffer(&this->vertices[0], sizeof(MyMeshVertex), this->vertices.size(), this->layoutShaderByteCode, this->layoutShaderSize);
+        this->vertexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexBuffer(&this->vertices[0], sizeof(MyMeshVertex), (UINT)this->vertices.size(), this->layoutShaderByteCode, this->layoutShaderSize);
         this->indexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateIndexBuffer(&this->indices[0], (UINT)this->indices.size());
     }
     else {
@@ -71,6 +71,14 @@ MyMesh::~MyMesh() {
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
+void MyMesh::Update(float deltaTime) {
+    this->transform->Update(deltaTime);
+}
+void MyMesh::Draw() {
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexBuffer(this->vertexBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetIndexBuffer(this->indexBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawIndexedTriangles(this->indexBuffer->GetIndexCount(), 0, 0);
+}
 
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║

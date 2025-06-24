@@ -54,7 +54,7 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyWindow::MyWindow() {
+MyWindow::MyWindow() : width(0), height(0) {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow constructed" << std::endl;
 
     WNDCLASSEX windowClass = {};
@@ -88,7 +88,7 @@ MyWindow::MyWindow() {
         UpdateWindow(windowHandle);
     }
 
-    RAWINPUTDEVICE rawInputDevice;
+    RAWINPUTDEVICE rawInputDevice = {};
     rawInputDevice.usUsagePage = 0x01;
     rawInputDevice.usUsage = 0x02; // Mouse
     rawInputDevice.dwFlags = 0;
@@ -136,6 +136,8 @@ bool MyWindow::Broadcast() {
 //* ╚════════════════════════════════╝
 void MyWindow::OnCreate() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyWindow::OnCreate called" << std::endl;
+    this->width = this->GetWindowRect().right - this->GetWindowRect().left;
+    this->height = this->GetWindowRect().bottom - this->GetWindowRect().top;
 }
 
 void MyWindow::OnUpdate() {

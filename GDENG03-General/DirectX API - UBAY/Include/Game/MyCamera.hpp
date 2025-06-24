@@ -8,6 +8,7 @@
 #include "Math/MyVector3.hpp"
 #include "Core/Input System/MyInputSystem.hpp"
 #include "Core/Input System/MyInputListener.hpp"
+#include "Game/MyTransform.hpp"
 
 namespace DX3D {
     class MyCamera : public MyInputListener {
@@ -15,30 +16,31 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        float windowWidth;
-        float windowHeight;
-    public:
-        MyMatrix4x4 projectionMatrix;
-        MyMatrix4x4 viewMatrix;
-        MyVector3 cameraPosition;
-        MyVector3 rotationInput;
-        float deltaTime;
         float moveSpeed = 1.0f;
         float sensitivity = 0.5f;
-
+        float deltaTime = 0.0f;
+        float maxPitch = 45; //* degrees; +-
         MyVector3 movementInput;
+        MyVector3 rotationInput;
+        MyMatrix4x4 projectionMatrix;
+        MyMatrix4x4 viewMatrix;
+
+        friend class MyAppWindow;
+    public:
+        MyTransformPtr transform;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyCamera(float windowWidth, float WindowHeight);
+        MyCamera();
         ~MyCamera();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
+        void ClampPitch();
     public:
         void Update(float deltaTime);
         void UpdateTransformation();
@@ -53,12 +55,12 @@ namespace DX3D {
         virtual void OnKeyDown(int keyCode) override;
         virtual void OnKeyHold(int keyCode) override;
         virtual void OnKeyUp(int keyCode) override;
-        virtual void OnMouseMove(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnMouseMove(const MyVector2& deltaMousePosition) override;
         virtual void OnLMBDown(const MyScreenPoint& mousePosition) override;
-        virtual void OnLMBHold(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnLMBHold(const MyVector2& deltaMousePosition) override;
         virtual void OnLMBUp(const MyScreenPoint& mousePosition) override;
         virtual void OnRMBDown(const MyScreenPoint& mousePosition) override;
-        virtual void OnRMBHold(const MyScreenPoint& deltaMousePosition) override;
+        virtual void OnRMBHold(const MyVector2& deltaMousePosition) override;
         virtual void OnRMBUp(const MyScreenPoint& mousePosition) override;
     public:
 

@@ -1,4 +1,6 @@
 #pragma once
+#include<iostream>
+#include<string>
 
 namespace DX3D {
     class MyVector2 {
@@ -39,6 +41,9 @@ namespace DX3D {
             returnVector.x = start.x * (1.0f - delta) + end.x * (delta);
             returnVector.y = start.y * (1.0f - delta) + end.y * (delta);
             return returnVector;
+        }
+        void PrintValues(std::string label = "") {
+            std::cout << "[" << label << "]: (" << this->x << ", " << this->y << ")" << std::endl;
         }
 
         //* ╔════════════════════════════════╗

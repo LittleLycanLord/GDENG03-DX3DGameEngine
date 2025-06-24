@@ -43,41 +43,17 @@ void MyInputSystem::Update() {
     this->newMousePosition.x = currentMousePosition.x;
     this->newMousePosition.y = currentMousePosition.y;
 
-    // Calculate delta
-    this->deltaMousePosition.x = this->newMousePosition.x - this->oldMousePosition.x;
-    this->deltaMousePosition.y = this->newMousePosition.y - this->oldMousePosition.y;
+    this->deltaMousePosition = this->rawMouseDelta;
 
-    // Ignore delta if we just warped the cursor
-    if (this->ignoreNextMouseDelta) {
-        this->deltaMousePosition = { 0, 0 };
-        this->ignoreNextMouseDelta = false;
-    }
-
-    MyScreenPoint rawMouseDelta{
-        static_cast<int>(this->rawMouseDeltaX),
-        static_cast<int>(this->rawMouseDeltaY)
-    };
-
-    if (this->rawMouseDeltaX != 0.0f || this->rawMouseDeltaY != 0.0f) {
+    if (this->rawMouseDelta.x != 0.0f || this->rawMouseDelta.y != 0.0f) {
         for (auto& listenerPair : this->inputListeners) {
             MyInputListener* listener = listenerPair.first;
             if (listener != nullptr) {
-                listener->OnMouseMove(rawMouseDelta);
+                listener->OnMouseMove(this->deltaMousePosition);
             }
         }
-        rawMouseDeltaX = 0.0f;
-        rawMouseDeltaY = 0.0f;
+        this->rawMouseDelta = MyVector2(0.0f);
     }
-
-    // if (this->newMousePosition.x != this->oldMousePosition.x || this->newMousePosition.y != this->oldMousePosition.y) {
-    //     for (auto& listenerPair : this->inputListeners) {
-    //         MyInputListener* listener = listenerPair.first;
-    //         if (listener != nullptr) {
-    //             listener->OnMouseMove(this->deltaMousePosition);
-    //             if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: Mouse moved to (" << this->newMousePosition.x << ", " << this->newMousePosition.y << ") in MyInputSystem::Update" << std::endl;
-    //         }
-    //     }
-    // }
 
     if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: MyInputSystem::Update called" << std::endl;
     if (GetKeyboardState(this->newKeyStates)) {
@@ -137,10 +113,8 @@ void MyInputSystem::Update() {
     if (this->lockMouse) {
         int centerX = static_cast<int>(this->windowWidth / 2);
         int centerY = static_cast<int>(this->windowHeight / 2);
-        if (this->newMousePosition.x != centerX || this->newMousePosition.y != centerY) {
+        if (this->newMousePosition.x != centerX || this->newMousePosition.y != centerY)
             MyInputSystem::GetInstance()->SetCursorPosition(MyScreenPoint(centerX, centerY));
-            this->ignoreNextMouseDelta = true;
-        }
     }
 }
 void MyInputSystem::AddListener(MyInputListener* inputListener) {
@@ -174,8 +148,7 @@ void MyInputSystem::RemoveListener(MyInputListener* inputListener) {
     }
 }
 void MyInputSystem::AddRawMouseDelta(float deltaX, float deltaY) {
-    rawMouseDeltaX += deltaX;
-    rawMouseDeltaY += deltaY;
+    rawMouseDelta += MyVector2(deltaX, deltaY);
 }
 void MyInputSystem::SetCursorPosition(const MyScreenPoint& position) {
     POINT point = { position.x, position.y };

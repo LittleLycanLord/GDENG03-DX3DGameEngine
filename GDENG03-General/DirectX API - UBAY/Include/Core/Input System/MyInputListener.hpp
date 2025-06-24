@@ -1,5 +1,6 @@
 #pragma once
 #include "Math/MyScreenPoint.hpp"
+#include "Math/MyVector2.hpp"
 
 namespace DX3D {
     class MyInputListener {
@@ -33,12 +34,12 @@ namespace DX3D {
         virtual void OnKeyUp(int keyCode) = 0;
 
         //* Mouse Input Events
-        virtual void OnMouseMove(const MyScreenPoint& deltaMousePosition) = 0;
+        virtual void OnMouseMove(const MyVector2& deltaMousePosition) = 0;
         virtual void OnLMBDown(const MyScreenPoint& mousePosition) = 0;
-        virtual void OnLMBHold(const MyScreenPoint& deltaMousePosition) = 0;
+        virtual void OnLMBHold(const MyVector2& deltaMousePosition) = 0;
         virtual void OnLMBUp(const MyScreenPoint& mousePosition) = 0;
         virtual void OnRMBDown(const MyScreenPoint& mousePosition) = 0;
-        virtual void OnRMBHold(const MyScreenPoint& deltaMousePosition) = 0;
+        virtual void OnRMBHold(const MyVector2& deltaMousePosition) = 0;
         virtual void OnRMBUp(const MyScreenPoint& mousePosition) = 0;
 
         //* ╔═══════════════════╗

@@ -184,6 +184,7 @@
     <ClInclude Include="Include\Core\Resource System\MyResource.hpp" />
     <ClInclude Include="Include\Core\Resource System\MyResourceSystem.hpp" />
     <ClInclude Include="Include\Game\MyCamera.hpp" />
+    <ClInclude Include="Include\Game\MyTransform.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyConstantBuffer.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyIndexBuffer.hpp" />
     <ClInclude Include="Include\Graphics\MyDeviceContext.hpp" />

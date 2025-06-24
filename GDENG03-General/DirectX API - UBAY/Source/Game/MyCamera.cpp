@@ -10,35 +10,40 @@ extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyCamera::MyCamera(float windowWidth, float windowHeight) : windowWidth(windowWidth), windowHeight(windowHeight) {}
+MyCamera::MyCamera() : transform(std::make_shared<MyTransform>()), deltaTime(0) {}
 MyCamera::~MyCamera() {}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
+void MyCamera::ClampPitch() {
+    float maxPitchInRadians = this->maxPitch * 3.14159265f / 180.0f;
+    if (this->transform->rotation.x > maxPitchInRadians)
+        this->transform->rotation.x = maxPitchInRadians;
+    if (this->transform->rotation.x < -maxPitchInRadians)
+        this->transform->rotation.x = -maxPitchInRadians;
+}
 void MyCamera::Update(float deltaTime) {
     this->deltaTime = deltaTime;
     this->UpdateTransformation();
 }
 void MyCamera::UpdateTransformation() {
-    this->viewMatrix.SetIdentity();
-    this->viewMatrix *= MyMatrix4x4::RotationX(this->rotationInput.x);
-    this->viewMatrix *= MyMatrix4x4::RotationY(this->rotationInput.y);
-    this->viewMatrix *= MyMatrix4x4::RotationZ(this->rotationInput.z);
-    this->cameraPosition += this->viewMatrix.GetTranslation() +
-        (this->viewMatrix.GetZDirection() * this->moveSpeed * this->deltaTime) * this->movementInput.y +
-        (this->viewMatrix.GetYDirection() * this->moveSpeed * this->deltaTime) * this->movementInput.z +
-        (this->viewMatrix.GetXDirection() * this->moveSpeed * this->deltaTime) * this->movementInput.x;
-    this->viewMatrix *= MyMatrix4x4::Translation(this->cameraPosition);
-    this->viewMatrix.SetInverse();
+    this->ClampPitch();
+    MyMatrix4x4 currentRotation = MyMatrix4x4::GetRotationMatrix(this->transform->rotation);
+    this->transform->position +=
+        (currentRotation.GetRightVector() * this->moveSpeed * this->deltaTime) * this->movementInput.x +
+        (currentRotation.GetUpVector() * this->moveSpeed * this->deltaTime) * this->movementInput.y +
+        (currentRotation.GetForwardVector() * this->moveSpeed * this->deltaTime) * this->movementInput.z;
+    this->transform->Update(this->deltaTime);
+    this->transform->worldMatrix.Invert();
 }
 
 void MyCamera::SetOrthographicLeftHand(float width, float height, float nearPlane, float farPlane) {
-    this->projectionMatrix.SetMatrix(MyMatrix4x4::OrthographicLeftHand(width, height, nearPlane, farPlane));
+    this->projectionMatrix.SetOrthographicLeftHand(width, height, nearPlane, farPlane);
 }
 
 void MyCamera::SetPerspectiveLeftHand(float fieldOfView, float aspectRatio, float nearPlane, float farPlane) {
-    this->projectionMatrix.SetMatrix(MyMatrix4x4::PerspectiveLeftHand(fieldOfView, aspectRatio, nearPlane, farPlane));
+    this->projectionMatrix.SetPerspectiveLeftHand(fieldOfView, aspectRatio, nearPlane, farPlane);
 }
 
 //* ╔════════════════════════════════╗
@@ -47,8 +52,13 @@ void MyCamera::SetPerspectiveLeftHand(float fieldOfView, float aspectRatio, floa
 void MyCamera::OnKeyDown(int keyCode) {
     if (LOG_INFO_CAMERA) std::cout << "[INFO]: MyCamera::OnKeyDown called with keyCode: " << keyCode << std::endl;
 
-    // Handle key down events here
     switch (keyCode) {
+    case 'W':
+    case 'A':
+    case 'S':
+    case 'D':
+    case 'Q':
+    case 'E':
     default:
         if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Unhandled key down: " << keyCode << std::endl;
         break;
@@ -58,31 +68,24 @@ void MyCamera::OnKeyDown(int keyCode) {
 void MyCamera::OnKeyHold(int keyCode) {
     if (LOG_INFO_CAMERA) std::cout << "[INFO]: MyCamera::OnKeyDown called with keyCode: " << keyCode << std::endl;
 
-    // Handle key down events here
     switch (keyCode) {
     case 'W':
-        // this->cameraPosition.z += moveSpeed * this->deltaTime; // Move camera forward
-        this->movementInput.y = 1.0f; // Move camera forward
+        this->movementInput.z = 1.0f; // Move camera forward
         break;
     case 'A':
-        // this->cameraPosition.x -= moveSpeed * this->deltaTime; // Move camera left
         this->movementInput.x = -1.0f; // Move camera left
         break;
     case 'S':
-        // this->cameraPosition.z -= moveSpeed * this->deltaTime; // Move camera backward
-        this->movementInput.y = -1.0f; // Move camera backward
+        this->movementInput.z = -1.0f; // Move camera backward
         break;
     case 'D':
-        // this->cameraPosition.x += moveSpeed * this->deltaTime; // Move camera right
         this->movementInput.x = 1.0f; // Move camera right
         break;
     case 'Q':
-        // this->cameraPosition.y += moveSpeed * this->deltaTime; // Move camera up
-        this->movementInput.z = 1.0f; // Move camera up
+        this->movementInput.y = -1.0f; // Move camera down
         break;
     case 'E':
-        // this->cameraPosition.y -= moveSpeed * this->deltaTime; // Move camera down
-        this->movementInput.z = -1.0f; // Move camera down
+        this->movementInput.y = +1.0f; // Move camera up
         break;
     default:
         break;
@@ -92,41 +95,38 @@ void MyCamera::OnKeyHold(int keyCode) {
 void MyCamera::OnKeyUp(int keyCode) {
     if (LOG_INFO_CAMERA) std::cout << "[INFO]: MyCamera::OnKeyUp called with keyCode: " << keyCode << std::endl;
 
-    // Handle key up events here
-    if (LOG_INFO_CAMERA) std::cout << "[INFO]: MyCamera::OnKeyDown called with keyCode: " << keyCode << std::endl;
-
-    // Handle key down events here
     switch (keyCode) {
     case 'W':
-        this->movementInput.y = 0.0f;
+        this->movementInput.z = 0.0f;
         break;
     case 'A':
         this->movementInput.x = 0.0f;
         break;
     case 'S':
-        this->movementInput.y = 0.0f;
+        this->movementInput.z = 0.0f;
         break;
     case 'D':
         this->movementInput.x = 0.0f;
         break;
     case 'Q':
-        this->movementInput.z = 0.0f;
+        this->movementInput.y = 0.0f;
         break;
     case 'E':
-        this->movementInput.z = 0.0f;
+        this->movementInput.y = 0.0f;
         break;
     default:
         break;
     }
 }
 
-void MyCamera::OnMouseMove(const MyScreenPoint& deltaMousePosition) {
+void MyCamera::OnMouseMove(const MyVector2& deltaMousePosition) {
     if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyCamera::OnMouseMove called with deltaMousePosition: ("
         << deltaMousePosition.x << ", " << deltaMousePosition.y << ")" << std::endl;
 
-    // Apply mouse delta to camera rotation (FPS style)
-    this->rotationInput.x += static_cast<float>(deltaMousePosition.y) * this->sensitivity * this->deltaTime;
-    this->rotationInput.y += static_cast<float>(deltaMousePosition.x) * this->sensitivity * this->deltaTime;
+    //* Yaw
+    this->transform->rotation.x += deltaMousePosition.y * this->sensitivity * this->deltaTime;
+    //* Pitch
+    this->transform->rotation.y += deltaMousePosition.x * this->sensitivity * this->deltaTime;
 }
 
 void MyCamera::OnLMBDown(const MyScreenPoint& mousePosition) {
@@ -134,9 +134,11 @@ void MyCamera::OnLMBDown(const MyScreenPoint& mousePosition) {
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 
-void MyCamera::OnLMBHold(const MyScreenPoint& deltaMousePosition) {
-    // std::cout << "[INFO]: deltaMousePosition.y -> " << deltaMousePosition.y << std::endl;
-    // this->rotationInput.x += (float)(deltaMousePosition.y * (this->sensitivity * this->deltaTime));
+void MyCamera::OnLMBHold(const MyVector2& deltaMousePosition) {
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyCamera::OnLMBHold called with deltaMousePosition: ("
+        << deltaMousePosition.x << ", " << deltaMousePosition.y << ")" << std::endl;
+    // //* Yaw
+    // this->transform->rotation.x += deltaMousePosition.y * this->sensitivity * this->deltaTime;
 }
 
 void MyCamera::OnLMBUp(const MyScreenPoint& mousePosition) {
@@ -149,9 +151,11 @@ void MyCamera::OnRMBDown(const MyScreenPoint& mousePosition) {
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 
-void MyCamera::OnRMBHold(const MyScreenPoint& deltaMousePosition) {
-    // std::cout << "[INFO]: deltaMousePosition.x -> " << deltaMousePosition.x << std::endl;
-    // this->rotationInput.y += (float)(deltaMousePosition.x * (this->sensitivity * this->deltaTime));
+void MyCamera::OnRMBHold(const MyVector2& deltaMousePosition) {
+    if (LOG_INFO_INPUT_SYSTEM_MOUSE) std::cout << "[INFO]: MyCamera::OnRMBHold called with deltaMousePosition: ("
+        << deltaMousePosition.x << ", " << deltaMousePosition.y << ")" << std::endl;
+    // //* Pitch
+    // this->transform->rotation.y += deltaMousePosition.x * this->sensitivity * this->deltaTime;
 }
 
 void MyCamera::OnRMBUp(const MyScreenPoint& mousePosition) {

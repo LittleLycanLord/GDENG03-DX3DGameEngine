@@ -21,483 +21,10 @@ extern const std::wstring SAMPLE_MESH_DIRECTORY;
 MyAppWindow::MyAppWindow() {}
 MyAppWindow::~MyAppWindow() {}
 
-//* ╔═════════════════════════════════╗
-//* ║ Magical Shit I Don't Understand ║
-//* ╚═════════════════════════════════╝
-
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-void MyAppWindow::UpdateDeltaTime() {
-    this->oldTime = this->newTime;
-    this->newTime = ::GetTickCount64();
-    this->deltaTime = this->oldTime ? (this->newTime - this->oldTime) / 1000.0f : 0.0f;
-}
-void MyAppWindow::UpdateObjects() {
-    this->constantData.time += this->deltaTime;
-
-    float speedMultiplier = 1.0f;
-    this->experimentalDelta += this->deltaTime * speedMultiplier;
-
-    // //* Test Translate
-    // if (this->experimentalDelta > 1.0f)
-    //     this->experimentalDelta = 0.0f;
-    // this->constantData.world.Translate(MyVector3::Lerp(MyVector3(-2.0f, -2.0f, 0.0f), MyVector3(2.0f, 2.0f, 0.0f), this->experimentalDelta));
-
-    // //* Test Scale
-    // this->constantData.world.Scale(MyVector3::Lerp(MyVector3(0.5f, 0.5f, 0.0f), MyVector3(2.0f, 2.0f, 0.0f), (sin(experimentalDelta) + 1.0f) / 2.0f));
-
-    // //* Transformation Matrix : T -> R -> S (Note: Matrix multiplication is not commutative)
-    // this->constantData.world.SetIdentity();
-    // this->constantData.world *= MyMatrix4x4::Scaling(MyVector3::Lerp(MyVector3(0.5f, 0.5f, 0.0f), MyVector3(2.0f, 2.0f, 0.0f), (sin(experimentalDelta) + 1.0f) / 2.0f));
-    // // this->constantData.world *= MyMatrix4x4::Rotating();
-    // this->constantData.world *= MyMatrix4x4::Translation(MyVector3::Lerp(MyVector3(-2.0f, -2.0f, 0.0f), MyVector3(2.0f, 2.0f, 0.0f), this->experimentalDelta * 0.1f));
-
-    this->constantData.world.Scale(MyVector3(1.0f, 1.0f, 1.0f));
-
-    //* Auto Rotating Cube
-    // this->constantData.world *= MyMatrix4x4::RotationZ(this->experimentalDelta * 0.55f);
-    // this->constantData.world *= MyMatrix4x4::RotationY(this->experimentalDelta * 0.55f);
-    // this->constantData.world *= MyMatrix4x4::RotationX(this->experimentalDelta * 0.55f);
-
-    // //* WASD Movement + Mouse Rotation
-    // this->constantData.world *= MyMatrix4x4::RotationZ(0.0f);
-    // this->constantData.world *= MyMatrix4x4::RotationY(this->yRotation);
-    // this->constantData.world *= MyMatrix4x4::RotationX(this->xRotation);
-
-    //* Camera Matrix
-    // this->cameraMatrix.SetIdentity();
-    // this->cameraMatrix *= MyMatrix4x4::RotationX(this->cameraRotation.x);
-    // this->cameraMatrix *= MyMatrix4x4::RotationY(this->cameraRotation.y);
-    // this->cameraMatrix *= MyMatrix4x4::RotationZ(this->cameraRotation.z);
-    // this->cameraPosition += this->cameraMatrix.GetTranslation() +
-    //     (this->cameraMatrix.GetZDirection() * this->cameraMoveInput.y * this->moveSpeed * this->deltaTime) +
-    //     (this->cameraMatrix.GetYDirection() * this->cameraMoveInput.z * this->moveSpeed * this->deltaTime) +
-    //     (this->cameraMatrix.GetXDirection() * this->cameraMoveInput.x * this->moveSpeed * this->deltaTime);
-    // this->cameraMatrix *= MyMatrix4x4::Translation(this->cameraPosition);
-    // this->cameraMatrix.SetInverse();
-
-    // this->constantData.view = this->cameraMatrix;
-
-    //* Camera Object
-    this->activeCamera->Update(this->deltaTime);
-    this->constantData.view = this->activeCamera->viewMatrix;
-    this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext(), &this->constantData);
-}
-
-//* ╔════════════════════════════════╗
-//* ║ Virtual / Overridden Functions ║
-//* ╚════════════════════════════════╝
-void MyAppWindow::OnCreate() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyAppWindow::OnCreate called" << std::endl;
-
-    MyWindow::OnCreate();
-
-    if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Registering MyAppWindow as input listener" << std::endl;
-    MyInputSystem::GetInstance()->windowWidth = this->GetWindowRect().right - this->GetWindowRect().left;
-    MyInputSystem::GetInstance()->windowHeight = this->GetWindowRect().bottom - this->GetWindowRect().top;
-
-    MyInputSystem::GetInstance()->AddListener(this);
-    MyInputSystem::GetInstance()->SetCursorVisibility(true);
-
-    try {
-        this->activeCamera = std::make_shared<MyCamera>((this->GetWindowRect().right - this->GetWindowRect().left) / 2.0f, (this->GetWindowRect().bottom - this->GetWindowRect().top) / 2.0f);
-        // this->activeCamera->SetOrthographicLeftHand(
-        //     (this->GetWindowRect().right - this->GetWindowRect().left) / 200.0f,
-        //     (this->GetWindowRect().bottom - this->GetWindowRect().top) / 200.0f,
-        //     -4.0f,
-        //     4.0
-        // );
-        this->activeCamera->SetPerspectiveLeftHand(
-            45.0f * 3.14159265f / 180.0f, // FOV in radians
-            (this->GetWindowRect().right - this->GetWindowRect().left) / (float)(this->GetWindowRect().bottom - this->GetWindowRect().top),
-            0.001f, // Near plane
-            10000.0f // Far plane
-        );
-        if (!this->activeCamera) {
-            std::cerr << "[ERROR]: Failed to create camera in MyAppWindow::OnCreate" << std::endl;
-            throw std::exception("Failed to create camera in MyAppWindow::OnCreate");
-        }
-    }
-    catch (const std::exception& ex) {
-        std::cerr << "[ERROR]: Exception in MyAppWindow::OnCreate: " << ex.what() << std::endl;
-    }
-
-    RECT windowRectangle = this->GetWindowRect();
-    swapChain = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateSwapChain(this->windowHandle, windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
-
-    //* Experimental
-    //* Texture Application
-    this->sampleTexture = MyGraphicsEngine::GetInstance()->GetTextureManager()->CreateTextureFromFile(SAMPLE_TEXTURE_DIRECTORY.c_str());
-    //* Mesh Application
-    this->sampleMesh = MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str());
-
-    //! Note: Define vertices in a CLOCKWISE MANNER
-    // // * Single Color Triangle
-    // MyVertex vertices[] = {
-    //     MyVertex(
-    //         0.0f,  0.5f, 0.0f    // position (x, y, z)
-    //     ), // Top
-    //     MyVertex(
-    //         0.5f, -0.5f, 0.0f    // position
-    //     ), // Right
-    //     MyVertex(
-    //        -0.5f, -0.5f, 0.0f    // position
-    //     ), // Left
-    // };
-
-    // //* Single Color Rectangle
-    // MyVertex vertices[] = {
-    //     MyVertex(
-    //        -0.5f,  0.5f, 0.0f    // position
-    //     ), // Top-left
-    //     MyVertex(
-    //         0.5f,  0.5f, 0.0f    // position
-    //     ), // Top-right
-    //     MyVertex(
-    //        -0.5f, -0.5f, 0.0f    // position
-    //     ), // Bottom-left
-
-    //     MyVertex(
-    //        -0.5f, -0.5f, 0.0f    // position
-    //     ), // Bottom-left
-    //     MyVertex(
-    //         0.5f,  0.5f, 0.0f    // position
-    //     ), // Top-right
-    //     MyVertex(
-    //         0.5f, -0.5f, 0.0f    // position
-    //     ), // Bottom-right
-    // };
-
-    // //* Rainbow Triangle
-    // MyVertex vertices[] = {
-    //     MyVertex(
-    //         0.0f,  0.5f, 0.0f,    // position
-    //         1.0f,  0.0f, 0.0f     // color
-    //     ), // Top
-    //     MyVertex(
-    //         0.5f, -0.5f, 0.0f,    // position
-    //         0.0f,  0.0f, 1.0f     // color
-    //     ), // Right
-    //     MyVertex(
-    //        -0.5f, -0.5f, 0.0f,    // position
-    //         0.0f,  1.0f, 0.0f     // color
-    //     ), // Left
-    // };
-
-    // //* Rainbow Rectangle
-    // MyVertex vertices[] = {
-    //     MyVertex(
-    //        -0.5f,  0.5f, 0.0f,    // position
-    //         0.0f,  1.0f, 0.0f     // color
-    //     ), // Top-left
-    //     MyVertex(
-    //         0.5f,  0.5f, 0.0f,    // position
-    //         1.0f,  1.0f, 0.0f     // color
-    //     ), // Top-right
-    //     MyVertex(
-    //        -0.5f, -0.5f, 0.0f,    // position
-    //         1.0f,  0.0f, 0.0f     // color
-    //     ), // Bottom-left
-
-    //     MyVertex(
-    //        -0.5f, -0.5f, 0.0f,    // position
-    //         1.0f,  0.0f, 0.0f     // color
-    //     ), // Bottom-left
-    //     MyVertex(
-    //         0.5f,  0.5f, 0.0f,    // position
-    //         1.0f,  1.0f, 0.0f     // color
-    //     ), // Top-right
-    //     MyVertex(
-    //         0.5f, -0.5f, 0.0f,    // position
-    //         0.0f,  0.0f, 1.0f     // color
-    //     ), // Bottom-right
-    // };
-
-    // //* Animated Rectangle
-    // MyVertex vertices[] = {
-    //     MyVertex(
-    //         -0.5f,  0.5f, 0.0f,    // position (x, y, z)
-    //         -0.11f, 0.78f, 0.0f,   // nextPosition (x, y, z)
-    //          0.0f,  1.0f, 0.0f     // color (r, g, b)
-    //     ), // Top-left
-    //     MyVertex(
-    //          0.5f,  0.5f, 0.0f,    // position
-    //          0.88f, 0.77f, 0.0f,   // nextPosition
-    //          1.0f,  1.0f, 0.0f     // color
-    //     ), // Top-right
-    //     MyVertex(
-    //         -0.5f, -0.5f, 0.0f,    // position
-    //         -0.32f,-0.11f, 0.0f,   // nextPosition
-    //          1.0f,  0.0f, 0.0f     // color
-    //     ), // Bottom-left
-
-    //     MyVertex(
-    //         -0.5f, -0.5f, 0.0f,    // position
-    //         -0.32f,-0.11f, 0.0f,   // nextPosition
-    //          1.0f,  0.0f, 0.0f     // color
-    //     ), // Bottom-left
-    //     MyVertex(
-    //          0.5f,  0.5f, 0.0f,    // position
-    //          0.88f, 0.77f, 0.0f,   // nextPosition
-    //          1.0f,  1.0f, 0.0f     // color
-    //     ), // Top-right
-    //     MyVertex(
-    //          0.5f, -0.5f, 0.0f,    // position
-    //          0.75f, -0.73f, 0.0f,  // nextPosition
-    //          0.0f,  0.0f, 1.0f     // color
-    //     ), // Bottom-right
-    // };
-
-    // //* Three Quads
-    // float offset = 0.3f;
-    // MyTriangle triangleA(
-    //     MyVertex(
-    //         MyVector3(-0.1f - offset, 0.1f - offset, 0.0f),  // position (x, y, z)
-    //         MyVector3(-0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition (x, y, z)
-    //         MyVector3(1.0f, 0.0f, 0.0f),                     // color (r, g, b)
-    //         MyVector3(0.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
-    //     ), // Top-left
-    //     MyVertex(
-    //         MyVector3(0.1f - offset, 0.1f - offset, 0.0f),  // position
-    //         MyVector3(0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition
-    //         MyVector3(0.0f, 1.0f, 0.0f),                    // color
-    //         MyVector3(1.0f, 1.0f, 0.0f)                     // nextColor
-    //     ), // Top-right
-    //     MyVertex(
-    //         MyVector3(-0.1f - offset, -0.1f - offset, 0.0f), // position
-    //         MyVector3(-0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
-    //         MyVector3(0.0f, 0.0f, 1.0f),                     // color
-    //         MyVector3(1.0f, 0.0f, 0.0f)                      // nextColor
-    //     ) // Bottom-left
-    // );
-    // MyTriangle triangleB(
-    //     MyVertex(
-    //         MyVector3(-0.1f - offset, -0.1f - offset, 0.0f), // position
-    //         MyVector3(-0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
-    //         MyVector3(0.0f, 0.0f, 1.0f),                     // color
-    //         MyVector3(1.0f, 0.0f, 0.0f)                      // nextColor
-    //     ), // Bottom-left
-    //     MyVertex(
-    //         MyVector3(0.1f - offset, 0.1f - offset, 0.0f),  // position
-    //         MyVector3(0.1f - offset, 0.1f - offset, 0.0f),  // nextPosition
-    //         MyVector3(0.0f, 1.0f, 0.0f),                    // color
-    //         MyVector3(1.0f, 1.0f, 0.0f)                     // nextColor
-    //     ), // Top-right
-    //     MyVertex(
-    //         MyVector3(0.1f - offset, -0.1f - offset, 0.0f), // position
-    //         MyVector3(0.1f - offset, -0.1f - offset, 0.0f), // nextPosition
-    //         MyVector3(1.0f, 1.0f, 0.0f),                    // color
-    //         MyVector3(0.0f, 0.0f, 1.0f)                     // nextColor
-    //     ) // Bottom-right
-    // );
-    // MyQuad quadA(triangleA, triangleB);
-
-    // MyQuad quadB;
-
-    // MyVertex topLeft(
-    //     MyVector3(-0.1f + offset, 0.1f + offset, 0.0f),  // position (x, y, z)
-    //     MyVector3(-0.1f + offset, 0.1f + offset, 0.0f),  // nextPosition (x, y, z)
-    //     MyVector3(0.0f, 0.0f, 1.0f),                     // color (r, g, b)
-    //     MyVector3(1.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
-    // );
-    // MyVertex topRight(
-    //     MyVector3(0.1f + offset, 0.1f + offset, 0.0f),   // position (x, y, z)
-    //     MyVector3(0.1f + offset, 0.1f + offset, 0.0f),   // nextPosition (x, y, z)
-    //     MyVector3(0.0f, 1.0f, 0.0f),                     // color (r, g, b)
-    //     MyVector3(0.0f, 0.0f, 1.0f)                      // nextColor (r, g, b)
-    // );
-    // MyVertex bottomRight(
-    //     MyVector3(0.1f + offset, -0.1f + offset, 0.0f),  // position (x, y, z)
-    //     MyVector3(0.1f + offset, -0.1f + offset, 0.0f),  // nextPosition (x, y, z)
-    //     MyVector3(0.0f, 0.0f, 1.0f),                     // color (r, g, b)
-    //     MyVector3(0.0f, 1.0f, 0.0f)                      // nextColor (r, g, b)
-    // );
-    // MyVertex bottomLeft(
-    //     MyVector3(-0.1f + offset, -0.1f + offset, 0.0f), // position (x, y, z)
-    //     MyVector3(-0.1f + offset, -0.1f + offset, 0.0f), // nextPosition (x, y, z)
-    //     MyVector3(1.0f, 1.0f, 0.0f),                     // color (r, g, b)
-    //     MyVector3(0.0f, 0.0f, 1.0f)                      // nextColor (r, g, b)
-    // );
-    // MyQuad quadC(topLeft, topRight, bottomRight, bottomLeft);
-
-    // MyVertex vertices[100];
-    // int i = 0;
-    // for (MyVertex vertex : quadA.GetVertices()) {
-    //     vertices[i] = vertex;
-    //     i++;
-    // }
-    // for (MyVertex vertex : quadB.GetVertices()) {
-    //     vertices[i] = vertex;
-    //     i++;
-    // }
-    // for (MyVertex vertex : quadC.GetVertices()) {
-    //     vertices[i] = vertex;
-    //     i++;
-    // }
-
-    //  //* Rainbow Cube
-    // MyVertex vertices[] = {
-    //     MyVertex(
-    //        -0.5f,  -0.5f, -0.5f, // position
-    //         1.0f,  0.0f, 0.0f,   // color
-    //         1.0f,  0.0f, 0.0f    // nextColor
-    //     ), // Bottom-left-back
-    //     MyVertex(
-    //         -0.5f,  0.5f, -0.5f, // position
-    //         0.0f,  1.0f, 0.0f,   // color
-    //         0.0f,  1.0f, 0.0f    // nextColor
-    //     ), // Top-left-back
-    //     MyVertex(
-    //         0.5f,  0.5f, -0.5f, // position
-    //         0.0f,  0.0f, 1.0f, // color
-    //         0.0f,  0.0f, 1.0f  // nextColor
-    //     ), // Top-right-front
-    //     MyVertex(
-    //         0.5f,  -0.5f, -0.5f, // position
-    //         1.0f,  1.0f, 0.0f,   // color
-    //         1.0f,  1.0f, 0.0f    // nextColor
-    //     ), // Bottom-right-back
-    //     MyVertex(
-    //         0.5f, -0.5f, 0.5f,  // position
-    //         1.0f,  0.0f, 1.0f,  // color
-    //         1.0f,  0.0f, 1.0f   // nextColor
-    //     ), // Bottom-right-front
-    //     MyVertex(
-    //         0.5f,  0.5f, 0.5f,  // position
-    //         0.0f,  1.0f, 1.0f,  // color
-    //         0.0f,  1.0f, 1.0f   // nextColor
-    //     ), // Top-right-front
-    //     MyVertex(
-    //         -0.5f,  0.5f, 0.5f, // position
-    //         1.0f,  1.0f, 1.0f,  // color
-    //         1.0f,  1.0f, 1.0f   // nextColor
-    //     ), // Top-left-front
-    //     MyVertex(
-    //         -0.5f,  -0.5f, 0.5f, // position
-    //         0.0f,  0.0f, 0.0f,   // color
-    //         0.0f,  0.0f, 0.0f    // nextColor
-    //     ), // Bottom-left-front
-    // };
-
-    // //* Rainbow Cube: Index Buffer Application
-    // unsigned int indices[] = {
-    //     //* FRONT
-    //     0, 1, 2,
-    //     2, 3, 0,
-    //     //* BACK
-    //     4, 5, 6,
-    //     6, 7, 4,
-    //     //* TOP
-    //     1, 6, 5,
-    //     5, 2, 1,
-    //     //* BOTTOM
-    //     7, 0, 3,
-    //     3, 4, 7,
-    //     //* RIGHT
-    //     3, 2, 5,
-    //     5, 4, 3,
-    //     //* LEFT
-    //     7, 6, 1,
-    //     1, 0, 7,
-    // };
-
-    //* Textured Cube
-    MyVector3 vertexPositions[] = {
-        MyVector3(
-           -0.5f,  -0.5f, -0.5f
-        ), // Bottom-left-back
-        MyVector3(
-            -0.5f,  0.5f, -0.5f
-        ), // Top-left-back
-        MyVector3(
-            0.5f,  0.5f, -0.5f
-        ), // Top-right-front
-        MyVector3(
-            0.5f,  -0.5f, -0.5f
-        ), // Bottom-right-back
-        MyVector3(
-            0.5f, -0.5f, 0.5f
-        ), // Bottom-right-front
-        MyVector3(
-            0.5f,  0.5f, 0.5f
-        ), // Top-right-front
-        MyVector3(
-            -0.5f,  0.5f, 0.5f
-        ), // Top-left-front
-        MyVector3(
-            -0.5f,  -0.5f, 0.5f
-        ), // Bottom-left-front
-    };
-
-    MyVector2 textureCoordinates[] = {
-        MyVector2(0.0f, 1.0f), // Top-left
-        MyVector2(0.0f, 0.0f), // Bottom-left
-        MyVector2(1.0f, 1.0f), // Top-right
-        MyVector2(1.0f, 0.0f), // Bottom-right
-    };
-
-    MyVertex vertices[] = {
-        //* FRONT FACE
-       MyVertex(vertexPositions[0], textureCoordinates[1]),
-       MyVertex(vertexPositions[1], textureCoordinates[0]),
-       MyVertex(vertexPositions[2], textureCoordinates[2]),
-       MyVertex(vertexPositions[3], textureCoordinates[3]),
-       //* BACK FACE
-       MyVertex(vertexPositions[4], textureCoordinates[1]),
-       MyVertex(vertexPositions[5], textureCoordinates[0]),
-       MyVertex(vertexPositions[6], textureCoordinates[2]),
-       MyVertex(vertexPositions[7], textureCoordinates[3]),
-       //* TOP FACE
-       MyVertex(vertexPositions[1], textureCoordinates[1]),
-       MyVertex(vertexPositions[6], textureCoordinates[0]),
-       MyVertex(vertexPositions[5], textureCoordinates[2]),
-       MyVertex(vertexPositions[2], textureCoordinates[3]),
-       //* BOTTOM FACE
-       MyVertex(vertexPositions[7], textureCoordinates[1]),
-       MyVertex(vertexPositions[0], textureCoordinates[0]),
-       MyVertex(vertexPositions[3], textureCoordinates[2]),
-       MyVertex(vertexPositions[4], textureCoordinates[3]),
-       //* RIGHT FACE
-       MyVertex(vertexPositions[3], textureCoordinates[1]),
-       MyVertex(vertexPositions[2], textureCoordinates[0]),
-       MyVertex(vertexPositions[5], textureCoordinates[2]),
-       MyVertex(vertexPositions[4], textureCoordinates[3]),
-       //* LEFT FACE
-       MyVertex(vertexPositions[7], textureCoordinates[1]),
-       MyVertex(vertexPositions[6], textureCoordinates[0]),
-       MyVertex(vertexPositions[1], textureCoordinates[2]),
-       MyVertex(vertexPositions[0], textureCoordinates[3])
-    };
-
-    //* Textured Cube: Index Buffer Application
-    unsigned int indices[] = {
-        //* FRONT
-        0, 1, 2,
-        2, 3, 0,
-        //* BACK
-        4, 5, 6,
-        6, 7, 4,
-        //* TOP
-        8, 9, 10,
-        10, 11, 8,
-        //* BOTTOM
-        12, 13, 14,
-        14, 15, 12,
-        //* RIGHT
-        16, 17, 18,
-        18, 19, 16,
-        //* LEFT
-        20, 21, 22,
-        22, 23, 20,
-    };
-    this->indexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateIndexBuffer(indices, ARRAYSIZE(indices));
-    if (!this->indexBuffer) {
-        std::cerr << "[ERROR]: Failed to create indexBuffer!" << std::endl;
-        throw std::exception("Failed to create indexBuffer!");
-        return;
-    }
-
+void MyAppWindow::InitializeShaders() {
     //* Vertex Shader Application
     void* vertexShaderByteCode = nullptr;
     size_t vertexShaderSize = 0;
@@ -509,13 +36,6 @@ void MyAppWindow::OnCreate() {
     this->vertexShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexShader(vertexShaderByteCode, vertexShaderSize);
     if (!this->vertexShader) {
         throw std::exception("Failed to create vertexShader!");
-        return;
-    }
-
-    //* Vertex Buffer Application
-    this->vertexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexBuffer(vertices, sizeof(MyVertex), ARRAYSIZE(vertices), vertexShaderByteCode, vertexShaderSize);
-    if (!this->vertexBuffer) {
-        throw std::exception("Failed to create vertexBuffer!");
         return;
     }
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
@@ -565,24 +85,16 @@ void MyAppWindow::OnCreate() {
     }
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
 
-    //* Constant Buffer Application
+}
+
+void MyAppWindow::InitializeConstantData() {
     if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO]: Setting constant buffer" << std::endl;
     this->constantData.time = 0;
     this->constantData.world.Translate(MyVector3(0.0f, 0.0f, 0.0f));
+    this->constantData.world.Scale(MyVector3(1.0f, 1.0f, 1.0f));
+    this->constantData.world.Rotate(MyVector3(0.0f, 0.0f, 0.0f));
     this->constantData.view.SetIdentity();
-    // this->constantData.projection.SetOrthographicLeftHand(
-    //     (this->GetWindowRect().right - this->GetWindowRect().left) / 200.0f,
-    //     (this->GetWindowRect().bottom - this->GetWindowRect().top) / 200.0f,
-    //     -4.0f,
-    //     4.0
-    // );
-    // this->constantData.projection.SetPerspectiveLeftHand(
-    //     45.0f * 3.14159265f / 180.0f, // FOV in radians
-    //     (this->GetWindowRect().right - this->GetWindowRect().left) / (float)(this->GetWindowRect().bottom - this->GetWindowRect().top),
-    //     0.001f, // Near plane
-    //     10000.0f // Far plane
-    // );
-    this->constantData.projection.SetMatrix(this->activeCamera->projectionMatrix);
+    this->constantData.projection = this->activeCamera->projectionMatrix;
     this->constantBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateConstantBuffer(&constantData, sizeof(MyConstant));
     if (!this->constantBuffer) {
         throw std::exception("Failed to create constantBuffer!");
@@ -590,33 +102,107 @@ void MyAppWindow::OnCreate() {
     }
 }
 
+void MyAppWindow::DebugLaunchFunction() {
+    //!! Experimental
+    //* Texture Application
+    this->sampleTexture = MyGraphicsEngine::GetInstance()->GetTextureManager()->CreateTextureFromFile(SAMPLE_TEXTURE_DIRECTORY.c_str());
+    //* Mesh Application
+    this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
+}
+
+void MyAppWindow::UpdateDeltaTime() {
+    this->oldTime = this->newTime;
+    this->newTime = ::GetTickCount64();
+    this->deltaTime = this->oldTime ? (this->newTime - this->oldTime) / 1000.0f : 0.0f;
+    this->constantData.time += this->deltaTime;
+}
+
+void MyAppWindow::UpdateObjects() {
+    for (MyMeshPtr mesh : this->meshes)
+        mesh->Update(this->deltaTime);
+
+    //* Update Active Camera
+    this->activeCamera->Update(this->deltaTime);
+    this->constantData.view = this->activeCamera->transform->worldMatrix;
+}
+
+void MyAppWindow::UpdateConstantBuffer() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Updating constant buffer..." << std::endl;
+    this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext(), &this->constantData);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->vertexShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->hullShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->domainShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->pixelShader, this->constantBuffer);
+}
+
+void MyAppWindow::UpdateShaders() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Updating shaders..." << std::endl;
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexShader(this->vertexShader);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->hullShader);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->domainShader);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->pixelShader);
+}
+
+//* ╔════════════════════════════════╗
+//* ║ Virtual / Overridden Functions ║
+//* ╚════════════════════════════════╝
+void MyAppWindow::OnCreate() {
+    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyAppWindow::OnCreate called" << std::endl;
+
+    MyWindow::OnCreate();
+
+    if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Registering MyAppWindow as input listener" << std::endl;
+    MyInputSystem::GetInstance()->windowWidth = this->width;
+    MyInputSystem::GetInstance()->windowHeight = this->height;
+
+    MyInputSystem::GetInstance()->AddListener(this);
+    MyInputSystem::GetInstance()->SetCursorVisibility(false);
+
+    //* Create First Camera
+    try {
+        this->cameras.push_back(std::make_shared<MyCamera>());
+        // this->activeCamera->SetOrthographicLeftHand(
+        //     this->width / 200.0f,
+        //     this->height / 200.0f,
+        //     -4.0f,
+        //     4.0
+        // );
+        this->cameras[0]->SetPerspectiveLeftHand(
+            45.0f * 3.14159265f / 180.0f, // FOV in radians
+            this->width / (float)this->height,
+            0.00001f, // Near plane
+            10000.0f // Far plane
+        );
+        this->activeCamera = this->cameras[0];
+        if (!this->activeCamera) {
+            std::cerr << "[ERROR]: Failed to create camera in MyAppWindow::OnCreate" << std::endl;
+            throw std::exception("Failed to create camera in MyAppWindow::OnCreate");
+        }
+        MyInputSystem::GetInstance()->AddListener(this->activeCamera.get());
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "[ERROR]: Exception in MyAppWindow::OnCreate: " << ex.what() << std::endl;
+    }
+
+    //* Create Swapchain
+    swapChain = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateSwapChain(this->windowHandle, this->width, this->height);
+    this->InitializeShaders();
+    this->InitializeConstantData();
+    this->DebugLaunchFunction();
+}
+
 void MyAppWindow::OnUpdate() {
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyAppWindow::OnUpdate called" << std::endl;
 
     MyWindow::OnUpdate();
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: OnUpdate called" << std::endl;
     MyInputSystem::GetInstance()->Update();
     this->UpdateObjects();
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: OnUpdate called" << std::endl;
+
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVector4(0.3f, 0.3f, 0.3f, 1.0f));
-
-    RECT windowRectangle = this->GetWindowRect();
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetViewPortSize(windowRectangle.right - windowRectangle.left, windowRectangle.bottom - windowRectangle.top);
-
-
-
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->hullShader, this->constantBuffer);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->domainShader, this->constantBuffer);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->vertexShader, this->constantBuffer);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->pixelShader, this->constantBuffer);
-
-    // Set shaders before drawing
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Setting vertex and pixel shaders" << std::endl;
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->hullShader);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->domainShader);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexShader(this->vertexShader);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->pixelShader);
-
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetViewPortSize(this->width, this->height);
+    this->UpdateConstantBuffer();
+    this->UpdateShaders();
     // Set texture for pixel shader
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: Setting texture: " << this->sampleTexture << std::endl;
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetTexture(this->pixelShader, this->sampleTexture);
@@ -624,22 +210,8 @@ void MyAppWindow::OnUpdate() {
     // Set sampler state for pixel shader
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetSamplerState();
 
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Setting vertex buffer: " << this->vertexBuffer << std::endl;
-    //! Using this->sampleMesh's vertex buffer
-    // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexBuffer(this->vertexBuffer);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexBuffer(this->sampleMesh->GetVertexBuffer());
-
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Setting index buffer: " << this->indexBuffer << std::endl;
-    //! Using this->sampleMesh's index buffer
-    // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetIndexBuffer(this->indexBuffer);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetIndexBuffer(this->sampleMesh->GetIndexBuffer());
-
-    // Draw non-indexed
-    // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawTriangles(this->vertexBuffer->GetVertexCount(), 0);
-    // Draw indexed
-    //! Using this->sampleMesh's index buffer
-    // MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawIndexedTriangles(this->indexBuffer->GetIndexCount(), 0, 0);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawIndexedTriangles(this->sampleMesh->GetIndexBuffer()->GetIndexCount(), 0, 0);
+    for (MyMeshPtr mesh : this->meshes)
+        mesh->Draw();
 
     if (this->swapChain) {
         if (LOG_INFO_WINDOW) std::cout << "[INFO]: Presenting swap chain" << std::endl;
@@ -667,11 +239,13 @@ void MyAppWindow::OnDestroy() {
 }
 
 void MyAppWindow::OnSetFocus() {
+    MyInputSystem::GetInstance()->lockMouse = true;
     MyInputSystem::GetInstance()->AddListener(this);
     MyInputSystem::GetInstance()->AddListener(this->activeCamera.get());
 }
 
 void MyAppWindow::OnKillFocus() {
+    MyInputSystem::GetInstance()->lockMouse = false;
     MyInputSystem::GetInstance()->RemoveListener(this);
     MyInputSystem::GetInstance()->RemoveListener(this->activeCamera.get());
 }
@@ -742,7 +316,7 @@ void MyAppWindow::OnKeyUp(int keyCode) {
     }
 }
 
-void MyAppWindow::OnMouseMove(const MyScreenPoint& deltaMousePosition) {
+void MyAppWindow::OnMouseMove(const MyVector2& deltaMousePosition) {
     if (LOG_INFO_INPUT_SYSTEM_MOUSE && false) std::cout << "[INFO]: MyAppWindow::OnMouseMove called with deltaMousePosition: ("
         << deltaMousePosition.x << ", " << deltaMousePosition.y << ")" << std::endl;
 }
@@ -752,7 +326,7 @@ void MyAppWindow::OnLMBDown(const MyScreenPoint& mousePosition) {
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 
-void MyAppWindow::OnLMBHold(const MyScreenPoint& deltaMousePosition) {
+void MyAppWindow::OnLMBHold(const MyVector2& deltaMousePosition) {
 }
 
 void MyAppWindow::OnLMBUp(const MyScreenPoint& mousePosition) {
@@ -765,7 +339,7 @@ void MyAppWindow::OnRMBDown(const MyScreenPoint& mousePosition) {
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
 }
 
-void MyAppWindow::OnRMBHold(const MyScreenPoint& deltaMousePosition) {
+void MyAppWindow::OnRMBHold(const MyVector2& deltaMousePosition) {
 }
 
 void MyAppWindow::OnRMBUp(const MyScreenPoint& mousePosition) {

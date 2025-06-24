@@ -1,64 +1,55 @@
 #pragma once
-#include <Windows.h>
-#include <WinUser.h>
+
+#include <iostream>
+#include <comdef.h>
 #include <exception>
-#include "Graphics/MyGraphicsEngine.hpp"
-#include "Core/Input System/MyInputSystem.hpp"
+#include "Core/Prerequisites.hpp"
+#include "Math/MyVector3.hpp"
+#include "Math/MyMatrix4x4.hpp"
 
 namespace DX3D {
-    class MyWindow {
+    class MyTransform {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
-    private:
-        bool running{ false };
-        bool initialized{ false };
-    protected:
-        unsigned int width = 0;
-        unsigned int height = 0;
     public:
-        HWND windowHandle{ nullptr };
+        MyMatrix4x4 worldMatrix;
+        MyVector3 position;
+        MyVector3 rotation;
+        MyVector3 scale;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyWindow();
-        ~MyWindow();
+        MyTransform() : position(MyVector3()),
+            rotation(MyVector3()),
+            scale(MyVector3(1.0f)) {
+        }
+        ~MyTransform() {}
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
-        bool Broadcast();
     public:
+        void Update(float deltaTime) {
+            this->worldMatrix.SetIdentity();
+            this->worldMatrix.Scale(this->scale);
+            this->worldMatrix.Rotate(this->rotation);
+            this->worldMatrix.Translate(this->position);
+        }
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
     protected:
     public:
-        virtual void OnCreate();
-        virtual void OnUpdate();
-        virtual void OnDestroy();
-
-        virtual void OnSetFocus();
-        virtual void OnKillFocus();
 
         //* ╔═══════════════════╗
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        bool IsRunning() {
-            if (this->running)
-                this->Broadcast();
-            return this->running;
-        }
-        RECT GetWindowRect() const {
-            RECT rect;
-            GetClientRect(windowHandle, &rect);
-            return rect;
-        }
     };
 } // namespace DX3D
 

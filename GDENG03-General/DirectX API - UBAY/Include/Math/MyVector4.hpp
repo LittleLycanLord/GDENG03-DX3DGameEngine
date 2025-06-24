@@ -1,4 +1,6 @@
 #pragma once
+#include<iostream>
+#include<string>
 
 namespace DX3D {
     class MyVector4 {
@@ -43,6 +45,9 @@ namespace DX3D {
             result.z = A.x * (B.y * C.w - C.y * B.w) - A.y * (B.x * C.w - C.x * B.w) + A.w * (B.x * C.y - C.x * B.y);
             result.w = -(A.x * (B.y * C.z - C.y * B.z) - A.y * (B.x * C.z - C.x * B.z) + A.z * (B.x * C.y - C.x * B.y));
             return result;
+        }
+        void PrintValues(std::string label = "") {
+            std::cout << "[" << label << "]: (" << this->x << ", " << this->y << ", " << this->z << ", " << this->w << ")" << std::endl;
         }
 
         //* ╔════════════════════════════════╗
