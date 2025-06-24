@@ -9,6 +9,7 @@ bool LOG_ERROR_GENERAL = true;
 
 // Logging toggles
 bool LOG_INFO_WINDOW = false;
+bool LOG_INFO_WINDOW_UPDATE = false;
 bool LOG_INFO_CAMERA = false;
 bool LOG_INFO_GRAPHICS_ENGINE = false;
 bool LOG_INFO_RENDER_SYSTEM = false;

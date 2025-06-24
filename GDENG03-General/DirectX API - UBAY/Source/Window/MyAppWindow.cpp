@@ -4,6 +4,7 @@
 using namespace DX3D;
 
 extern bool LOG_INFO_WINDOW;
+extern bool LOG_INFO_WINDOW_UPDATE;
 extern bool LOG_INFO_CONSTANT_BUFFER;
 extern bool LOG_INFO_INPUT_SYSTEM_KEYBOARD;
 extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
@@ -89,14 +90,14 @@ void MyAppWindow::InitializeShaders() {
 
 void MyAppWindow::InitializeConstantData() {
     if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO]: Setting constant buffer" << std::endl;
-    this->constantData.time = 0;
-    this->constantData.world.Translate(MyVector3(0.0f, 0.0f, 0.0f));
-    this->constantData.world.Scale(MyVector3(1.0f, 1.0f, 1.0f));
-    this->constantData.world.Rotate(MyVector3(0.0f, 0.0f, 0.0f));
-    this->constantData.view.SetIdentity();
-    this->constantData.projection = this->activeCamera->projectionMatrix;
-    this->constantBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateConstantBuffer(&constantData, sizeof(MyConstant));
-    if (!this->constantBuffer) {
+    this->globalConstantData.time = 0;
+    this->globalConstantData.world.Translate(MyVector3(0.0f, 0.0f, 0.0f));
+    this->globalConstantData.world.Scale(MyVector3(1.0f, 1.0f, 1.0f));
+    this->globalConstantData.world.Rotate(MyVector3(0.0f, 0.0f, 0.0f));
+    this->globalConstantData.view.SetIdentity();
+    this->globalConstantData.projection = this->activeCamera->projectionMatrix;
+    this->globalConstantBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateConstantBuffer(&globalConstantData, sizeof(MyConstant));
+    if (!this->globalConstantBuffer) {
         throw std::exception("Failed to create constantBuffer!");
         return;
     }
@@ -107,14 +108,21 @@ void MyAppWindow::DebugLaunchFunction() {
     //* Texture Application
     this->sampleTexture = MyGraphicsEngine::GetInstance()->GetTextureManager()->CreateTextureFromFile(SAMPLE_TEXTURE_DIRECTORY.c_str());
     //* Mesh Application
-    this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
+    this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
+    this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
+    this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
+
+    this->meshes[0]->time = 0.0f;
+    this->meshes[1]->time = 2.0f;
+    this->meshes[2]->time = 4.0f;
 }
 
 void MyAppWindow::UpdateDeltaTime() {
     this->oldTime = this->newTime;
     this->newTime = ::GetTickCount64();
     this->deltaTime = this->oldTime ? (this->newTime - this->oldTime) / 1000.0f : 0.0f;
-    this->constantData.time += this->deltaTime;
+    this->globalConstantData.time += this->deltaTime;
+    if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Updating deltaTime... Lifetime(" << this->globalConstantData.time << "), deltaTime(" << this->deltaTime << ")" << std::endl;
 }
 
 void MyAppWindow::UpdateObjects() {
@@ -123,26 +131,32 @@ void MyAppWindow::UpdateObjects() {
 
     //* Update Active Camera
     this->activeCamera->Update(this->deltaTime);
-    this->constantData.view = this->activeCamera->transform->worldMatrix;
+    this->globalConstantData.view = this->activeCamera->transform->worldMatrix;
 }
 
 void MyAppWindow::UpdateConstantBuffer() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Updating constant buffer..." << std::endl;
-    this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext(), &this->constantData);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->vertexShader, this->constantBuffer);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->hullShader, this->constantBuffer);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->domainShader, this->constantBuffer);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->pixelShader, this->constantBuffer);
+    if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Updating constant buffer..." << std::endl;
+    this->globalConstantBuffer->Update(MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext(), &this->globalConstantData);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->vertexShader, this->globalConstantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->hullShader, this->globalConstantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->domainShader, this->globalConstantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->pixelShader, this->globalConstantBuffer);
 }
 
 void MyAppWindow::UpdateShaders() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Updating shaders..." << std::endl;
+    if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Updating shaders..." << std::endl;
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexShader(this->vertexShader);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->hullShader);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->domainShader);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->pixelShader);
 }
 
+void MyAppWindow::DrawLoop() {
+    if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Drawing meshes..." << std::endl;
+    for (MyMeshPtr mesh : this->meshes)
+        mesh->Draw(this->vertexShader, this->hullShader, this->domainShader, this->pixelShader,
+            this->activeCamera->transform->worldMatrix, this->activeCamera->projectionMatrix, this->globalConstantData.time);
+}
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
@@ -192,29 +206,27 @@ void MyAppWindow::OnCreate() {
 }
 
 void MyAppWindow::OnUpdate() {
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyAppWindow::OnUpdate called" << std::endl;
+    if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: MyAppWindow::OnUpdate called" << std::endl;
 
     MyWindow::OnUpdate();
     MyInputSystem::GetInstance()->Update();
     this->UpdateObjects();
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: OnUpdate called" << std::endl;
 
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVector4(0.3f, 0.3f, 0.3f, 1.0f));
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetViewPortSize(this->width, this->height);
     this->UpdateConstantBuffer();
     this->UpdateShaders();
     // Set texture for pixel shader
-    if (LOG_INFO_WINDOW) std::cout << "[INFO]: Setting texture: " << this->sampleTexture << std::endl;
+    if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Setting texture: " << this->sampleTexture << std::endl;
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetTexture(this->pixelShader, this->sampleTexture);
 
     // Set sampler state for pixel shader
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetSamplerState();
 
-    for (MyMeshPtr mesh : this->meshes)
-        mesh->Draw();
+    this->DrawLoop();
 
     if (this->swapChain) {
-        if (LOG_INFO_WINDOW) std::cout << "[INFO]: Presenting swap chain" << std::endl;
+        if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Presenting swap chain" << std::endl;
         this->swapChain->Present(true);
     }
 
@@ -230,7 +242,7 @@ void MyAppWindow::OnDestroy() {
     MyWindow::OnDestroy();
     this->vertexBuffer = nullptr;
     this->indexBuffer = nullptr;
-    this->constantBuffer = nullptr;
+    this->globalConstantBuffer = nullptr;
     this->hullShader = nullptr;
     this->domainShader = nullptr;
     this->vertexShader = nullptr;

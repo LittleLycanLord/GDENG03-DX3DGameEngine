@@ -13,6 +13,8 @@
 #include "Core/Primitives/MyQuad.hpp"
 #include "Core/Input System/MyInputSystem.hpp"
 #include "Core/Input System/MyInputListener.hpp"
+#include "Core/Resource System/Managers/MyTextureManager.hpp"
+#include "Core/Resource System/Managers/MyMeshManager.hpp"
 #include "Core/Resource System/Managers/MyTexture.hpp"
 #include "Core/Resource System/Managers/MyMesh.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
@@ -32,7 +34,8 @@ namespace DX3D {
     private:
         MySwapChainPtr swapChain{ nullptr };
         MyVertexBufferPtr vertexBuffer{ nullptr };
-        MyConstantBufferPtr constantBuffer{ nullptr };
+        MyConstant globalConstantData;
+        MyConstantBufferPtr globalConstantBuffer{ nullptr };
         MyIndexBufferPtr indexBuffer{ nullptr };
         MyHullShaderPtr hullShader{ nullptr };
         MyDomainShaderPtr domainShader{ nullptr };
@@ -47,7 +50,6 @@ namespace DX3D {
         ULONGLONG newTime = 0;
         float deltaTime = 0;
 
-        MyConstant constantData;
 
         //* Experimental variables
         float experimentalDelta = 0;
@@ -76,6 +78,7 @@ namespace DX3D {
         void UpdateObjects();
         void UpdateConstantBuffer();
         void UpdateShaders();
+        void DrawLoop();
     public:
 
         //* ╔════════════════════════════════╗

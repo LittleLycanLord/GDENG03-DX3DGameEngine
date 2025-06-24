@@ -17,6 +17,10 @@ MyTextureManager::~MyTextureManager() {
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
+MyTexturePtr MyTextureManager::CreateUniqueTextureFromFile(const wchar_t* resourcePath) {
+    return std::make_shared<MyTexture>(resourcePath);
+}
+
 
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║

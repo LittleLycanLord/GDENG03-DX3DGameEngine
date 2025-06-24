@@ -54,6 +54,12 @@ indices() {
         MyGraphicsEngine::GetInstance()->GetShaderByteCodeAndSize(&this->layoutShaderByteCode, &this->layoutShaderSize);
         this->vertexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexBuffer(&this->vertices[0], sizeof(MyMeshVertex), (UINT)this->vertices.size(), this->layoutShaderByteCode, this->layoutShaderSize);
         this->indexBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateIndexBuffer(&this->indices[0], (UINT)this->indices.size());
+
+        this->constantData.world = this->transform->worldMatrix; // Initial world matrix
+        this->constantData.view.SetIdentity();                   // Set to identity or camera view
+        this->constantData.projection.SetIdentity();             // Set to identity or camera projection
+        this->constantData.time = 0.0f;                          // Initial time
+        this->constantBuffer = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateConstantBuffer(&this->constantData, sizeof(MyConstant));
     }
     else {
         if (!this->error.empty())
@@ -72,9 +78,30 @@ MyMesh::~MyMesh() {
 //* ║ Functions ║
 //* ╚═══════════╝
 void MyMesh::Update(float deltaTime) {
+    //* Transform Unit Test
+    this->time += deltaTime;
+    float radius = 3.0f;
+    this->transform->position.x = radius * cosf(this->time);
+    this->transform->position.z = radius * sinf(this->time);
+    this->transform->rotation.y = this->time;
+    this->transform->scale = MyVector3(1.0f + 0.5f * sinf(this->time));
+
     this->transform->Update(deltaTime);
 }
-void MyMesh::Draw() {
+void MyMesh::Draw(MyVertexShaderPtr vertexShader, MyHullShaderPtr hullShader, MyDomainShaderPtr domainShader, MyPixelShaderPtr pixelShader,
+    const MyMatrix4x4& view, const MyMatrix4x4& projection, float time) {
+    this->constantData.world = this->transform->worldMatrix;
+    this->constantData.view = view;
+    this->constantData.projection = projection;
+    this->constantData.time = time;
+
+    this->constantBuffer->Update(MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext(), &this->constantData);
+
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(vertexShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(hullShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(domainShader, this->constantBuffer);
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(pixelShader, this->constantBuffer);
+
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexBuffer(this->vertexBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetIndexBuffer(this->indexBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->DrawIndexedTriangles(this->indexBuffer->GetIndexCount(), 0, 0);

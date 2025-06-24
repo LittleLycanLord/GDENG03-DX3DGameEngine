@@ -28,6 +28,7 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
+        MyTexturePtr CreateUniqueTextureFromFile(const wchar_t* resourcePath);
         MyTexturePtr CreateTextureFromFile(const wchar_t* resourcePath) {
             return std::static_pointer_cast<MyTexture>(CreateResourceFromFile(resourcePath));
         }

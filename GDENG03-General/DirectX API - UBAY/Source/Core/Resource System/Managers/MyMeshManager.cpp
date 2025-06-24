@@ -17,6 +17,9 @@ MyMeshManager::~MyMeshManager() {
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
+MyMeshPtr MyMeshManager::CreateUniqueMeshFromFile(const wchar_t* resourcePath) {
+    return std::make_shared<MyMesh>(resourcePath);
+}
 
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║

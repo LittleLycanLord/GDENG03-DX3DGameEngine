@@ -14,6 +14,7 @@
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/Buffers/MyVertexBuffer.hpp"
 #include "Graphics/Buffers/MyIndexBuffer.hpp"
+#include "Math/MyConstant.hpp"
 #include "Math/MyMeshVertex.hpp"
 #include "Math/MyVector3.hpp"
 #include "Math/MyVector2.hpp"
@@ -36,12 +37,17 @@ namespace DX3D {
 
         MyVertexBufferPtr vertexBuffer;
         MyIndexBufferPtr indexBuffer;
+        MyConstant constantData;
+        MyConstantBufferPtr constantBuffer;
         void* layoutShaderByteCode;
         size_t layoutShaderSize = 0;
+
+
 
         friend class MyDeviceContext;
     public:
         MyTransformPtr transform;
+        float time = 0;
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
@@ -55,7 +61,8 @@ namespace DX3D {
     private:
     public:
         void Update(float deltaTime);
-        void Draw();
+        void Draw(MyVertexShaderPtr vertexShader, MyHullShaderPtr hullShader, MyDomainShaderPtr domainShader, MyPixelShaderPtr pixelShader,
+            const MyMatrix4x4& view, const MyMatrix4x4& projection, float time);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

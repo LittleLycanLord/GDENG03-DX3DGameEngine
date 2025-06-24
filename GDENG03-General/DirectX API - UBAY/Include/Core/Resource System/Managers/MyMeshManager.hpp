@@ -28,6 +28,7 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
+        MyMeshPtr CreateUniqueMeshFromFile(const wchar_t* resourcePath);
         MyMeshPtr CreateMeshFromFile(const wchar_t* resourcePath) {
             return std::static_pointer_cast<MyMesh>(CreateResourceFromFile(resourcePath));
         }
