@@ -2,6 +2,9 @@
 #include <Windows.h>
 #include <vector>
 #include <exception>
+#include "imgui.h"
+#include "backends/imgui_impl_dx11.h"
+#include "backends/imgui_impl_win32.h"
 #include "Window/MyWindow.hpp"
 #include "Math/MyMatrix4x4.hpp"
 #include "Math/MyVector3.hpp"
@@ -42,6 +45,7 @@ namespace DX3D {
         MyVertexShaderPtr vertexShader{ nullptr };
         MyPixelShaderPtr pixelShader{ nullptr };
 
+        bool freeMouse{ false };
         MyCameraPtr activeCamera{ nullptr };
         std::vector<MyCameraPtr> cameras;
         std::vector<MyMeshPtr> meshes;
@@ -74,6 +78,8 @@ namespace DX3D {
         void DebugLaunchFunction();
 
         //* Runtime
+        void ImGuiUpdate();
+
         void UpdateDeltaTime();
         void UpdateObjects();
         void UpdateConstantBuffer();

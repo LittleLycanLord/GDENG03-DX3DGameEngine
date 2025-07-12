@@ -3,15 +3,17 @@
 
 using namespace DX3D;
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND windowHandle, UINT message, WPARAM wParameters, LPARAM lParameters);
 extern bool LOG_INFO_WINDOW;
 
 //* ╔═════════════════════════════════╗
 //* ║ Magical Shit I Don't Understand ║
 //* ╚═════════════════════════════════╝
 LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParameters, LPARAM lParameters) {
+    if (ImGui_ImplWin32_WndProcHandler(windowHandle, message, wParameters, lParameters))
+        return true;
     switch (message) {
     case WM_CREATE: {
-
             break;
         }
     case WM_SETFOCUS: {

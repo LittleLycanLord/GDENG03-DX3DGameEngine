@@ -42,6 +42,8 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
+        // Add this getter for ImGui/DirectX interop
+        void* GetShaderResourceView() const { return (void*)D3DShaderResourceView; }
     };
 } // namespace DX3D
 
