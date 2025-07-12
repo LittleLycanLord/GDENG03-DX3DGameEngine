@@ -4,6 +4,7 @@
 #include <exception>
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Core/Input System/MyInputSystem.hpp"
+#include "backends/imgui_impl_win32.h"
 
 namespace DX3D {
     class MyWindow {

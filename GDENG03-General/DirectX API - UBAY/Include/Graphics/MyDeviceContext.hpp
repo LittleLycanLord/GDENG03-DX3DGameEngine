@@ -65,6 +65,9 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
+        ID3D11DeviceContext* GetD3DDeviceContext() const {
+            return this->D3DDeviceContext;
+        }
 
     };
 } // namespace DX3D

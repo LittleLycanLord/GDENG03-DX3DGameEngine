@@ -15,6 +15,11 @@ extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY;
 extern const std::wstring SAMPLE_MESH_DIRECTORY;
+extern const std::wstring IMGUI_LOGO_DIRECTORY;
+
+static ImVec4 myColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f); // Default: Red
+static bool freeMouse = false; // Toggle for mouse/camera control
+static void* imguiLogoSRV = nullptr; // Holds the logo texture SRV
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
@@ -117,6 +122,92 @@ void MyAppWindow::DebugLaunchFunction() {
     this->meshes[2]->time = 4.0f;
 }
 
+void MyAppWindow::ImGuiUpdate() {
+    if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: ImGui Update..." << std::endl;
+
+    // Start ImGui frame (should already be in your render loop)
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    static bool showCredits = false;
+    static bool showColorPickerUI = false;
+    // freeMouse is now file-static
+
+    // Menu Bar
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("About")) {
+            if (ImGui::MenuItem("Credits")) {
+                showCredits = true;
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("UI")) {
+            if (ImGui::MenuItem("Color Picker")) {
+                showColorPickerUI = true;
+            }
+            ImGui::MenuItem("Free Mouse", nullptr, &freeMouse);
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+
+    // Handle mouse/camera toggle
+    static bool prevFreeMouse = false;
+    if (freeMouse != prevFreeMouse) {
+        MyInputSystem::GetInstance()->SetCursorVisibility(freeMouse);
+        MyInputSystem::GetInstance()->lockMouse = !freeMouse;
+        prevFreeMouse = freeMouse;
+    }
+
+    // Credits Modal
+    if (showCredits) {
+        ImGui::OpenPopup("Credits");
+    }
+    // Load logo texture once
+    if (!imguiLogoSRV && !IMGUI_LOGO_DIRECTORY.empty()) {
+        auto tex = MyGraphicsEngine::GetInstance()->GetTextureManager()->CreateTextureFromFile(IMGUI_LOGO_DIRECTORY.c_str());
+        if (tex) imguiLogoSRV = tex->GetShaderResourceView();
+    }
+
+    if (ImGui::BeginPopupModal("Credits", &showCredits, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        if (imguiLogoSRV) {
+            ImGui::Image(imguiLogoSRV, ImVec2(128, 128));
+        }
+        else {
+            ImGui::Button("DLSU Logo", ImVec2(128, 128));
+        }
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        ImGui::Text("De La Salle University");
+        ImGui::Text(" ");
+        ImGui::Text("Developer: Conrad Ubay");
+        ImGui::Text(" ");
+        ImGui::Text("Acknowledgments:");
+        ImGui::BulletText("Sir Neil Patrick Delgallego's GDEND03 Course");
+        ImGui::BulletText("Mostly inspired by Pardcode's playlist \"Game Engine Tutorial Series\" on YouTube");
+        if (ImGui::Button("Close")) {
+            showCredits = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+
+        ImGui::EndPopup();
+    }
+
+    // Color Picker Placeholder UI
+    if (showColorPickerUI) {
+        ImGui::Begin("Color Picker UI", &showColorPickerUI);
+        ImGui::Text("Color Picker Placeholder");
+        ImGui::ColorPicker4("Color Wheel", (float*)&myColor);
+        ImGui::End();
+    }
+
+    // Render ImGui
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
 void MyAppWindow::UpdateDeltaTime() {
     this->oldTime = this->newTime;
     this->newTime = ::GetTickCount64();
@@ -172,6 +263,21 @@ void MyAppWindow::OnCreate() {
     MyInputSystem::GetInstance()->AddListener(this);
     MyInputSystem::GetInstance()->SetCursorVisibility(false);
 
+    //* Initialize ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    // Setup ImGui style
+    ImGui::StyleColorsDark();
+
+    // Initialize ImGui for Win32 + DX11
+    ImGui_ImplWin32_Init(this->windowHandle);
+    ImGui_ImplDX11_Init(
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetD3DDevice(),
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->GetD3DDeviceContext()
+    );
+
     //* Create First Camera
     try {
         this->cameras.push_back(std::make_shared<MyCamera>());
@@ -214,6 +320,8 @@ void MyAppWindow::OnUpdate() {
 
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVector4(0.3f, 0.3f, 0.3f, 1.0f));
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetViewPortSize(this->width, this->height);
+
+
     this->UpdateConstantBuffer();
     this->UpdateShaders();
     // Set texture for pixel shader
@@ -225,6 +333,7 @@ void MyAppWindow::OnUpdate() {
 
     this->DrawLoop();
 
+    this->ImGuiUpdate();
     if (this->swapChain) {
         if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Presenting swap chain" << std::endl;
         this->swapChain->Present(true);
@@ -239,6 +348,9 @@ void MyAppWindow::OnDestroy() {
     if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Removing MyAppWindow as input listener" << std::endl;
     MyInputSystem::GetInstance()->RemoveListener(this);
 
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
     MyWindow::OnDestroy();
     this->vertexBuffer = nullptr;
     this->indexBuffer = nullptr;
@@ -274,6 +386,9 @@ void MyAppWindow::OnKeyDown(int keyCode) {
     case 'N':
         if (LOG_INFO_WINDOW) std::cout << "[INFO]: N pressed, wireframe mode disabled" << std::endl;
         MyGraphicsEngine::GetInstance()->GetRenderSystem()->ToggleWireframeMode(false);
+        break;
+    case 'L':
+        freeMouse = !freeMouse;
         break;
     default:
         if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Unhandled key down: " << keyCode << std::endl;
