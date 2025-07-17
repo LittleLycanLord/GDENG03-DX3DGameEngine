@@ -1,5 +1,6 @@
 struct VS_INPUT {
     float3 position : POSITION0;
+    float3 normal : NORMAL0;
     float2 textureCoordinate : TEXCOORD0;
 };
 struct VS_TEXTURED_OUTPUT {

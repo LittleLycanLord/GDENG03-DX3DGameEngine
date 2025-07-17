@@ -366,8 +366,13 @@ void MyAppWindow::UpdateShaders() {
 
 void MyAppWindow::DrawLoop() {
     if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Drawing meshes..." << std::endl;
+    
+    // Use lighting shaders if enabled, otherwise use standard shaders
+    MyVertexShaderPtr vertexShaderToUse = this->useLightingShaders ? this->lightingVertexShader : this->vertexShader;
+    MyPixelShaderPtr pixelShaderToUse = this->useLightingShaders ? this->lightingPixelShader : this->pixelShader;
+    
     for (MyMeshPtr mesh : this->meshes)
-        mesh->Draw(this->vertexShader, this->hullShader, this->domainShader, this->pixelShader,
+        mesh->Draw(vertexShaderToUse, this->hullShader, this->domainShader, pixelShaderToUse,
             this->activeCamera->transform->worldMatrix, this->activeCamera->projectionMatrix, this->globalConstantData.time);
 }
 //* ╔════════════════════════════════╗
@@ -463,9 +468,10 @@ void MyAppWindow::OnUpdate() {
 
     this->UpdateConstantBuffer();
     this->UpdateShaders();
-    // Set texture for pixel shader
+    // Set texture for the current pixel shader (lighting or standard)
     if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Setting texture: " << this->sampleTexture << std::endl;
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetTexture(this->pixelShader, this->sampleTexture);
+    MyPixelShaderPtr currentPixelShader = this->useLightingShaders ? this->lightingPixelShader : this->pixelShader;
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetTexture(currentPixelShader, this->sampleTexture);
 
     // Set sampler state for pixel shader
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetSamplerState();

@@ -11,20 +11,26 @@ namespace DX3D {
         //* ╚════════════╝
     public:
         MyVector3 position;
+        MyVector3 normal;
         MyVector2 textureCoordinates;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyMeshVertex() : position(), textureCoordinates() {}
+        MyMeshVertex() : position(), normal(), textureCoordinates() {}
 
+        MyMeshVertex(MyVector3 position, MyVector3 normal, MyVector2 textureCoordinates)
+            : position(position), normal(normal), textureCoordinates(textureCoordinates) {
+        }
+
+        // Backward compatibility constructor (provides default normal)
         MyMeshVertex(MyVector3 position, MyVector2 textureCoordinates)
-            : position(position), textureCoordinates(textureCoordinates) {
+            : position(position), normal(MyVector3(0.0f, 1.0f, 0.0f)), textureCoordinates(textureCoordinates) {
         }
 
         MyMeshVertex(const MyMeshVertex& other)
-            : position(other.position), textureCoordinates(other.textureCoordinates) {
+            : position(other.position), normal(other.normal), textureCoordinates(other.textureCoordinates) {
         }
 
         //* ╔═══════════╗
@@ -34,14 +40,15 @@ namespace DX3D {
         // Get the input layout description for this vertex format
         static D3D11_INPUT_ELEMENT_DESC* GetInputLayout() {
             static D3D11_INPUT_ELEMENT_DESC layout[] = {
-                { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,                          D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,                                         D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(MyMeshVertex, normal),           D3D11_INPUT_PER_VERTEX_DATA, 0 },
                 { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, offsetof(MyMeshVertex, textureCoordinates), D3D11_INPUT_PER_VERTEX_DATA, 0 }
             };
             return layout;
         }
 
         static UINT GetInputLayoutCount() {
-            return 2;
+            return 3;
         }
 
         static UINT GetVertexSize() {
@@ -50,7 +57,7 @@ namespace DX3D {
 
         // Validate vertex data
         bool IsValid() const {
-            return position.IsValid() && textureCoordinates.IsValid();
+            return position.IsValid() && normal.IsValid() && textureCoordinates.IsValid();
         }
     };
 } // namespace DX3D

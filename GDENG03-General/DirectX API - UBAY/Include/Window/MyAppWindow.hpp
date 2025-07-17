@@ -56,7 +56,7 @@ namespace DX3D {
         //* ╚═══════════════════════════╝
         MyVertexShaderPtr lightingVertexShader{ nullptr };
         MyPixelShaderPtr lightingPixelShader{ nullptr };
-        bool useLightingShaders{ true };
+        bool useLightingShaders{ false };
 
         //* ╔═══════════════════════════╗
         //* ║ Game Objects & Camera     ║

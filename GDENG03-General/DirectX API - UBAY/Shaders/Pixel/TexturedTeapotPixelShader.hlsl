@@ -12,5 +12,5 @@ cbuffer MyConstant: register(b0) {
     float time;
 };
 float4 main(VS_TEXTURED_OUTPUT input) : SV_TARGET {
-    return MyTexture.Sample(Sampler, input.textureCoordinate * 0.5);
+    return MyTexture.Sample(Sampler, input.textureCoordinate);
 }

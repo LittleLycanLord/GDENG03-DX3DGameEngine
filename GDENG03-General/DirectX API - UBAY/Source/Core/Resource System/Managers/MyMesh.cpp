@@ -39,11 +39,21 @@ indices() {
                         tinyobj::real_t y = (tinyobj::real_t)this->attributes.vertices[index.vertex_index * 3 + 1];
                         tinyobj::real_t z = (tinyobj::real_t)this->attributes.vertices[index.vertex_index * 3 + 2];
 
+                        //* NORMAL
+                        tinyobj::real_t nx = 0.0f;
+                        tinyobj::real_t ny = 0.0f;
+                        tinyobj::real_t nz = 0.0f;
+                        if (index.normal_index >= 0 && !this->attributes.normals.empty()) {
+                            nx = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 0];
+                            ny = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 1];
+                            nz = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 2];
+                        }
+
                         //* TEXCOORD
                         tinyobj::real_t u = (tinyobj::real_t)this->attributes.texcoords[index.texcoord_index * 2 + 0];
                         tinyobj::real_t v = (tinyobj::real_t)this->attributes.texcoords[index.texcoord_index * 2 + 1];
 
-                        this->vertices.push_back(MyMeshVertex(MyVector3(x, y, z), MyVector2(u, v)));
+                        this->vertices.push_back(MyMeshVertex(MyVector3(x, y, z), MyVector3(nx, ny, nz), MyVector2(u, v)));
                         this->indices.push_back((unsigned int)indexOffset + vertex);
                     }
                     indexOffset += vertexPerFace;

@@ -1,5 +1,6 @@
 #include "Graphics/Buffers/MyVertexBuffer.hpp"
 #include "Core/MyLogger.hpp"
+#include "Math/MyMeshVertex.hpp"
 
 using namespace DX3D;
 
@@ -45,15 +46,13 @@ MyVertexBuffer::MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCou
         throw std::exception("Invalid shader bytecode in MyVertexBuffer::MyVertexBuffer");
     }
 
-    D3D11_INPUT_ELEMENT_DESC layout[] = {
-        // Standard vertex layout for position + texture coordinates
-        { "POSITION",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
-        { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float2 texCoord (offset 12)
-    };
+    // Use the centralized layout from MyMeshVertex to ensure consistency
+    D3D11_INPUT_ELEMENT_DESC* layout = MyMeshVertex::GetInputLayout();
+    UINT layoutElementCount = MyMeshVertex::GetInputLayoutCount();
 
     result = D3DDevice->CreateInputLayout(
         layout,
-        ARRAYSIZE(layout),
+        layoutElementCount,
         shaderByteCode,
         shaderByteCodeSize,
         &this->D3DInputLayout

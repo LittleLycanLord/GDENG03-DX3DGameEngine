@@ -15,8 +15,8 @@ extern const std::wstring PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/TexturedTeapo
 extern const std::wstring LIGHTING_VERTEX_SHADER_DIRECTORY = L"Shaders/Vertex/LightingVertexShader.hlsl";
 extern const std::wstring LIGHTING_PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/LightingPixelShader.hlsl";
 
-extern const std::wstring SAMPLE_TEXTURE_DIRECTORY = L"Assets/Textures/CheckerBoard.jpg";
-extern const std::wstring SAMPLE_MESH_DIRECTORY = L"Assets/Meshes/Cube.obj";
+extern const std::wstring SAMPLE_TEXTURE_DIRECTORY = L"Assets/Textures/Wooden Box.jpg";
+extern const std::wstring SAMPLE_MESH_DIRECTORY = L"Assets/Meshes/SimpleCube.obj";
 extern const std::wstring IMGUI_LOGO_DIRECTORY = L"Assets/Textures/dlsu_logo.png";
 using namespace DX3D;
 

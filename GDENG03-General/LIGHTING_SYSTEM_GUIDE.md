@@ -48,6 +48,43 @@ output.worldNormal = normalize(mul(input.normal, (float3x3)world));
 **Solution**: Added proper size validation before copying shader bytecode.
 
 ### 5. Light Data Initialization
+
+### 6. Normal Data Support (Latest Update)
+**Problem**: MyMesh was not storing or processing normal vectors, preventing proper lighting calculations.
+
+**Solution**: 
+- Updated `MyMeshVertex` structure to include normal data:
+```cpp
+class MyMeshVertex {
+public:
+    MyVector3 position;
+    MyVector3 normal;           // Added normal support
+    MyVector2 textureCoordinates;
+};
+```
+
+- Modified mesh loading to read normals from OBJ files:
+```cpp
+// NORMAL - Read from tinyobj loader
+tinyobj::real_t nx = 0.0f, ny = 0.0f, nz = 0.0f;
+if (index.normal_index >= 0 && !this->attributes.normals.empty()) {
+    nx = this->attributes.normals[index.normal_index * 3 + 0];
+    ny = this->attributes.normals[index.normal_index * 3 + 1];
+    nz = this->attributes.normals[index.normal_index * 3 + 2];
+}
+```
+
+- Updated vertex input layout to include NORMAL semantic:
+```cpp
+static D3D11_INPUT_ELEMENT_DESC layout[] = {
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,           D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(MyMeshVertex, normal), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, offsetof(MyMeshVertex, textureCoordinates), D3D11_INPUT_PER_VERTEX_DATA, 0 }
+};
+```
+
+- Updated layout shader to process normal data properly
+- Modified DrawLoop to use lighting shaders by default when `useLightingShaders` is enabled
 **Problem**: Uninitialized light data could cause unpredictable behavior.
 
 **Solution**: Clear all light data before filling with actual light information.
