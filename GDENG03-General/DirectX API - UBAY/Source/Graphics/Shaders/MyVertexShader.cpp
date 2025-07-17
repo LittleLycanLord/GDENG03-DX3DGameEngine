@@ -1,10 +1,7 @@
 #include "Graphics/Shaders/MyVertexShader.hpp"
-#include <iostream>
-#include <comdef.h>
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_VERTEX_SHADER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║

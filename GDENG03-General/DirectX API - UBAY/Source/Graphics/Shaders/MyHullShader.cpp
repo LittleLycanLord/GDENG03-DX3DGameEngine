@@ -1,10 +1,9 @@
 #include "Graphics/Shaders/MyHullShader.hpp"
+#include "Core/MyLogger.hpp"
 #include <iostream>
 #include <comdef.h>
 
 using namespace DX3D;
-
-extern bool LOG_INFO_HULL_SHADER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║

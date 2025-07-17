@@ -1,10 +1,9 @@
 #include "Window/MyWindow.hpp"
-#include <iostream>
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND windowHandle, UINT message, WPARAM wParameters, LPARAM lParameters);
-extern bool LOG_INFO_WINDOW;
 
 //* ╔═════════════════════════════════╗
 //* ║ Magical Shit I Don't Understand ║

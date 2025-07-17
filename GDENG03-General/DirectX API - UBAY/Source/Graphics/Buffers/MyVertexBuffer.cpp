@@ -1,8 +1,7 @@
 #include "Graphics/Buffers/MyVertexBuffer.hpp"
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_VERTEX_BUFFER;
 
 MyVertexBuffer::MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCount, void* shaderByteCode, size_t shaderByteCodeSize, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
     if (LOG_INFO_VERTEX_BUFFER) std::cout << "[INFO]: MyVertexBuffer constructed" << std::endl;
@@ -41,19 +40,15 @@ MyVertexBuffer::MyVertexBuffer(void* vertexList, UINT vertexSize, UINT vertexCou
         return;
     }
 
+    if (!shaderByteCode || shaderByteCodeSize == 0) {
+        std::cerr << "[ERROR]: Invalid shader bytecode in MyVertexBuffer::MyVertexBuffer" << std::endl;
+        throw std::exception("Invalid shader bytecode in MyVertexBuffer::MyVertexBuffer");
+    }
+
     D3D11_INPUT_ELEMENT_DESC layout[] = {
-        // { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
-        // { "POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 nextPosition (offset 12)
-        // { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 color (offset 24)
-        // { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 nextColor (offset 36)
-
-        // { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
-        // { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },  // float3 nextPosition (offset 12)
-        // { "COLOR",    1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 color (offset 24)
-
+        // Standard vertex layout for position + texture coordinates
         { "POSITION",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float3 position (offset 0)
-        { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },  // float3 nextPosition (offset 12)
-
+        { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // float2 texCoord (offset 12)
     };
 
     result = D3DDevice->CreateInputLayout(

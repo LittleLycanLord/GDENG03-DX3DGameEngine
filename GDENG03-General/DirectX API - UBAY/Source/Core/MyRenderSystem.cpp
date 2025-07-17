@@ -1,17 +1,15 @@
 #include "Core/MyRenderSystem.hpp"
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_RENDER_SYSTEM;
-extern bool LOG_INFO_VERTEX_SHADER;
-extern bool LOG_INFO_PIXEL_SHADER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 MyRenderSystem::MyRenderSystem() {
+    PERFORMANCE_TIMER("RENDERSYSTEM", "MyRenderSystem Constructor");
     if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO]: MyRenderSystem constructed" << std::endl;
-
+    LOG_INFO("RENDERSYSTEM", "Initializing DirectX 11 render system");
 
     D3D_DRIVER_TYPE driverTypes[] = {
         D3D_DRIVER_TYPE_HARDWARE,
@@ -25,6 +23,7 @@ MyRenderSystem::MyRenderSystem() {
 
     HRESULT result = 0;
     for (UINT driverTypeIndex = 0; driverTypeIndex < ARRAYSIZE(driverTypes); ) {
+        LOG_DEBUG("RENDERSYSTEM", "Attempting to create D3D11 device with driver type: " + std::to_string(driverTypeIndex));
         result = D3D11CreateDevice(
             NULL,
             driverTypes[driverTypeIndex],
@@ -37,13 +36,16 @@ MyRenderSystem::MyRenderSystem() {
             &this->featureLevel,
             &this->D3DDeviceContext
         );
-        if (SUCCEEDED(result))
+        if (SUCCEEDED(result)) {
+            LOG_INFO("RENDERSYSTEM", "D3D11 device created successfully with driver type: " + std::to_string(driverTypeIndex));
             break;
+        }
 
         driverTypeIndex++;
     }
 
     if (FAILED(result)) {
+        LOG_ERROR("RENDERSYSTEM", "D3D11CreateDevice failed with HRESULT: 0x" + std::to_string(result));
         std::cout << "D3D11CreateDevice failed in MyRenderSystem::Initialize. HRESULT: 0x" << std::hex << result << std::endl;
         _com_error err(result);
         std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
@@ -52,6 +54,7 @@ MyRenderSystem::MyRenderSystem() {
 
     if (LOG_INFO_RENDER_SYSTEM)
         std::cout << "[INFO]: D3D11 Device created successfully" << std::endl;
+    LOG_INFO("RENDERSYSTEM", "D3D11 Device and device context created successfully");
 
     immediateDeviceContext = std::make_shared<MyDeviceContext>(this->D3DDeviceContext, this);
 
@@ -125,15 +128,21 @@ MyRenderSystem::~MyRenderSystem() {
 //* ║ Functions ║
 //* ╚═══════════╝
 MySwapChainPtr MyRenderSystem::CreateSwapChain(HWND windowHandle, UINT width, UINT height) {
+    PERFORMANCE_TIMER("RENDERSYSTEM", "CreateSwapChain");
+    LOG_INFO("RENDERSYSTEM", "Creating swap chain with dimensions: " + std::to_string(width) + "x" + std::to_string(height));
+    
     try {
         MySwapChainPtr swapChain = std::make_shared<MySwapChain>(windowHandle, width, height, this);
         if (!swapChain) {
+            LOG_ERROR("RENDERSYSTEM", "Failed to allocate MySwapChain");
             std::cerr << "[ERROR]: Failed to allocate MySwapChain in MyRenderSystem::CreateSwapChain" << std::endl;
             throw std::exception("Failed to allocate MySwapChain in MyRenderSystem::CreateSwapChain");
         }
+        LOG_INFO("RENDERSYSTEM", "Swap chain created successfully");
         return swapChain;
     }
     catch (const std::exception& ex) {
+        LOG_ERROR("RENDERSYSTEM", "Exception in CreateSwapChain: " + std::string(ex.what()));
         std::cerr << "[ERROR]: Exception in CreateSwapChain: " << ex.what() << std::endl;
         return nullptr;
     }
@@ -260,9 +269,9 @@ bool MyRenderSystem::CompileHullShader(const wchar_t* fileName, const char* entr
     );
 
     if (FAILED(result)) {
-        std::cout << "D3DCompileFromFile failed in MyRenderSystem::CompileHullShader. HRESULT: 0x" << std::hex << result << std::endl;
+        std::wcout << L"[ERROR]: D3DCompileFromFile failed for Hull Shader: " << fileName << L". HRESULT: 0x" << std::hex << result << std::endl;
         if (errorBlob) {
-            std::cout << "" << (char*)errorBlob->GetBufferPointer() << std::endl;
+            std::cout << "[SHADER ERROR]: " << (char*)errorBlob->GetBufferPointer() << std::endl;
             errorBlob->Release();
         }
         return false;
@@ -293,9 +302,9 @@ bool MyRenderSystem::CompileDomainShader(const wchar_t* fileName, const char* en
     );
 
     if (FAILED(result)) {
-        std::cout << "D3DCompileFromFile failed in MyRenderSystem::CompileDomainShader. HRESULT: 0x" << std::hex << result << std::endl;
+        std::wcout << L"[ERROR]: D3DCompileFromFile failed for Domain Shader: " << fileName << L". HRESULT: 0x" << std::hex << result << std::endl;
         if (errorBlob) {
-            std::cout << "" << (char*)errorBlob->GetBufferPointer() << std::endl;
+            std::cout << "[SHADER ERROR]: " << (char*)errorBlob->GetBufferPointer() << std::endl;
             errorBlob->Release();
         }
         return false;
@@ -326,9 +335,9 @@ bool MyRenderSystem::CompileVertexShader(const wchar_t* fileName, const char* en
     );
 
     if (FAILED(result)) {
-        std::cout << "D3DCompileFromFile failed in MyRenderSystem::CompileVertexShader. HRESULT: 0x" << std::hex << result << std::endl;
+        std::wcout << L"[ERROR]: D3DCompileFromFile failed for Vertex Shader: " << fileName << L". HRESULT: 0x" << std::hex << result << std::endl;
         if (errorBlob) {
-            std::cout << "" << (char*)errorBlob->GetBufferPointer() << std::endl;
+            std::cout << "[SHADER ERROR]: " << (char*)errorBlob->GetBufferPointer() << std::endl;
             errorBlob->Release();
         }
         return false;
@@ -359,9 +368,9 @@ bool MyRenderSystem::CompilePixelShader(const wchar_t* fileName, const char* ent
     );
 
     if (FAILED(result)) {
-        std::cout << "D3DCompileFromFile failed in MyRenderSystem::CompilePixelShader. HRESULT: 0x" << std::hex << result << std::endl;
+        std::wcout << L"[ERROR]: D3DCompileFromFile failed for Pixel Shader: " << fileName << L". HRESULT: 0x" << std::hex << result << std::endl;
         if (errorBlob) {
-            std::cout << "" << (char*)errorBlob->GetBufferPointer() << std::endl;
+            std::cout << "[SHADER ERROR]: " << (char*)errorBlob->GetBufferPointer() << std::endl;
             errorBlob->Release();
         }
         return false;
@@ -386,18 +395,40 @@ bool MyRenderSystem::ReleaseCompiledShader() {
 
 
 void MyRenderSystem::ToggleWireframeMode(bool enable) {
-    D3D11_RASTERIZER_DESC rasterizerDesciption = {};
+    // Clean up existing rasterizer state
+    if (this->immediateDeviceContext->D3DRasterizerState) {
+        this->immediateDeviceContext->D3DRasterizerState->Release();
+        this->immediateDeviceContext->D3DRasterizerState = nullptr;
+    }
+
+    D3D11_RASTERIZER_DESC rasterizerDescription = {};
+    rasterizerDescription.FrontCounterClockwise = FALSE;
+    rasterizerDescription.DepthBias = 0;
+    rasterizerDescription.DepthBiasClamp = 0.0f;
+    rasterizerDescription.SlopeScaledDepthBias = 0.0f;
+    rasterizerDescription.DepthClipEnable = TRUE;
+    rasterizerDescription.ScissorEnable = FALSE;
+    rasterizerDescription.MultisampleEnable = FALSE;
+    rasterizerDescription.AntialiasedLineEnable = FALSE;
+    
     if (enable) {
-        rasterizerDesciption.FillMode = D3D11_FILL_WIREFRAME;
-        rasterizerDesciption.CullMode = D3D11_CULL_NONE;
+        rasterizerDescription.FillMode = D3D11_FILL_WIREFRAME;
+        rasterizerDescription.CullMode = D3D11_CULL_NONE;
     }
     else {
-        rasterizerDesciption.FillMode = D3D11_FILL_SOLID;
-        rasterizerDesciption.CullMode = D3D11_CULL_BACK;
+        rasterizerDescription.FillMode = D3D11_FILL_SOLID;
+        rasterizerDescription.CullMode = D3D11_CULL_BACK;
     }
-    this->D3DDevice->CreateRasterizerState(&rasterizerDesciption, &this->immediateDeviceContext->D3DRasterizerState);
+    
+    HRESULT hr = this->D3DDevice->CreateRasterizerState(&rasterizerDescription, &this->immediateDeviceContext->D3DRasterizerState);
+    if (FAILED(hr)) {
+        std::cout << "CreateRasterizerState failed in MyRenderSystem::ToggleWireframeMode. HRESULT: 0x" << std::hex << hr << std::endl;
+        _com_error err(hr);
+        std::wcout << L"[ERROR]: " << err.ErrorMessage() << std::endl;
+        return;
+    }
+    
     this->immediateDeviceContext->D3DDeviceContext->RSSetState(this->immediateDeviceContext->D3DRasterizerState);
-
 }
 
 //* ╔════════════════════════════════╗

@@ -27,6 +27,16 @@ namespace DX3D {
     class MyMesh;
     class MyMeshManager;
 
+    //* Lighting System
+    class MyLight;
+    class MyDirectionalLight;
+    class MyPointLight;
+    class MySpotLight;
+    class MyLightManager;
+    
+    //* Utilities
+    class MyLogger;
+
     //* ╔════════════════╗
     //* ║ Smart Pointers ║
     //* ╚════════════════╝
@@ -59,6 +69,16 @@ namespace DX3D {
     //* Core GameObjects
     typedef std::shared_ptr<MyTransform> MyTransformPtr;
     typedef std::shared_ptr<MyCamera> MyCameraPtr;
+
+    //* Lighting System
+    typedef std::shared_ptr<MyLight> MyLightPtr;
+    typedef std::shared_ptr<MyDirectionalLight> MyDirectionalLightPtr;
+    typedef std::shared_ptr<MyPointLight> MyPointLightPtr;
+    typedef std::shared_ptr<MySpotLight> MySpotLightPtr;
+    typedef std::shared_ptr<MyLightManager> MyLightManagerPtr;
+    
+    //* Utilities
+    typedef std::shared_ptr<MyLogger> MyLoggerPtr;
 
 } // namespace DX3D
 

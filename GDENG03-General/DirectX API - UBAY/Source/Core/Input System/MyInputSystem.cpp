@@ -1,11 +1,9 @@
 #include "Core/Input System/MyInputSystem.hpp"
+#include "Core/MyLogger.hpp"
 
 DX3D::MyInputSystem* DX3D::MyInputSystem::instance = nullptr;
 
 using namespace DX3D;
-
-extern bool LOG_INFO_INPUT_SYSTEM_KEYBOARD;
-extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
 
 MyInputSystem::MyInputSystem() {}
 MyInputSystem::~MyInputSystem() {

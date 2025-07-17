@@ -1,13 +1,7 @@
 #include "Window/MyAppWindow.hpp"
-#include <iostream>
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_WINDOW;
-extern bool LOG_INFO_WINDOW_UPDATE;
-extern bool LOG_INFO_CONSTANT_BUFFER;
-extern bool LOG_INFO_INPUT_SYSTEM_KEYBOARD;
-extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
 // Add extern declarations for shader path constants
 extern const std::wstring HULL_SHADER_DIRECTORY;
 extern const std::wstring DOMAIN_SHADER_DIRECTORY;
@@ -30,16 +24,24 @@ MyAppWindow::~MyAppWindow() {}
 //* ║ Functions ║
 //* ╚═══════════╝
 void MyAppWindow::InitializeShaders() {
+    PERFORMANCE_TIMER("WINDOW", "InitializeShaders");
+    LOG_INFO("SHADERS", "Starting shader compilation and initialization");
+
     //* Vertex Shader Application
+    LOG_DEBUG("SHADERS", "Compiling vertex shader");
     void* vertexShaderByteCode = nullptr;
     size_t vertexShaderSize = 0;
     if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompileVertexShader(
         VERTEX_SHADER_DIRECTORY.c_str(), "main", &vertexShaderByteCode, &vertexShaderSize)) {
+        LOG_ERROR("SHADERS", "Failed to compile vertex shader!");
         throw std::exception("Failed to compile vertex shader!");
         return;
     }
+    LOG_INFO("SHADERS", "Vertex shader compiled successfully");
+
     this->vertexShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexShader(vertexShaderByteCode, vertexShaderSize);
     if (!this->vertexShader) {
+        LOG_ERROR("SHADERS", "Failed to create vertex shader object!");
         throw std::exception("Failed to create vertexShader!");
         return;
     }
@@ -131,6 +133,7 @@ void MyAppWindow::ImGuiUpdate() {
 
     static bool showCredits = false;
     static bool showColorPickerUI = false;
+    static bool showLoggingControls = false;
     // this->freeMouse is now file-static
 
     // Menu Bar
@@ -141,13 +144,20 @@ void MyAppWindow::ImGuiUpdate() {
             }
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("UI")) {
-            if (ImGui::MenuItem("Color Picker")) {
-                showColorPickerUI = true;
+        if (ImGui::BeginMenu("Debug")) {
+            if (ImGui::MenuItem("Logging Controls")) {
+                showLoggingControls = true;
             }
             ImGui::MenuItem("Free Mouse", nullptr, &this->freeMouse);
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("UI")) {
+            if (ImGui::MenuItem("Color Picker")) {
+                showColorPickerUI = true;
+            }
+            ImGui::EndMenu();
+        }
+
         ImGui::EndMainMenuBar();
     }
 
@@ -156,6 +166,16 @@ void MyAppWindow::ImGuiUpdate() {
     if (this->freeMouse != prevFreeMouse) {
         MyInputSystem::GetInstance()->SetCursorVisibility(this->freeMouse);
         MyInputSystem::GetInstance()->lockMouse = !this->freeMouse;
+        
+        // Add/Remove camera from input listeners based on freeMouse state
+        if (this->freeMouse) {
+            // Mouse is free - remove camera from input listeners so it doesn't receive mouse input
+            MyInputSystem::GetInstance()->RemoveListener(this->activeCamera.get());
+        } else {
+            // Mouse is locked - add camera back to input listeners so it can control the view
+            MyInputSystem::GetInstance()->AddListener(this->activeCamera.get());
+        }
+        
         prevFreeMouse = this->freeMouse;
     }
 
@@ -198,6 +218,15 @@ void MyAppWindow::ImGuiUpdate() {
         ImGui::Begin("Color Picker UI", &showColorPickerUI);
         ImGui::Text("Color Picker Placeholder");
         ImGui::ColorPicker4("Color Wheel", (float*)&myColor);
+        ImGui::End();
+    }
+
+    // Logging Controls Window
+    if (showLoggingControls) {
+        ImGui::Begin("Engine Logging Controls", &showLoggingControls);
+        if (MyLogger::GetInstance()) {
+            MyLogger::GetInstance()->RenderImGuiLoggingControls();
+        }
         ImGui::End();
     }
 
@@ -250,7 +279,9 @@ void MyAppWindow::DrawLoop() {
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
 void MyAppWindow::OnCreate() {
+    PERFORMANCE_TIMER("WINDOW", "MyAppWindow::OnCreate");
     if (LOG_INFO_WINDOW) std::cout << "[INFO]: MyAppWindow::OnCreate called" << std::endl;
+    LOG_INFO("WINDOW", "MyAppWindow::OnCreate - Initializing window");
 
     MyWindow::OnCreate();
 
@@ -303,10 +334,19 @@ void MyAppWindow::OnCreate() {
     }
 
     //* Create Swapchain
+    LOG_INFO("WINDOW", "Creating swap chain");
     swapChain = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateSwapChain(this->windowHandle, this->width, this->height);
+
+    LOG_INFO("WINDOW", "Initializing shaders");
     this->InitializeShaders();
+
+    LOG_INFO("WINDOW", "Initializing constant data");
     this->InitializeConstantData();
+
+    LOG_INFO("WINDOW", "Running debug launch function");
     this->DebugLaunchFunction();
+
+    LOG_INFO("WINDOW", "MyAppWindow::OnCreate completed successfully");
 }
 
 void MyAppWindow::OnUpdate() {

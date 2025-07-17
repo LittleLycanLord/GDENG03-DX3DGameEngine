@@ -1,8 +1,7 @@
 #include "Graphics/Buffers/MyIndexBuffer.hpp"
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_INDEX_BUFFER;
 
 MyIndexBuffer::MyIndexBuffer(void* indices, UINT indexCount, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
     if (LOG_INFO_INDEX_BUFFER) std::cout << "[INFO]: MyIndexBuffer constructed" << std::endl;

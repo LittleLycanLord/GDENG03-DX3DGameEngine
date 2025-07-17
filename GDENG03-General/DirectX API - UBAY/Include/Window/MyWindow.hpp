@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <WinUser.h>
 #include <exception>
+#include <iostream>
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Core/Input System/MyInputSystem.hpp"
 #include "backends/imgui_impl_win32.h"

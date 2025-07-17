@@ -1,8 +1,7 @@
 #include "Core/Resource System/Managers/MyMeshManager.hpp"
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_MESH_MANAGER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║

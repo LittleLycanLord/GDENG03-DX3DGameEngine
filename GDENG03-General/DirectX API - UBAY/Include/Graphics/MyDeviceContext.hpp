@@ -2,9 +2,7 @@
 #include <d3d11.h>
 #include <exception>
 #include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
 #include "Math/MyVector4.hpp"
-#include "Core/MyRenderSystem.hpp"
 #include "Core/Resource System/Managers/MyTexture.hpp"
 #include "Graphics/MySwapChain.hpp"
 #include "Graphics/Buffers/MyConstantBuffer.hpp"

@@ -1,38 +1,9 @@
 #include "Core/Input System/MyInputSystem.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Window/MyAppWindow.hpp"
+#include "Core/MyLogger.hpp"
 #include <string>
 #include <iostream>
-
-bool LOG_WARNING_GENERAL = true;
-bool LOG_ERROR_GENERAL = true;
-
-// Logging toggles
-bool LOG_INFO_WINDOW = false;
-bool LOG_INFO_WINDOW_UPDATE = false;
-bool LOG_INFO_CAMERA = false;
-bool LOG_INFO_GRAPHICS_ENGINE = false;
-bool LOG_INFO_RENDER_SYSTEM = false;
-bool LOG_INFO_SWAP_CHAIN = false;
-bool LOG_INFO_DEVICE_CONTEXT = false;
-bool LOG_INFO_VERTEX_BUFFER = false;
-bool LOG_INFO_CONSTANT_BUFFER = false;
-bool LOG_INFO_INDEX_BUFFER = false;
-
-bool LOG_INFO_HULL_SHADER = false;
-bool LOG_INFO_DOMAIN_SHADER = false;
-bool LOG_INFO_VERTEX_SHADER = false;
-bool LOG_INFO_PIXEL_SHADER = false;
-
-bool LOG_INFO_INPUT_SYSTEM_KEYBOARD = false;
-bool LOG_INFO_INPUT_SYSTEM_MOUSE = false;
-
-bool LOG_INFO_RESOURCE_SYSTEM = false;
-bool LOG_INFO_RESOURCE = false;
-bool LOG_INFO_TEXTURE_MANAGER = false;
-bool LOG_INFO_TEXTURE = false;
-bool LOG_INFO_MESH_MANAGER = false;
-bool LOG_INFO_MESH = false;
 
 extern const std::wstring LAYOUT_SHADER_DIRECTORY = L"Shaders/Layout/MeshVertexLayoutShader.hlsl";
 extern const std::wstring HULL_SHADER_DIRECTORY = L"Shaders/Hull/TexturedTeapotHullShader.hlsl";
@@ -47,37 +18,59 @@ using namespace DX3D;
 int main() {
     std::cout << "[INFO]: Application started" << std::endl;
 
+    // Initialize Logger first
+    try {
+        MyLogger::Create();
+        MyLogger::GetInstance()->Initialize("GDENG03-Engine.log", true, true);
+        LOG_INFO("APPLICATION", "GDENG03 DirectX Engine starting up...");
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "[ERROR]: Failed to create MyLogger: " << ex.what() << std::endl;
+        return -3;
+    }
+
     try {
         MyGraphicsEngine::Create();
+        LOG_INFO("APPLICATION", "Graphics Engine initialized successfully");
     }
     catch (const std::exception& ex) {
-        std::cerr << "[ERROR]: Failed to create MyGraphicsEngine: " << ex.what() << std::endl;
+        LOG_ERROR("APPLICATION", "Failed to create MyGraphicsEngine: " + std::string(ex.what()));
+        MyLogger::Release();
         return -1;
     }
+
     try {
         MyInputSystem::Create();
+        LOG_INFO("APPLICATION", "Input System initialized successfully");
     }
     catch (const std::exception& ex) {
-        std::cerr << "[ERROR]: Failed to create MyInputSystem: " << ex.what() << std::endl;
+        LOG_ERROR("APPLICATION", "Failed to create MyInputSystem: " + std::string(ex.what()));
+        MyGraphicsEngine::Release();
+        MyLogger::Release();
         return -2;
     }
 
     try {
         MyAppWindow appWindow;
-        MyInputSystem::GetInstance()->windowHandle = appWindow.windowHandle;
+        MyInputSystem::GetInstance()->SetWindowHandle(appWindow.windowHandle);
+        LOG_INFO("APPLICATION", "Entering main application loop");
         while (appWindow.IsRunning());
+        LOG_INFO("APPLICATION", "Application loop ended");
     }
     catch (const std::exception& ex) {
-        std::cerr << "[ERROR]: Exception: " << ex.what() << std::endl;
+        LOG_ERROR("APPLICATION", "Exception in main loop: " + std::string(ex.what()));
         MyGraphicsEngine::Release();
         MyInputSystem::Release();
+        MyLogger::Release();
         return -1;
     }
+
+    LOG_INFO("APPLICATION", "Application shutting down gracefully");
     std::cout << "[INFO]: Application exiting" << std::endl;
 
     MyGraphicsEngine::Release();
     MyInputSystem::Release();
-    if (LOG_INFO_RENDER_SYSTEM) std::cout << "[INFO] MyGraphicsEngine released" << std::endl;
+    MyLogger::Release();
 
     return 0;
 }

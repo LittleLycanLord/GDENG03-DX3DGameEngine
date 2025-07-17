@@ -28,6 +28,9 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
+        //* ╔═══════════════════════╗
+        //* ║ Operator Overloading  ║
+        //* ╚═══════════════════════╝
         void operator=(const MyMatrix4x4& returnMatrix) { memcpy(this->matrix, returnMatrix.matrix, sizeof(float) * 16); }
         MyMatrix4x4 operator*(const MyMatrix4x4& rhs) const {
             MyMatrix4x4 result;
@@ -44,7 +47,9 @@ namespace DX3D {
             return *this;
         }
 
-        //* Matrix Transformation Application
+        //* ╔═══════════════════════════════╗
+        //* ║ Matrix Transformation Methods ║
+        //* ╚═══════════════════════════════╝
         void SetIdentity() {
             *this = MyMatrix4x4::GetIdentityMatrix();
         }
@@ -77,7 +82,9 @@ namespace DX3D {
             *this = MyMatrix4x4::GetPerspectiveLeftHandMatrix(fieldOfView, aspectRatio, nearPlane, farPlane);
         }
 
-        //*Utility Functions
+        //* ╔═════════════════════╗
+        //* ║ Utility Functions   ║
+        //* ╚═════════════════════╝
         const float GetDeterminant() const {
             MyVector4 minor;
             MyVector4 A = { this->matrix[0][0], this->matrix[0][1], this->matrix[0][2], this->matrix[0][3] };
@@ -111,8 +118,9 @@ namespace DX3D {
         //* ╚═══════════════════╝
     public:
 
-
-
+        //* ╔═══════════════════════════════════╗
+        //* ║ Static Matrix Creation Functions  ║
+        //* ╚═══════════════════════════════════╝
         //* Matrix Transformation Calculations
         static MyMatrix4x4 GetIdentityMatrix() {
             MyMatrix4x4 returnMatrix;

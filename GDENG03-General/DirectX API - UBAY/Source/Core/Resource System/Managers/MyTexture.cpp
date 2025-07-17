@@ -1,9 +1,8 @@
 #include "Core/Resource System/Managers/MyTexture.hpp"
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
 using namespace DirectX;
-
-extern bool LOG_INFO_TEXTURE;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║

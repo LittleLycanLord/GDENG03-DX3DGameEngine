@@ -2,10 +2,9 @@
 #include <iostream>
 #include <comdef.h>
 #include <exception>
-#include "Core/Prerequisites.hpp"
+#include <d3d11.h>
 #include "Core/MyRenderSystem.hpp"
-#include "Graphics/MyDeviceContext.hpp"
-#include "Graphics/MyGraphicsEngine.hpp"
+#include "Core/Prerequisites.hpp"
 
 namespace DX3D {
     class MyVertexBuffer {
@@ -13,7 +12,7 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyRenderSystem* renderSystem { nullptr };
+        MyRenderSystem* renderSystem{ nullptr };
 
         UINT vertexSize{ 0 };
         UINT vertexCount{ 0 };

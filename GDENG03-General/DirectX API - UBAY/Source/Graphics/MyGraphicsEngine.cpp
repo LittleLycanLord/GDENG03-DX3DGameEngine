@@ -1,48 +1,62 @@
 #include "Graphics/MyGraphicsEngine.hpp"
+#include "Core/MyLogger.hpp"
 
 DX3D::MyGraphicsEngine* DX3D::MyGraphicsEngine::instance = nullptr;
 
 using namespace DX3D;
 
 extern const std::wstring LAYOUT_SHADER_DIRECTORY;
-extern bool LOG_INFO_GRAPHICS_ENGINE;
-extern bool LOG_INFO_VERTEX_SHADER;
-extern bool LOG_INFO_PIXEL_SHADER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 MyGraphicsEngine::MyGraphicsEngine() {
+    PERFORMANCE_TIMER("GRAPHICS", "MyGraphicsEngine Constructor");
     if (LOG_INFO_GRAPHICS_ENGINE) std::cout << "[INFO]: MyGraphicsEngine constructed" << std::endl;
+    LOG_INFO("GRAPHICS", "Initializing Graphics Engine");
 
     try {
+        LOG_DEBUG("GRAPHICS", "Creating render system");
         this->renderSystem = new MyRenderSystem();
         if (!this->renderSystem) {
+            LOG_ERROR("GRAPHICS", "Failed to allocate MyRenderSystem");
             std::cerr << "[ERROR]: Failed to allocate MyRenderSystem in MyGraphicsEngine::Initialize" << std::endl;
             throw std::exception("Failed to allocate MyRenderSystem in MyGraphicsEngine::Initialize");
         }
+        LOG_INFO("GRAPHICS", "Render system created successfully");
     }
     catch (const std::exception& ex) {
+        LOG_ERROR("GRAPHICS", "Exception creating render system: " + std::string(ex.what()));
         std::cerr << "[ERROR]: Exception in MyGraphicsEngine: " << ex.what() << std::endl;
     }
+
     try {
+        LOG_DEBUG("GRAPHICS", "Creating texture manager");
         this->textureManager = new MyTextureManager();
         if (!this->textureManager) {
+            LOG_ERROR("GRAPHICS", "Failed to allocate MyTextureManager");
             std::cerr << "[ERROR]: Failed to allocate MyTextureManager in MyGraphicsEngine::Initialize" << std::endl;
             throw std::exception("Failed to allocate MyTextureManager in MyGraphicsEngine::Initialize");
         }
+        LOG_INFO("GRAPHICS", "Texture manager created successfully");
     }
     catch (const std::exception& ex) {
+        LOG_ERROR("GRAPHICS", "Exception creating texture manager: " + std::string(ex.what()));
         std::cerr << "[ERROR]: Exception in MyGraphicsEngine: " << ex.what() << std::endl;
     }
+
     try {
+        LOG_DEBUG("GRAPHICS", "Creating mesh manager");
         this->meshManager = new MyMeshManager();
         if (!this->meshManager) {
+            LOG_ERROR("GRAPHICS", "Failed to allocate MyMeshManager");
             std::cerr << "[ERROR]: Failed to allocate MyMeshManager in MyGraphicsEngine::Initialize" << std::endl;
             throw std::exception("Failed to allocate MyMeshManager in MyGraphicsEngine::Initialize");
         }
+        LOG_INFO("GRAPHICS", "Mesh manager created successfully");
     }
     catch (const std::exception& ex) {
+        LOG_ERROR("GRAPHICS", "Exception creating mesh manager: " + std::string(ex.what()));
         std::cerr << "[ERROR]: Exception in MyGraphicsEngine: " << ex.what() << std::endl;
     }
 

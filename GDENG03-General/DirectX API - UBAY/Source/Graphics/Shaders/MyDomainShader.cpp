@@ -1,10 +1,9 @@
 #include "Graphics/Shaders/MyDomainShader.hpp"
+#include "Core/MyLogger.hpp"
 #include <iostream>
 #include <comdef.h>
 
 using namespace DX3D;
-
-extern bool LOG_INFO_DOMAIN_SHADER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║

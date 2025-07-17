@@ -1,9 +1,9 @@
 #include "Graphics/MyDeviceContext.hpp"
+#include "Core/Prerequisites.hpp"
+#include "Core/MyLogger.hpp"
 #include <iostream>
 
 using namespace DX3D;
-
-extern bool LOG_INFO_DEVICE_CONTEXT;
 
 MyDeviceContext::MyDeviceContext(ID3D11DeviceContext* D3DDeviceContext, MyRenderSystem* renderSystem) : renderSystem(renderSystem) {
     this->D3DDeviceContext = D3DDeviceContext;
@@ -11,6 +11,12 @@ MyDeviceContext::MyDeviceContext(ID3D11DeviceContext* D3DDeviceContext, MyRender
 }
 MyDeviceContext::~MyDeviceContext() {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext destructed" << std::endl;
+    
+    if (this->D3DRasterizerState) {
+        this->D3DRasterizerState->Release();
+        this->D3DRasterizerState = nullptr;
+    }
+    
     if (this->D3DSamplerState) {
         this->D3DSamplerState->Release();
         this->D3DSamplerState = nullptr;

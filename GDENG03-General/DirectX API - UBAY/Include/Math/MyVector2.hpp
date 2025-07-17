@@ -1,6 +1,7 @@
 #pragma once
 #include<iostream>
 #include<string>
+#include<cmath> // For std::isnan and std::isinf
 
 namespace DX3D {
     class MyVector2 {
@@ -44,6 +45,12 @@ namespace DX3D {
         }
         void PrintValues(std::string label = "") {
             std::cout << "[" << label << "]: (" << this->x << ", " << this->y << ")" << std::endl;
+        }
+
+        // Validation method
+        bool IsValid() const {
+            return !std::isnan(x) && !std::isnan(y) &&
+                   !std::isinf(x) && !std::isinf(y);
         }
 
         //* ╔════════════════════════════════╗

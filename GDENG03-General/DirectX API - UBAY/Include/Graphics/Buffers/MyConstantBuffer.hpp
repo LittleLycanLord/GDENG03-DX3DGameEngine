@@ -2,10 +2,8 @@
 #include <iostream>
 #include <comdef.h>
 #include <exception>
-#include "Core/Prerequisites.hpp"
-#include "Core/MyRenderSystem.hpp"
-#include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
+#include "Core/Prerequisites.hpp"
 
 
 namespace DX3D {

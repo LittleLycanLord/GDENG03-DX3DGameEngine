@@ -4,6 +4,7 @@
 #include <iostream>
 #include <comdef.h>
 #include <exception>
+#include "Core/Prerequisites.hpp"
 #include "Graphics/MySwapChain.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/Buffers/MyVertexBuffer.hpp"
@@ -47,6 +48,7 @@ namespace DX3D {
         friend class MyPixelShader;
         friend class MyTexture;
         friend class MyDeviceContext;
+        friend class MyLogger;
     public:
 
         //* ╔════════════════════════════╗

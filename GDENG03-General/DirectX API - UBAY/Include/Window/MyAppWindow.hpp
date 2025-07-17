@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <vector>
 #include <exception>
+#include <iostream>
 #include "imgui.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
@@ -35,6 +36,9 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        //* ╔═══════════════════════════╗
+        //* ║ Rendering Resources       ║
+        //* ╚═══════════════════════════╝
         MySwapChainPtr swapChain{ nullptr };
         MyVertexBufferPtr vertexBuffer{ nullptr };
         MyConstant globalConstantData;
@@ -45,19 +49,25 @@ namespace DX3D {
         MyVertexShaderPtr vertexShader{ nullptr };
         MyPixelShaderPtr pixelShader{ nullptr };
 
+        //* ╔═══════════════════════════╗
+        //* ║ Game Objects & Camera     ║
+        //* ╚═══════════════════════════╝
         bool freeMouse{ false };
         MyCameraPtr activeCamera{ nullptr };
         std::vector<MyCameraPtr> cameras;
         std::vector<MyMeshPtr> meshes;
 
+        //* ╔═══════════════════════════╗
+        //* ║ Timing & Performance      ║
+        //* ╚═══════════════════════════╝
         ULONGLONG oldTime = 0;
         ULONGLONG newTime = 0;
         float deltaTime = 0;
-
-
-        //* Experimental variables
         float experimentalDelta = 0;
 
+        //* ╔═══════════════════════════╗
+        //* ║ Sample Assets             ║
+        //* ╚═══════════════════════════╝
         MyTexturePtr sampleTexture{ nullptr };
         MyMeshPtr sampleMesh{ nullptr };
 

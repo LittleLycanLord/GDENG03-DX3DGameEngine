@@ -1,8 +1,7 @@
 #include "Graphics/MySwapChain.hpp"
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_SWAP_CHAIN;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║

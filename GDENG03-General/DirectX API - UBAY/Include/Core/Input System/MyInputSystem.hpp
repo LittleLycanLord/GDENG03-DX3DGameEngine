@@ -25,6 +25,7 @@ namespace DX3D {
         MyScreenPoint newMousePosition = { 0, 0 };
         MyScreenPoint oldMousePosition = { 0, 0 };
         MyVector2 deltaMousePosition = { 0.0f, 0.0f };
+        HWND windowHandle;
     public:
         bool lockMouse = true;
         unsigned int windowWidth;
@@ -34,7 +35,6 @@ namespace DX3D {
         //* ║ Singleton Instance Accessor ║
         //* ╚═════════════════════════════╝
     public:
-        HWND windowHandle;
         static MyInputSystem* GetInstance() {
             static MyInputSystem instance;
             return &instance;
@@ -72,6 +72,17 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
+        void SetWindowHandle(HWND handle) {
+            this->windowHandle = handle;
+        }
+
+        unsigned char GetNewKeyState(unsigned char key) const {
+            return newKeyStates[key];
+        }
+
+        unsigned char GetOldKeyState(unsigned char key) const {
+            return oldKeyStates[key];
+        }
 
     };
 } // namespace DX3D

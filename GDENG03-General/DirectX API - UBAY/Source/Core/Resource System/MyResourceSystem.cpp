@@ -1,8 +1,7 @@
 #include "Core/Resource System/MyResourceSystem.hpp"
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_RESOURCE_SYSTEM;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║

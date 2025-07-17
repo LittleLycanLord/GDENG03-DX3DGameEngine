@@ -1,11 +1,7 @@
 #include "Game/MyCamera.hpp"
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_CAMERA;
-extern bool LOG_INFO_CONSTANT_BUFFER;
-extern bool LOG_INFO_INPUT_SYSTEM_KEYBOARD;
-extern bool LOG_INFO_INPUT_SYSTEM_MOUSE;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║

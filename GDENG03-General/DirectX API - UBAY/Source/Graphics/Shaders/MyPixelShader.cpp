@@ -1,10 +1,7 @@
 #include "Graphics/Shaders/MyPixelShader.hpp"
-#include <iostream>
-#include <comdef.h>
+#include "Core/MyLogger.hpp"
 
 using namespace DX3D;
-
-extern bool LOG_INFO_PIXEL_SHADER;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
