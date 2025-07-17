@@ -38,6 +38,12 @@ namespace DX3D {
             this->z += other.z;
             return *this;
         }
+        MyVector3& operator = (const MyVector3& other) {
+            this->x = other.x;
+            this->y = other.y;
+            this->z = other.z;
+            return *this;
+        }
         static MyVector3 Lerp(const MyVector3& start, const MyVector3& end, float delta) {
             MyVector3 returnVector;
             returnVector.x = start.x * (1.0f - delta) + end.x * (delta);

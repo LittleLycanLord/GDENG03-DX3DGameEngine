@@ -154,6 +154,12 @@ void MyLogger::RenderImGuiLoggingControls() {
             ImGui::TreePop();
         }
 
+        // Lighting System
+        if (ImGui::TreeNode("Lighting")) {
+            ImGui::Checkbox("Lighting System", &this->logInfoLighting);
+            ImGui::TreePop();
+        }
+
         // Quick actions
         ImGui::Separator();
         if (ImGui::Button("Enable All")) {
@@ -166,6 +172,7 @@ void MyLogger::RenderImGuiLoggingControls() {
             this->logInfoInputSystemKeyboard = this->logInfoInputSystemMouse = true;
             this->logInfoResourceSystem = this->logInfoResource = this->logInfoTextureManager = true;
             this->logInfoTexture = this->logInfoMeshManager = this->logInfoMesh = true;
+            this->logInfoLighting = true;
         }
         ImGui::SameLine();
         if (ImGui::Button("Disable All")) {
@@ -178,6 +185,7 @@ void MyLogger::RenderImGuiLoggingControls() {
             this->logInfoInputSystemKeyboard = this->logInfoInputSystemMouse = false;
             this->logInfoResourceSystem = this->logInfoResource = this->logInfoTextureManager = false;
             this->logInfoTexture = this->logInfoMeshManager = this->logInfoMesh = false;
+            this->logInfoLighting = false;
         }
     }
 }

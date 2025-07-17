@@ -13,6 +13,10 @@ namespace DX3D {
         float padding2 = 0.0f;  // Pad to 16-byte boundary  
         float padding3 = 0.0f;  // Pad to 16-byte boundary
     };
+
+    // Note: Lighting data is now handled by MyLightManager's separate constant buffer
+    // This keeps the transform data and lighting data in separate buffers for better performance
+    // and organization. The lighting constant buffer is bound to register(b1) in shaders.
 } // namespace DX3D
 
 // namespace DX3D {

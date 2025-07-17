@@ -162,6 +162,11 @@
     <ClCompile Include="Source\Core\Resource System\Managers\MyTextureManager.cpp" />
     <ClCompile Include="Source\Core\Resource System\MyResource.cpp" />
     <ClCompile Include="Source\Core\Resource System\MyResourceSystem.cpp" />
+    <ClCompile Include="Source\Game\Lighting\MyDirectionalLight.cpp" />
+    <ClCompile Include="Source\Game\Lighting\MyLight.cpp" />
+    <ClCompile Include="Source\Game\Lighting\MyLightManager.cpp" />
+    <ClCompile Include="Source\Game\Lighting\MyPointLight.cpp" />
+    <ClCompile Include="Source\Game\Lighting\MySpotLight.cpp" />
     <ClCompile Include="Source\Game\MyCamera.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyConstantBuffer.cpp" />
     <ClCompile Include="Source\Graphics\Buffers\MyIndexBuffer.cpp" />
@@ -191,6 +196,11 @@
     <ClInclude Include="Include\Core\Resource System\Managers\MyTextureManager.hpp" />
     <ClInclude Include="Include\Core\Resource System\MyResource.hpp" />
     <ClInclude Include="Include\Core\Resource System\MyResourceSystem.hpp" />
+    <ClInclude Include="Include\Game\Lighting\MyDirectionalLight.hpp" />
+    <ClInclude Include="Include\Game\Lighting\MyLight.hpp" />
+    <ClInclude Include="Include\Game\Lighting\MyLightManager.hpp" />
+    <ClInclude Include="Include\Game\Lighting\MyPointLight.hpp" />
+    <ClInclude Include="Include\Game\Lighting\MySpotLight.hpp" />
     <ClInclude Include="Include\Game\MyCamera.hpp" />
     <ClInclude Include="Include\Game\MyTransform.hpp" />
     <ClInclude Include="Include\Graphics\Buffers\MyConstantBuffer.hpp" />

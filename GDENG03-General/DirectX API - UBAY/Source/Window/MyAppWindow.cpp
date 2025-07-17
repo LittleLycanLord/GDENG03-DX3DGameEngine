@@ -7,6 +7,8 @@ extern const std::wstring HULL_SHADER_DIRECTORY;
 extern const std::wstring DOMAIN_SHADER_DIRECTORY;
 extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
+extern const std::wstring LIGHTING_VERTEX_SHADER_DIRECTORY;
+extern const std::wstring LIGHTING_PIXEL_SHADER_DIRECTORY;
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY;
 extern const std::wstring SAMPLE_MESH_DIRECTORY;
 extern const std::wstring IMGUI_LOGO_DIRECTORY;
@@ -94,6 +96,53 @@ void MyAppWindow::InitializeShaders() {
 
 }
 
+void MyAppWindow::InitializeLightingShaders() {
+    PERFORMANCE_TIMER("WINDOW", "InitializeLightingShaders");
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Starting lighting shader compilation and initialization" << std::endl;
+
+    //* Lighting Vertex Shader
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Compiling lighting vertex shader" << std::endl;
+    void* lightingVertexShaderByteCode = nullptr;
+    size_t lightingVertexShaderSize = 0;
+    if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompileVertexShader(
+        LIGHTING_VERTEX_SHADER_DIRECTORY.c_str(), "main", &lightingVertexShaderByteCode, &lightingVertexShaderSize)) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to compile lighting vertex shader!" << std::endl;
+        throw std::exception("Failed to compile lighting vertex shader!");
+        return;
+    }
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Lighting vertex shader compiled successfully" << std::endl;
+
+    this->lightingVertexShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateVertexShader(lightingVertexShaderByteCode, lightingVertexShaderSize);
+    if (!this->lightingVertexShader) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to create lighting vertex shader object!" << std::endl;
+        throw std::exception("Failed to create lighting vertex shader!");
+        return;
+    }
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
+
+    //* Lighting Pixel Shader
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Compiling lighting pixel shader" << std::endl;
+    void* lightingPixelShaderByteCode = nullptr;
+    size_t lightingPixelShaderSize = 0;
+    if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompilePixelShader(
+        LIGHTING_PIXEL_SHADER_DIRECTORY.c_str(), "main", &lightingPixelShaderByteCode, &lightingPixelShaderSize)) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to compile lighting pixel shader!" << std::endl;
+        throw std::exception("Failed to compile lighting pixel shader!");
+        return;
+    }
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Lighting pixel shader compiled successfully" << std::endl;
+
+    this->lightingPixelShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreatePixelShader(lightingPixelShaderByteCode, lightingPixelShaderSize);
+    if (!this->lightingPixelShader) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to create lighting pixel shader object!" << std::endl;
+        throw std::exception("Failed to create lighting pixel shader!");
+        return;
+    }
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
+    
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Lighting shaders initialized successfully" << std::endl;
+}
+
 void MyAppWindow::InitializeConstantData() {
     if (LOG_INFO_CONSTANT_BUFFER) std::cout << "[INFO]: Setting constant buffer" << std::endl;
     this->globalConstantData.time = 0;
@@ -149,6 +198,7 @@ void MyAppWindow::ImGuiUpdate() {
                 showLoggingControls = true;
             }
             ImGui::MenuItem("Free Mouse", nullptr, &this->freeMouse);
+            ImGui::MenuItem("Use Lighting Shaders", nullptr, &this->useLightingShaders);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("UI")) {
@@ -166,16 +216,17 @@ void MyAppWindow::ImGuiUpdate() {
     if (this->freeMouse != prevFreeMouse) {
         MyInputSystem::GetInstance()->SetCursorVisibility(this->freeMouse);
         MyInputSystem::GetInstance()->lockMouse = !this->freeMouse;
-        
+
         // Add/Remove camera from input listeners based on freeMouse state
         if (this->freeMouse) {
             // Mouse is free - remove camera from input listeners so it doesn't receive mouse input
             MyInputSystem::GetInstance()->RemoveListener(this->activeCamera.get());
-        } else {
+        }
+        else {
             // Mouse is locked - add camera back to input listeners so it can control the view
             MyInputSystem::GetInstance()->AddListener(this->activeCamera.get());
         }
-        
+
         prevFreeMouse = this->freeMouse;
     }
 
@@ -250,6 +301,27 @@ void MyAppWindow::UpdateObjects() {
     //* Update Active Camera
     this->activeCamera->Update(this->deltaTime);
     this->globalConstantData.view = this->activeCamera->transform->worldMatrix;
+
+    //* Update Lighting System
+    if (MyLightManager::GetInstance()) {
+        // Example: Animate a point light around the scene
+        static float lightTime = 0.0f;
+        lightTime += this->deltaTime;
+
+        if (MyLightManager::GetInstance()->GetLightCount() > 1) {
+            auto pointLight = std::dynamic_pointer_cast<MyPointLight>(MyLightManager::GetInstance()->GetLight(1));
+            if (pointLight) {
+                // Circular motion for the point light
+                float radius = 5.0f;
+                pointLight->transform->position.x = cos(lightTime) * radius;
+                pointLight->transform->position.z = sin(lightTime) * radius;
+                pointLight->transform->position.y = 2.0f + sin(lightTime * 2.0f) * 1.0f;
+            }
+        }
+
+        // Update lighting data
+        MyLightManager::GetInstance()->UpdateLightingData();
+    }
 }
 
 void MyAppWindow::UpdateConstantBuffer() {
@@ -263,10 +335,33 @@ void MyAppWindow::UpdateConstantBuffer() {
 
 void MyAppWindow::UpdateShaders() {
     if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Updating shaders..." << std::endl;
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexShader(this->vertexShader);
+
+    if (useLightingShaders && lightingVertexShader && lightingPixelShader) {
+        // Use lighting shaders
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexShader(this->lightingVertexShader);
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->lightingPixelShader);
+
+        // Update lighting constant buffer
+        if (MyLightManager::GetInstance()) {
+            MyLightManager::GetInstance()->UpdateLightingConstantBuffer();
+            auto deviceContext = MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext();
+            auto lightingBuffer = MyLightManager::GetInstance()->GetLightingConstantBuffer();
+            if (lightingBuffer) {
+                // Set lighting constant buffer to both vertex and pixel shaders
+                deviceContext->SetConstantBuffer(this->lightingVertexShader, lightingBuffer);
+                deviceContext->SetConstantBuffer(this->lightingPixelShader, lightingBuffer);
+            }
+        }
+    }
+    else {
+        // Use standard shaders
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetVertexShader(this->vertexShader);
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->pixelShader);
+    }
+
+    // Always set hull and domain shaders (they don't change)
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->hullShader);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->domainShader);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->pixelShader);
 }
 
 void MyAppWindow::DrawLoop() {
@@ -340,8 +435,14 @@ void MyAppWindow::OnCreate() {
     LOG_INFO("WINDOW", "Initializing shaders");
     this->InitializeShaders();
 
+    LOG_INFO("WINDOW", "Initializing lighting shaders");
+    this->InitializeLightingShaders();
+
     LOG_INFO("WINDOW", "Initializing constant data");
     this->InitializeConstantData();
+
+    LOG_INFO("WINDOW", "Initializing lighting system");
+    this->InitializeLightingSystem();
 
     LOG_INFO("WINDOW", "Running debug launch function");
     this->DebugLaunchFunction();
@@ -386,10 +487,15 @@ void MyAppWindow::OnDestroy() {
     if (LOG_INFO_INPUT_SYSTEM_KEYBOARD) std::cout << "[INFO]: Removing MyAppWindow as input listener" << std::endl;
     MyInputSystem::GetInstance()->RemoveListener(this);
 
+    // Clean up lighting system
+    MyLightManager::Release();
+
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
     MyWindow::OnDestroy();
+
+    // Clean up rendering resources
     this->vertexBuffer = nullptr;
     this->indexBuffer = nullptr;
     this->globalConstantBuffer = nullptr;
@@ -397,6 +503,8 @@ void MyAppWindow::OnDestroy() {
     this->domainShader = nullptr;
     this->vertexShader = nullptr;
     this->pixelShader = nullptr;
+    this->lightingVertexShader = nullptr;
+    this->lightingPixelShader = nullptr;
     this->swapChain = nullptr;
 }
 
@@ -510,4 +618,40 @@ void MyAppWindow::OnRMBHold(const MyVector2& deltaMousePosition) {
 void MyAppWindow::OnRMBUp(const MyScreenPoint& mousePosition) {
     if (LOG_INFO_INPUT_SYSTEM_MOUSE && false) std::cout << "[INFO]: MyAppWindow::OnRMBUp called with mousePosition: ("
         << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
+}
+
+void MyAppWindow::InitializeLightingSystem() {
+    PERFORMANCE_TIMER("WINDOW", "InitializeLightingSystem");
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Initializing lighting system" << std::endl;
+
+    // Create lighting manager
+    MyLightManager::Create();
+    if (!MyLightManager::GetInstance()) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to create MyLightManager" << std::endl;
+        throw std::exception("Failed to create MyLightManager");
+        return;
+    }
+
+    // Set up basic lighting scene
+    MyLightManager::GetInstance()->SetAmbientLight(MyVector3(0.2f, 0.2f, 0.3f), 0.1f);
+
+    // Add a default directional light (like sunlight)
+    auto sunLight = MyLightManager::GetInstance()->AddDirectionalLight(
+        MyVector3(1.0f, 0.9f, 0.7f), // Warm sunlight color
+        2.0f // Intensity
+    );
+    sunLight->transform->rotation = MyVector3(-45.0f, 30.0f, 0.0f); // Angled from above
+
+    // Add a point light for additional illumination
+    auto lampLight = MyLightManager::GetInstance()->AddPointLight(
+        MyVector3(3.0f, 2.0f, 0.0f),  // Position
+        MyVector3(1.0f, 0.8f, 0.6f),  // Warm lamp color
+        3.0f,                         // Intensity
+        15.0f                         // Range
+    );
+
+    // Create lighting constant buffer
+    MyLightManager::GetInstance()->CreateLightingConstantBuffer();
+
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Lighting system initialized with " << MyLightManager::GetInstance()->GetLightCount() << " lights" << std::endl;
 }

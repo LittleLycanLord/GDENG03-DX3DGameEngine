@@ -62,6 +62,9 @@ namespace DX3D {
         bool logInfoMeshManager = false;
         bool logInfoMesh = false;
 
+        // Lighting system
+        bool logInfoLighting = false;
+
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
@@ -120,6 +123,7 @@ namespace DX3D {
         static bool ShouldLogTexture() { return GetInstance() ? GetInstance()->logInfoTexture : false; }
         static bool ShouldLogMeshManager() { return GetInstance() ? GetInstance()->logInfoMeshManager : false; }
         static bool ShouldLogMesh() { return GetInstance() ? GetInstance()->logInfoMesh : false; }
+        static bool ShouldLogLighting() { return GetInstance() ? GetInstance()->logInfoLighting : false; }
 
     private:
         std::string GetTimestamp();
@@ -182,4 +186,5 @@ namespace DX3D {
 #define LOG_INFO_TEXTURE DX3D::MyLogger::ShouldLogTexture()
 #define LOG_INFO_MESH_MANAGER DX3D::MyLogger::ShouldLogMeshManager()
 #define LOG_INFO_MESH DX3D::MyLogger::ShouldLogMesh()
+#define LOG_INFO_LIGHTING DX3D::MyLogger::ShouldLogLighting()
 } // namespace DX3D

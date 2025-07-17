@@ -17,10 +17,12 @@
 #include "Core/Primitives/MyQuad.hpp"
 #include "Core/Input System/MyInputSystem.hpp"
 #include "Core/Input System/MyInputListener.hpp"
+#include "Core/MyLogger.hpp"
 #include "Core/Resource System/Managers/MyTextureManager.hpp"
 #include "Core/Resource System/Managers/MyMeshManager.hpp"
 #include "Core/Resource System/Managers/MyTexture.hpp"
 #include "Core/Resource System/Managers/MyMesh.hpp"
+#include "Game/Lighting/MyLightManager.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Graphics/MyDeviceContext.hpp"
 #include "Graphics/MySwapChain.hpp"
@@ -48,6 +50,13 @@ namespace DX3D {
         MyDomainShaderPtr domainShader{ nullptr };
         MyVertexShaderPtr vertexShader{ nullptr };
         MyPixelShaderPtr pixelShader{ nullptr };
+
+        //* ╔═══════════════════════════╗
+        //* ║ Lighting System           ║
+        //* ╚═══════════════════════════╝
+        MyVertexShaderPtr lightingVertexShader{ nullptr };
+        MyPixelShaderPtr lightingPixelShader{ nullptr };
+        bool useLightingShaders{ true };
 
         //* ╔═══════════════════════════╗
         //* ║ Game Objects & Camera     ║
@@ -84,6 +93,8 @@ namespace DX3D {
     private:
         //* Initialization
         void InitializeShaders();
+        void InitializeLightingShaders();
+        void InitializeLightingSystem();
         void InitializeConstantData();
         void DebugLaunchFunction();
 

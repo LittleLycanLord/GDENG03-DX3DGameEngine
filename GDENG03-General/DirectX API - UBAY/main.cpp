@@ -10,6 +10,11 @@ extern const std::wstring HULL_SHADER_DIRECTORY = L"Shaders/Hull/TexturedTeapotH
 extern const std::wstring DOMAIN_SHADER_DIRECTORY = L"Shaders/Domain/TexturedTeapotDomainShader.hlsl";
 extern const std::wstring VERTEX_SHADER_DIRECTORY = L"Shaders/Vertex/TexturedTeapotVertexShader.hlsl";
 extern const std::wstring PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/TexturedTeapotPixelShader.hlsl";
+
+// Lighting Shader Paths - New dedicated lighting shaders
+extern const std::wstring LIGHTING_VERTEX_SHADER_DIRECTORY = L"Shaders/Vertex/LightingVertexShader.hlsl";
+extern const std::wstring LIGHTING_PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/LightingPixelShader.hlsl";
+
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY = L"Assets/Textures/CheckerBoard.jpg";
 extern const std::wstring SAMPLE_MESH_DIRECTORY = L"Assets/Meshes/Cube.obj";
 extern const std::wstring IMGUI_LOGO_DIRECTORY = L"Assets/Textures/dlsu_logo.png";
