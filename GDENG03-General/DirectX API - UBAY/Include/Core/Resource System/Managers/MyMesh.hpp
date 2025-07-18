@@ -47,7 +47,7 @@ namespace DX3D {
         friend class MyDeviceContext;
     public:
         MyTransformPtr transform;
-        float time = 0;
+        float lifetime = 0;
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝

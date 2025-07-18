@@ -4,12 +4,16 @@ struct HS_CONTROL_POINT_OUTPUT {
     float4 position : SV_POSITION;
     float2 textureCoordinate : TEXCOORD0;
     float3 normal : NORMAL0;
+    float3 worldPosition : TEXCOORD1;
+    float3 viewDirection : TEXCOORD2;
 };
 
 struct VS_TEXTURED_OUTPUT {
     float4 position : SV_POSITION;
     float2 textureCoordinate : TEXCOORD0;
     float3 normal : NORMAL0;
+    float3 worldPosition : TEXCOORD1;
+    float3 viewDirection : TEXCOORD2;
 };
 
 struct HS_CONSTANT_DATA_OUTPUT {
@@ -35,14 +39,15 @@ VS_TEXTURED_OUTPUT main(HS_CONSTANT_DATA_OUTPUT input,
     // When tessellation factor is 1.0, barycentric coordinates will be (1,0,0), (0,1,0), or (0,0,1)
     float3 bary = barycentricCoordinates;
     
-    // Interpolate position
     output.position = patch[0].position * bary.x + patch[1].position * bary.y + patch[2].position * bary.z;
     
-    // Interpolate texture coordinates
     output.textureCoordinate = patch[0].textureCoordinate * bary.x + patch[1].textureCoordinate * bary.y + patch[2].textureCoordinate * bary.z;
     
-    // Interpolate normals
     output.normal = patch[0].normal * bary.x + patch[1].normal * bary.y + patch[2].normal * bary.z;
+    
+    output.worldPosition = patch[0].worldPosition * bary.x + patch[1].worldPosition * bary.y + patch[2].worldPosition * bary.z;
+    
+    output.viewDirection = patch[0].viewDirection * bary.x + patch[1].viewDirection * bary.y + patch[2].viewDirection * bary.z;
 
     return output;
 }

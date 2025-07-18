@@ -23,7 +23,17 @@ indices() {
                 std::cerr << "[ERROR]: Failed to load mesh from file" << std::endl;
                 throw std::runtime_error("Failed to load mesh from file");
             }
+
+            // Debug: Check if we have shapes and vertices
+            if (LOG_INFO_MESH) std::cout << "[DEBUG]: Shapes count: " << this->shapes.size() << std::endl;
+            if (this->shapes.empty()) {
+                std::cerr << "[ERROR]: No shapes found in OBJ file" << std::endl;
+                throw std::runtime_error("No shapes found in OBJ file");
+            }
+
             for (size_t shape = 0; shape < this->shapes.size(); shape++) {
+                if (LOG_INFO_MESH) std::cout << "[DEBUG]: Processing shape " << shape << ", faces: " << this->shapes[shape].mesh.num_face_vertices.size() << std::endl;
+
                 size_t indexOffset = 0;
                 this->vertices.reserve(this->shapes[shape].mesh.indices.size());
                 this->indices.reserve(this->shapes[shape].mesh.indices.size());
@@ -88,13 +98,14 @@ MyMesh::~MyMesh() {
 //* ║ Functions ║
 //* ╚═══════════╝
 void MyMesh::Update(float deltaTime) {
-    //* Transform Unit Test
-    this->time += deltaTime;
-    float radius = 3.0f;
-    this->transform->position.x = radius * cosf(this->time);
-    this->transform->position.z = radius * sinf(this->time);
-    this->transform->rotation.y = this->time;
-    this->transform->scale = MyVector3(1.0f + 0.5f * sinf(this->time));
+    this->lifetime += deltaTime;
+    
+    //* Transform Unit Test - DISABLED for lighting testing
+    // float radius = 3.0f;
+    // this->transform->position.x = radius * cosf(this->lifetime);
+    // this->transform->position.z = radius * sinf(this->lifetime);
+    // this->transform->rotation.y = this->lifetime;
+    // this->transform->scale = MyVector3(1.0f + 0.5f * sinf(this->lifetime)) * 0.1f;
 
     this->transform->Update(deltaTime);
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Math/MyMatrix4x4.hpp"
+#include "Math/MyVector3.hpp"
 
 namespace DX3D {
     // GPU constant buffer alignment - must be 16-byte aligned
@@ -9,9 +10,7 @@ namespace DX3D {
         MyMatrix4x4 view;
         MyMatrix4x4 projection;
         float time = 0.0f;
-        float padding1 = 0.0f;  // Pad to 16-byte boundary
-        float padding2 = 0.0f;  // Pad to 16-byte boundary  
-        float padding3 = 0.0f;  // Pad to 16-byte boundary
+        MyVector3 cameraPosition;
     };
 
     // Note: Lighting data is now handled by MyLightManager's separate constant buffer

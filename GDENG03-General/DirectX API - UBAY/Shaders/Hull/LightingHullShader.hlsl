@@ -4,12 +4,16 @@ struct VS_TEXTURED_OUTPUT {
     float4 position : SV_POSITION;
     float2 textureCoordinate : TEXCOORD0;
     float3 normal : NORMAL0;
+    float3 worldPosition : TEXCOORD1;
+    float3 viewDirection : TEXCOORD2;
 };
 
 struct HS_CONTROL_POINT_OUTPUT {
     float4 position : SV_POSITION;
     float2 textureCoordinate : TEXCOORD0;
     float3 normal : NORMAL0;
+    float3 worldPosition : TEXCOORD1;
+    float3 viewDirection : TEXCOORD2;
 };
 
 struct HS_CONSTANT_DATA_OUTPUT {
@@ -47,10 +51,11 @@ HS_CONTROL_POINT_OUTPUT main(InputPatch<VS_TEXTURED_OUTPUT, NUM_CONTROL_POINTS> 
 {
     HS_CONTROL_POINT_OUTPUT output;
 
-    // Pass through all data unchanged
     output.position = patch[pointID].position;
     output.textureCoordinate = patch[pointID].textureCoordinate;
     output.normal = patch[pointID].normal;
+    output.worldPosition = patch[pointID].worldPosition;
+    output.viewDirection = patch[pointID].viewDirection;
 
     return output;
 }

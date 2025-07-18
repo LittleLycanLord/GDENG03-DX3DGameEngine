@@ -17,8 +17,8 @@ extern const std::wstring LIGHTING_PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/Ligh
 extern const std::wstring LIGHTING_HULL_SHADER_DIRECTORY = L"Shaders/Hull/LightingHullShader.hlsl";
 extern const std::wstring LIGHTING_DOMAIN_SHADER_DIRECTORY = L"Shaders/Domain/LightingDomainShader.hlsl";
 
-extern const std::wstring SAMPLE_TEXTURE_DIRECTORY = L"Assets/Textures/Wooden Box.jpg";
-extern const std::wstring SAMPLE_MESH_DIRECTORY = L"Assets/Meshes/SimpleCube.obj";
+extern const std::wstring SAMPLE_TEXTURE_DIRECTORY = L"Assets/Textures/White.jpg";
+extern const std::wstring SAMPLE_MESH_DIRECTORY = L"Assets/Meshes/Teapot.obj";
 extern const std::wstring IMGUI_LOGO_DIRECTORY = L"Assets/Textures/dlsu_logo.png";
 using namespace DX3D;
 

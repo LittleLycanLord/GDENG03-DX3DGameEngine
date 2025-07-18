@@ -208,9 +208,19 @@ void MyAppWindow::DebugLaunchFunction() {
     this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
     this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
 
-    this->meshes[0]->time = 0.0f;
-    this->meshes[1]->time = 2.0f;
-    this->meshes[2]->time = 4.0f;
+    // this->meshes[0]->lifetime = 0.0f;
+    // this->meshes[1]->lifetime = 2.0f;
+    // this->meshes[2]->lifetime = 4.0f;
+
+    // Position meshes in a row for lighting testing
+    this->meshes[0]->transform->position = MyVector3(-3.0f, 0.0f, 0.0f);  // Left
+    this->meshes[1]->transform->position = MyVector3(0.0f, 0.0f, 0.0f);   // Center
+    this->meshes[2]->transform->position = MyVector3(3.0f, 0.0f, 0.0f);   // Right
+    
+    // Set uniform scale for all meshes
+    this->meshes[0]->transform->scale = MyVector3(0.1f);
+    this->meshes[1]->transform->scale = MyVector3(0.1f);
+    this->meshes[2]->transform->scale = MyVector3(0.1f);
 }
 
 void MyAppWindow::ImGuiUpdate() {
@@ -343,6 +353,7 @@ void MyAppWindow::UpdateObjects() {
     //* Update Active Camera
     this->activeCamera->Update(this->deltaTime);
     this->globalConstantData.view = this->activeCamera->transform->worldMatrix;
+    this->globalConstantData.cameraPosition = this->activeCamera->transform->position;
 
     //* Update Lighting System
     if (MyLightManager::GetInstance()) {
