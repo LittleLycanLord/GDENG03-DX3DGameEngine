@@ -400,159 +400,299 @@ void MyAppWindow::ImGuiUpdate() {
 
     // Lighting Controls Window
     if (showLightingControls) {
-        ImGui::Begin("Lighting System Controls", &showLightingControls);
+        ImGui::Begin("Lighting System Controls", &showLightingControls, ImGuiWindowFlags_AlwaysVerticalScrollbar);
         
         if (MyLightManager::GetInstance()) {
+            // Header information
             ImGui::Text("Lighting System Status: Active");
             ImGui::Text("Total Lights: %d", (int)MyLightManager::GetInstance()->GetLightCount());
+            ImGui::Text("Lighting Mode: %s", useLightingShaders ? "Enabled" : "Disabled");
+            
+            // Quick toggle for lighting mode
+            if (ImGui::Button(useLightingShaders ? "Disable Lighting" : "Enable Lighting")) {
+                useLightingShaders = !useLightingShaders;
+            }
+            
             ImGui::Separator();
             
             // Global lighting controls
-            ImGui::Text("Global Settings:");
-            auto lightingData = MyLightManager::GetInstance()->GetLightingData();
-            
-            // Ambient light controls
-            float ambientColor[3] = { 
-                MyLightManager::GetInstance()->GetAmbientLight().x,
-                MyLightManager::GetInstance()->GetAmbientLight().y,
-                MyLightManager::GetInstance()->GetAmbientLight().z
-            };
-            float ambientIntensity = MyLightManager::GetInstance()->GetAmbientIntensity();
-            
-            if (ImGui::ColorEdit3("Ambient Color", ambientColor)) {
-                MyLightManager::GetInstance()->SetAmbientLight(
-                    MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]), 
-                    ambientIntensity
-                );
-            }
-            if (ImGui::SliderFloat("Ambient Intensity", &ambientIntensity, 0.0f, 1.0f)) {
-                MyLightManager::GetInstance()->SetAmbientLight(
-                    MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]), 
-                    ambientIntensity
-                );
+            if (ImGui::CollapsingHeader("Global Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+                // Ambient light controls
+                float ambientColor[3] = { 
+                    MyLightManager::GetInstance()->GetAmbientLight().x,
+                    MyLightManager::GetInstance()->GetAmbientLight().y,
+                    MyLightManager::GetInstance()->GetAmbientLight().z
+                };
+                float ambientIntensity = MyLightManager::GetInstance()->GetAmbientIntensity();
+                
+                if (ImGui::ColorEdit3("Ambient Color", ambientColor)) {
+                    MyLightManager::GetInstance()->SetAmbientLight(
+                        MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]), 
+                        ambientIntensity
+                    );
+                }
+                if (ImGui::SliderFloat("Ambient Intensity", &ambientIntensity, 0.0f, 2.0f)) {
+                    MyLightManager::GetInstance()->SetAmbientLight(
+                        MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]), 
+                        ambientIntensity
+                    );
+                }
+                
+                // Global controls
+                ImGui::Spacing();
+                if (ImGui::Button("Enable All Lights")) {
+                    MyLightManager::GetInstance()->EnableAllLights();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Disable All Lights")) {
+                    MyLightManager::GetInstance()->DisableAllLights();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Remove All Lights")) {
+                    MyLightManager::GetInstance()->RemoveAllLights();
+                }
             }
             
             ImGui::Separator();
-            ImGui::Text("Individual Lights:");
+            
+            // Light creation controls
+            if (ImGui::CollapsingHeader("Add New Lights")) {
+                static int lightTypeToAdd = 0;
+                const char* lightTypes[] = { "Directional Light", "Point Light", "Spot Light" };
+                
+                ImGui::Combo("Light Type", &lightTypeToAdd, lightTypes, IM_ARRAYSIZE(lightTypes));
+                
+                if (ImGui::Button("Add Light")) {
+                    MyVector3 defaultColor(1.0f, 1.0f, 1.0f);
+                    float defaultIntensity = 1.0f;
+                    
+                    switch (lightTypeToAdd) {
+                        case 0: // Directional Light
+                            MyLightManager::GetInstance()->AddDirectionalLight(defaultColor, defaultIntensity);
+                            break;
+                        case 1: // Point Light
+                            MyLightManager::GetInstance()->AddPointLight(MyVector3(0.0f, 2.0f, 0.0f), defaultColor, defaultIntensity, 10.0f);
+                            break;
+                        case 2: // Spot Light
+                            MyLightManager::GetInstance()->AddSpotLight(MyVector3(0.0f, 3.0f, 0.0f), MyVector3(0.0f, -1.0f, 0.0f), defaultColor, defaultIntensity, 15.0f);
+                            break;
+                    }
+                }
+            }
+            
+            ImGui::Separator();
             
             // Individual light controls
-            for (size_t i = 0; i < MyLightManager::GetInstance()->GetLightCount(); i++) {
-                auto light = MyLightManager::GetInstance()->GetLight(i);
-                if (!light) continue;
-                
-                ImGui::PushID((int)i);
-                
-                // Light type and basic info
-                std::string lightName;
-                if (auto dirLight = std::dynamic_pointer_cast<MyDirectionalLight>(light)) {
-                    lightName = "Directional Light " + std::to_string(i);
-                } else if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
-                    lightName = "Point Light " + std::to_string(i);
-                } else if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
-                    lightName = "Spot Light " + std::to_string(i);
-                } else {
-                    lightName = "Unknown Light " + std::to_string(i);
+            if (ImGui::CollapsingHeader("Individual Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
+                // Light statistics
+                int directionalCount = 0, pointCount = 0, spotCount = 0;
+                for (size_t i = 0; i < MyLightManager::GetInstance()->GetLightCount(); i++) {
+                    auto light = MyLightManager::GetInstance()->GetLight(i);
+                    if (std::dynamic_pointer_cast<MyDirectionalLight>(light)) directionalCount++;
+                    else if (std::dynamic_pointer_cast<MyPointLight>(light)) pointCount++;
+                    else if (std::dynamic_pointer_cast<MySpotLight>(light)) spotCount++;
                 }
                 
-                if (ImGui::CollapsingHeader(lightName.c_str())) {
-                    // Enable/Disable toggle
+                ImGui::Text("Directional: %d | Point: %d | Spot: %d", directionalCount, pointCount, spotCount);
+                ImGui::Spacing();
+                
+                // Individual light controls
+                for (size_t i = 0; i < MyLightManager::GetInstance()->GetLightCount(); i++) {
+                    auto light = MyLightManager::GetInstance()->GetLight(i);
+                    if (!light) continue;
+                    
+                    ImGui::PushID((int)i);
+                    
+                    // Determine light type and create appropriate name
+                    std::string lightName;
+                    std::string lightTypeIcon;
+                    
+                    if (auto dirLight = std::dynamic_pointer_cast<MyDirectionalLight>(light)) {
+                        lightName = "☀️ Directional Light " + std::to_string(i);
+                        lightTypeIcon = "☀️";
+                    } else if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
+                        lightName = "💡 Point Light " + std::to_string(i);
+                        lightTypeIcon = "💡";
+                    } else if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
+                        lightName = "🔦 Spot Light " + std::to_string(i);
+                        lightTypeIcon = "🔦";
+                    } else {
+                        lightName = "❓ Unknown Light " + std::to_string(i);
+                        lightTypeIcon = "❓";
+                    }
+                    
+                    // Add enabled/disabled indicator to name
+                    if (!light->IsEnabled()) {
+                        lightName += " (DISABLED)";
+                    }
+                    
+                    bool headerOpen = ImGui::CollapsingHeader(lightName.c_str());
+                    
+                    // Quick enable/disable button on same line
+                    ImGui::SameLine();
                     bool isEnabled = light->IsEnabled();
-                    if (ImGui::Checkbox("Enabled", &isEnabled)) {
+                    if (ImGui::Checkbox(("##enabled" + std::to_string(i)).c_str(), &isEnabled)) {
                         light->SetEnabled(isEnabled);
                     }
                     
-                    // Color control
-                    float color[3] = { light->GetColor().x, light->GetColor().y, light->GetColor().z };
-                    if (ImGui::ColorEdit3("Color", color)) {
-                        light->SetColor(MyVector3(color[0], color[1], color[2]));
+                    // Quick delete button
+                    ImGui::SameLine();
+                    if (ImGui::Button(("Delete##" + std::to_string(i)).c_str())) {
+                        MyLightManager::GetInstance()->RemoveLight(light);
+                        ImGui::PopID();
+                        continue; // Skip the rest of this light since it's deleted
                     }
                     
-                    // Intensity control
-                    float intensity = light->GetIntensity();
-                    if (ImGui::SliderFloat("Intensity", &intensity, 0.0f, 10.0f)) {
-                        light->SetIntensity(intensity);
-                    }
-                    
-                    // Position control (for point and spot lights)
-                    if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
-                        float position[3] = { 
-                            pointLight->transform->position.x,
-                            pointLight->transform->position.y,
-                            pointLight->transform->position.z
-                        };
-                        if (ImGui::SliderFloat3("Position", position, -10.0f, 10.0f)) {
-                            pointLight->transform->position = MyVector3(position[0], position[1], position[2]);
+                    if (headerOpen) {
+                        ImGui::Indent();
+                        
+                        // Light type info
+                        ImGui::Text("Type: %s", lightTypeIcon.c_str());
+                        ImGui::SameLine();
+                        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Index: %d", (int)i);
+                        
+                        // Color control with preview
+                        float color[3] = { light->GetColor().x, light->GetColor().y, light->GetColor().z };
+                        if (ImGui::ColorEdit3("Color", color)) {
+                            light->SetColor(MyVector3(color[0], color[1], color[2]));
                         }
                         
-                        float range = pointLight->GetRange();
-                        if (ImGui::SliderFloat("Range", &range, 1.0f, 50.0f)) {
-                            pointLight->SetRange(range);
-                        }
-                    }
-                    
-                    if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
-                        float position[3] = { 
-                            spotLight->transform->position.x,
-                            spotLight->transform->position.y,
-                            spotLight->transform->position.z
-                        };
-                        if (ImGui::SliderFloat3("Position", position, -10.0f, 10.0f)) {
-                            spotLight->transform->position = MyVector3(position[0], position[1], position[2]);
+                        // Intensity control with dynamic range
+                        float intensity = light->GetIntensity();
+                        float maxIntensity = 20.0f; // Adjust based on light type
+                        if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
+                            maxIntensity = 15.0f;
+                        } else if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
+                            maxIntensity = 10.0f;
                         }
                         
-                        float range = spotLight->GetRange();
-                        if (ImGui::SliderFloat("Range", &range, 1.0f, 50.0f)) {
-                            spotLight->SetRange(range);
+                        if (ImGui::SliderFloat("Intensity", &intensity, 0.0f, maxIntensity)) {
+                            light->SetIntensity(intensity);
                         }
                         
-                        float innerAngle = spotLight->GetInnerConeAngle();
-                        float outerAngle = spotLight->GetOuterConeAngle();
-                        if (ImGui::SliderFloat("Inner Cone Angle", &innerAngle, 5.0f, 45.0f)) {
-                            spotLight->SetInnerConeAngle(innerAngle);
+                        // Type-specific controls
+                        if (auto dirLight = std::dynamic_pointer_cast<MyDirectionalLight>(light)) {
+                            ImGui::Separator();
+                            ImGui::Text("Directional Light Properties:");
+                            
+                            // Direction control via rotation
+                            float rotation[3] = { 
+                                dirLight->transform->rotation.x,
+                                dirLight->transform->rotation.y,
+                                dirLight->transform->rotation.z
+                            };
+                            if (ImGui::SliderFloat3("Rotation", rotation, -180.0f, 180.0f)) {
+                                dirLight->transform->rotation = MyVector3(rotation[0], rotation[1], rotation[2]);
+                            }
+                            
+                            // Display calculated direction
+                            ImGui::Text("Direction: (%.2f, %.2f, %.2f)", 
+                                dirLight->GetDirection().x, 
+                                dirLight->GetDirection().y, 
+                                dirLight->GetDirection().z);
                         }
-                        if (ImGui::SliderFloat("Outer Cone Angle", &outerAngle, 10.0f, 90.0f)) {
-                            spotLight->SetOuterConeAngle(outerAngle);
+                        
+                        if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
+                            ImGui::Separator();
+                            ImGui::Text("Point Light Properties:");
+                            
+                            // Position control
+                            float position[3] = { 
+                                pointLight->transform->position.x,
+                                pointLight->transform->position.y,
+                                pointLight->transform->position.z
+                            };
+                            if (ImGui::SliderFloat3("Position", position, -20.0f, 20.0f)) {
+                                pointLight->transform->position = MyVector3(position[0], position[1], position[2]);
+                            }
+                            
+                            // Range control
+                            float range = pointLight->GetRange();
+                            if (ImGui::SliderFloat("Range", &range, 0.1f, 50.0f)) {
+                                pointLight->SetRange(range);
+                            }
                         }
+                        
+                        if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
+                            ImGui::Separator();
+                            ImGui::Text("Spot Light Properties:");
+                            
+                            // Position control
+                            float position[3] = { 
+                                spotLight->transform->position.x,
+                                spotLight->transform->position.y,
+                                spotLight->transform->position.z
+                            };
+                            if (ImGui::SliderFloat3("Position", position, -20.0f, 20.0f)) {
+                                spotLight->transform->position = MyVector3(position[0], position[1], position[2]);
+                            }
+                            
+                            // Direction control via rotation
+                            float rotation[3] = { 
+                                spotLight->transform->rotation.x,
+                                spotLight->transform->rotation.y,
+                                spotLight->transform->rotation.z
+                            };
+                            if (ImGui::SliderFloat3("Rotation", rotation, -180.0f, 180.0f)) {
+                                spotLight->transform->rotation = MyVector3(rotation[0], rotation[1], rotation[2]);
+                            }
+                            
+                            // Range control
+                            float range = spotLight->GetRange();
+                            if (ImGui::SliderFloat("Range", &range, 0.1f, 50.0f)) {
+                                spotLight->SetRange(range);
+                            }
+                            
+                            // Cone angle controls
+                            float innerAngle = spotLight->GetInnerConeAngle();
+                            float outerAngle = spotLight->GetOuterConeAngle();
+                            
+                            if (ImGui::SliderFloat("Inner Cone Angle", &innerAngle, 1.0f, 89.0f)) {
+                                // Ensure inner angle is less than outer angle
+                                if (innerAngle >= outerAngle) {
+                                    outerAngle = innerAngle + 1.0f;
+                                    spotLight->SetOuterConeAngle(outerAngle);
+                                }
+                                spotLight->SetInnerConeAngle(innerAngle);
+                            }
+                            
+                            if (ImGui::SliderFloat("Outer Cone Angle", &outerAngle, 2.0f, 90.0f)) {
+                                // Ensure outer angle is greater than inner angle
+                                if (outerAngle <= innerAngle) {
+                                    innerAngle = outerAngle - 1.0f;
+                                    spotLight->SetInnerConeAngle(innerAngle);
+                                }
+                                spotLight->SetOuterConeAngle(outerAngle);
+                            }
+                            
+                            // Display calculated direction
+                            ImGui::Text("Direction: (%.2f, %.2f, %.2f)", 
+                                spotLight->GetDirection().x, 
+                                spotLight->GetDirection().y, 
+                                spotLight->GetDirection().z);
+                        }
+                        
+                        // Animation controls
+                        ImGui::Separator();
+                        if (ImGui::CollapsingHeader(("Animation##" + std::to_string(i)).c_str())) {
+                            ImGui::Text("Animation controls could be added here");
+                            ImGui::Text("(e.g., oscillate position, rotate, pulse intensity)");
+                        }
+                        
+                        ImGui::Unindent();
                     }
                     
-                    // Direction control (for directional and spot lights)
-                    if (auto dirLight = std::dynamic_pointer_cast<MyDirectionalLight>(light)) {
-                        float rotation[3] = { 
-                            dirLight->transform->rotation.x,
-                            dirLight->transform->rotation.y,
-                            dirLight->transform->rotation.z
-                        };
-                        if (ImGui::SliderFloat3("Rotation", rotation, -180.0f, 180.0f)) {
-                            dirLight->transform->rotation = MyVector3(rotation[0], rotation[1], rotation[2]);
-                        }
-                    }
-                    
-                    if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
-                        float rotation[3] = { 
-                            spotLight->transform->rotation.x,
-                            spotLight->transform->rotation.y,
-                            spotLight->transform->rotation.z
-                        };
-                        if (ImGui::SliderFloat3("Rotation", rotation, -180.0f, 180.0f)) {
-                            spotLight->transform->rotation = MyVector3(rotation[0], rotation[1], rotation[2]);
-                        }
-                    }
+                    ImGui::PopID();
                 }
                 
-                ImGui::PopID();
-            }
-            
-            ImGui::Separator();
-            if (ImGui::Button("Enable All Lights")) {
-                MyLightManager::GetInstance()->EnableAllLights();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Disable All Lights")) {
-                MyLightManager::GetInstance()->DisableAllLights();
+                if (MyLightManager::GetInstance()->GetLightCount() == 0) {
+                    ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No lights in the scene. Add some lights above!");
+                }
             }
             
         } else {
             ImGui::Text("Lighting System: Not Initialized");
+            ImGui::Text("The lighting system failed to initialize properly.");
         }
         
         ImGui::End();

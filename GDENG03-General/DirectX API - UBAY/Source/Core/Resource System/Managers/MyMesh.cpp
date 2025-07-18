@@ -26,9 +26,21 @@ indices() {
 
             // Debug: Check if we have shapes and vertices
             if (LOG_INFO_MESH) std::cout << "[DEBUG]: Shapes count: " << this->shapes.size() << std::endl;
+            if (LOG_INFO_MESH) std::cout << "[DEBUG]: Vertices count: " << this->attributes.vertices.size() / 3 << std::endl;
+            if (LOG_INFO_MESH) std::cout << "[DEBUG]: Normals count: " << this->attributes.normals.size() / 3 << std::endl;
+            if (LOG_INFO_MESH) std::cout << "[DEBUG]: Texcoords count: " << this->attributes.texcoords.size() / 2 << std::endl;
+            
             if (this->shapes.empty()) {
                 std::cerr << "[ERROR]: No shapes found in OBJ file" << std::endl;
                 throw std::runtime_error("No shapes found in OBJ file");
+            }
+
+            // Warn about missing data but continue loading
+            if (this->attributes.normals.empty()) {
+                if (LOG_INFO_MESH) std::cout << "[WARNING]: OBJ file has no normals, using default values" << std::endl;
+            }
+            if (this->attributes.texcoords.empty()) {
+                if (LOG_INFO_MESH) std::cout << "[WARNING]: OBJ file has no texture coordinates, using default values" << std::endl;
             }
 
             for (size_t shape = 0; shape < this->shapes.size(); shape++) {
@@ -44,7 +56,12 @@ indices() {
                         //* Vertex Reading
                         tinyobj::index_t index = (tinyobj::index_t)this->shapes[shape].mesh.indices[indexOffset + vertex];
 
-                        //* POSITION
+                        //* POSITION - Check bounds for vertex data
+                        if (index.vertex_index < 0 || index.vertex_index * 3 + 2 >= this->attributes.vertices.size()) {
+                            std::cerr << "[ERROR]: Invalid vertex index: " << index.vertex_index << std::endl;
+                            throw std::runtime_error("Invalid vertex index in OBJ file");
+                        }
+                        
                         tinyobj::real_t x = (tinyobj::real_t)this->attributes.vertices[index.vertex_index * 3 + 0];
                         tinyobj::real_t y = (tinyobj::real_t)this->attributes.vertices[index.vertex_index * 3 + 1];
                         tinyobj::real_t z = (tinyobj::real_t)this->attributes.vertices[index.vertex_index * 3 + 2];
@@ -54,14 +71,30 @@ indices() {
                         tinyobj::real_t ny = 1.0f; // Default up vector
                         tinyobj::real_t nz = 0.0f;
                         if (index.normal_index >= 0 && !this->attributes.normals.empty()) {
-                            nx = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 0];
-                            ny = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 1];
-                            nz = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 2];
+                            // Check bounds for normal data
+                            if (index.normal_index * 3 + 2 < this->attributes.normals.size()) {
+                                nx = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 0];
+                                ny = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 1];
+                                nz = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 2];
+                            }
+                            else {
+                                if (LOG_INFO_MESH) std::cout << "[WARNING]: Normal index out of bounds, using default normal" << std::endl;
+                            }
                         }
 
                         //* TEXCOORD
-                        tinyobj::real_t u = (tinyobj::real_t)this->attributes.texcoords[index.texcoord_index * 2 + 0];
-                        tinyobj::real_t v = (tinyobj::real_t)this->attributes.texcoords[index.texcoord_index * 2 + 1];
+                        tinyobj::real_t u = 0.0f; // Default UV coordinate
+                        tinyobj::real_t v = 0.0f; // Default UV coordinate
+                        if (index.texcoord_index >= 0 && !this->attributes.texcoords.empty()) {
+                            // Check bounds for texture coordinate data
+                            if (index.texcoord_index * 2 + 1 < this->attributes.texcoords.size()) {
+                                u = (tinyobj::real_t)this->attributes.texcoords[index.texcoord_index * 2 + 0];
+                                v = (tinyobj::real_t)this->attributes.texcoords[index.texcoord_index * 2 + 1];
+                            }
+                            else {
+                                if (LOG_INFO_MESH) std::cout << "[WARNING]: Texture coordinate index out of bounds, using default UV" << std::endl;
+                            }
+                        }
 
                         this->vertices.push_back(MyMeshVertex(MyVector3(x, y, z), MyVector3(nx, ny, nz), MyVector2(u, v)));
                         this->indices.push_back((unsigned int)indexOffset + vertex);
