@@ -25,6 +25,11 @@ LRESULT CALLBACK WindowProcedure(HWND windowHandle, UINT message, WPARAM wParame
             if (windowInstance) windowInstance->OnKillFocus();
             break;
         }
+    case WM_CLOSE: {
+            // Handle window close request (e.g., from Alt+F4, X button, or our SendMessage)
+            ::DestroyWindow(windowHandle);
+            break;
+        }
     case WM_DESTROY: {
             MyWindow* windowInstance = (MyWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
             if (windowInstance) windowInstance->OnDestroy();

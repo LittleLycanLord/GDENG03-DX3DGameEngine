@@ -14,6 +14,8 @@ extern const std::wstring PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/TexturedTeapo
 // Lighting Shader Paths - New dedicated lighting shaders
 extern const std::wstring LIGHTING_VERTEX_SHADER_DIRECTORY = L"Shaders/Vertex/LightingVertexShader.hlsl";
 extern const std::wstring LIGHTING_PIXEL_SHADER_DIRECTORY = L"Shaders/Pixel/LightingPixelShader.hlsl";
+extern const std::wstring LIGHTING_HULL_SHADER_DIRECTORY = L"Shaders/Hull/LightingHullShader.hlsl";
+extern const std::wstring LIGHTING_DOMAIN_SHADER_DIRECTORY = L"Shaders/Domain/LightingDomainShader.hlsl";
 
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY = L"Assets/Textures/Wooden Box.jpg";
 extern const std::wstring SAMPLE_MESH_DIRECTORY = L"Assets/Meshes/SimpleCube.obj";

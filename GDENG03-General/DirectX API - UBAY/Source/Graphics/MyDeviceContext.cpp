@@ -114,14 +114,22 @@ void MyDeviceContext::SetViewPortSize(UINT width, UINT height) {
 
 void MyDeviceContext::SetHullShader(const MyHullShaderPtr& hullShader) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetHullShader called" << std::endl;
-    if (!hullShader || !hullShader->D3DHullShader) {
-        throw std::exception("hullShader or D3DHullShader is null in MyDeviceContext::SetHullShader");
-        return;
-    }
     if (!this->D3DDeviceContext) {
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::SetHullShader");
         return;
     }
+    
+    // Allow null hull shader to disable tessellation
+    if (!hullShader) {
+        this->D3DDeviceContext->HSSetShader(nullptr, nullptr, 0);
+        return;
+    }
+    
+    if (!hullShader->D3DHullShader) {
+        throw std::exception("D3DHullShader is null in MyDeviceContext::SetHullShader");
+        return;
+    }
+    
     this->D3DDeviceContext->HSSetShader(
         hullShader->D3DHullShader,
         nullptr,
@@ -131,14 +139,22 @@ void MyDeviceContext::SetHullShader(const MyHullShaderPtr& hullShader) {
 
 void MyDeviceContext::SetDomainShader(const MyDomainShaderPtr& domainShader) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetDomainShader called" << std::endl;
-    if (!domainShader || !domainShader->D3DDomainShader) {
-        throw std::exception("domainShader or D3DDomainShader is null in MyDeviceContext::SetDomainShader");
-        return;
-    }
     if (!this->D3DDeviceContext) {
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::SetDomainShader");
         return;
     }
+    
+    // Allow null domain shader to disable tessellation
+    if (!domainShader) {
+        this->D3DDeviceContext->DSSetShader(nullptr, nullptr, 0);
+        return;
+    }
+    
+    if (!domainShader->D3DDomainShader) {
+        throw std::exception("D3DDomainShader is null in MyDeviceContext::SetDomainShader");
+        return;
+    }
+    
     this->D3DDeviceContext->DSSetShader(
         domainShader->D3DDomainShader,
         nullptr,
@@ -218,7 +234,7 @@ void MyDeviceContext::DrawTriangles(UINT vertexCount, UINT startVertexIndex) {
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::DrawTriangles");
         return;
     }
-    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+    // Primitive topology should be set externally via SetPrimitiveTopology
     this->D3DDeviceContext->Draw(vertexCount, startVertexIndex);
 }
 
@@ -228,8 +244,22 @@ void MyDeviceContext::DrawIndexedTriangles(UINT indexCount, UINT startVertexInde
         throw std::exception("D3DDeviceContext is null in MyDeviceContext::DrawIndexedTriangles");
         return;
     }
-    this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+    // Primitive topology should be set externally via SetPrimitiveTopology
     this->D3DDeviceContext->DrawIndexed(indexCount, startIndexLocation, startVertexIndex);
+}
+
+void MyDeviceContext::SetPrimitiveTopology(bool useTessellation) {
+    if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::SetPrimitiveTopology called with useTessellation=" << useTessellation << std::endl;
+    if (!this->D3DDeviceContext) {
+        throw std::exception("D3DDeviceContext is null in MyDeviceContext::SetPrimitiveTopology");
+        return;
+    }
+    
+    if (useTessellation) {
+        this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+    } else {
+        this->D3DDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    }
 }
 
 void MyDeviceContext::SetTexture(const MyVertexShaderPtr& vertexShader, const MyTexturePtr& texture) {

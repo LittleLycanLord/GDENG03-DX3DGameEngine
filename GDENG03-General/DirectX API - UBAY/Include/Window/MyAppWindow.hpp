@@ -54,14 +54,28 @@ namespace DX3D {
         //* ╔═══════════════════════════╗
         //* ║ Lighting System           ║
         //* ╚═══════════════════════════╝
+        enum class LightingMode {
+            STANDARD = 0,
+            BASIC_LIGHTING = 1,
+            HIGH_CONTRAST = 2,
+            DEBUG_NORMALS = 3
+        };
+        
         MyVertexShaderPtr lightingVertexShader{ nullptr };
         MyPixelShaderPtr lightingPixelShader{ nullptr };
+        MyPixelShaderPtr highContrastPixelShader{ nullptr };
+        MyPixelShaderPtr debugNormalsPixelShader{ nullptr };
+        MyHullShaderPtr lightingHullShader{ nullptr };
+        MyDomainShaderPtr lightingDomainShader{ nullptr };
+        LightingMode currentLightingMode{ LightingMode::STANDARD };
         bool useLightingShaders{ false };
+        bool useTessellation{ false }; // Default to off for lighting compatibility
 
         //* ╔═══════════════════════════╗
         //* ║ Game Objects & Camera     ║
         //* ╚═══════════════════════════╝
         bool freeMouse{ false };
+        bool shouldCloseWindow{ false }; // Flag to defer window closing until end of frame
         MyCameraPtr activeCamera{ nullptr };
         std::vector<MyCameraPtr> cameras;
         std::vector<MyMeshPtr> meshes;
@@ -136,6 +150,11 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
+        // Request window closure at the end of the current frame
+        void RequestWindowClose() { shouldCloseWindow = true; }
+        
+        // Check if window is marked for closing
+        bool IsWindowClosing() const { return shouldCloseWindow; }
     };
 } // namespace DX3D
 

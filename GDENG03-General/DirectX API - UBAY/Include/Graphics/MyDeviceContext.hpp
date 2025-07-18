@@ -49,6 +49,7 @@ namespace DX3D {
         void SetTexture(const MyVertexShaderPtr& vertexShader, const MyTexturePtr& texture);
         void SetTexture(const MyPixelShaderPtr& pixelShader, const MyTexturePtr& texture);
         void SetSamplerState();
+        void SetPrimitiveTopology(bool useTessellation);
 
         void DrawTriangles(UINT vertexCount, UINT startVertexIndex);
         void DrawIndexedTriangles(UINT indexCount, UINT startVertexIndex, UINT startIndexLocation);

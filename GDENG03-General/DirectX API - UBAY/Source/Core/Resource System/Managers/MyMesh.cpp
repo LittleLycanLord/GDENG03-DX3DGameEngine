@@ -41,7 +41,7 @@ indices() {
 
                         //* NORMAL
                         tinyobj::real_t nx = 0.0f;
-                        tinyobj::real_t ny = 0.0f;
+                        tinyobj::real_t ny = 1.0f; // Default up vector
                         tinyobj::real_t nz = 0.0f;
                         if (index.normal_index >= 0 && !this->attributes.normals.empty()) {
                             nx = (tinyobj::real_t)this->attributes.normals[index.normal_index * 3 + 0];

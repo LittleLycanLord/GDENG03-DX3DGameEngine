@@ -1,5 +1,6 @@
 #include "Window/MyAppWindow.hpp"
 #include "Core/MyLogger.hpp"
+#include <windows.h>  // For VK_ESCAPE and other virtual key codes
 
 using namespace DX3D;
 // Add extern declarations for shader path constants
@@ -9,6 +10,8 @@ extern const std::wstring VERTEX_SHADER_DIRECTORY;
 extern const std::wstring PIXEL_SHADER_DIRECTORY;
 extern const std::wstring LIGHTING_VERTEX_SHADER_DIRECTORY;
 extern const std::wstring LIGHTING_PIXEL_SHADER_DIRECTORY;
+extern const std::wstring LIGHTING_HULL_SHADER_DIRECTORY;
+extern const std::wstring LIGHTING_DOMAIN_SHADER_DIRECTORY;
 extern const std::wstring SAMPLE_TEXTURE_DIRECTORY;
 extern const std::wstring SAMPLE_MESH_DIRECTORY;
 extern const std::wstring IMGUI_LOGO_DIRECTORY;
@@ -139,6 +142,44 @@ void MyAppWindow::InitializeLightingShaders() {
         return;
     }
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
+
+    //* Lighting Hull Shader
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Compiling lighting hull shader" << std::endl;
+    void* lightingHullShaderByteCode = nullptr;
+    size_t lightingHullShaderSize = 0;
+    if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompileHullShader(
+        LIGHTING_HULL_SHADER_DIRECTORY.c_str(), "main", &lightingHullShaderByteCode, &lightingHullShaderSize)) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to compile lighting hull shader!" << std::endl;
+        throw std::exception("Failed to compile lighting hull shader!");
+        return;
+    }
+
+    this->lightingHullShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateHullShader(lightingHullShaderByteCode, lightingHullShaderSize);
+    if (!this->lightingHullShader) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to create lighting hull shader object!" << std::endl;
+        throw std::exception("Failed to create lighting hull shader!");
+        return;
+    }
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
+
+    //* Lighting Domain Shader
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Compiling lighting domain shader" << std::endl;
+    void* lightingDomainShaderByteCode = nullptr;
+    size_t lightingDomainShaderSize = 0;
+    if (!MyGraphicsEngine::GetInstance()->GetRenderSystem()->CompileDomainShader(
+        LIGHTING_DOMAIN_SHADER_DIRECTORY.c_str(), "main", &lightingDomainShaderByteCode, &lightingDomainShaderSize)) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to compile lighting domain shader!" << std::endl;
+        throw std::exception("Failed to compile lighting domain shader!");
+        return;
+    }
+
+    this->lightingDomainShader = MyGraphicsEngine::GetInstance()->GetRenderSystem()->CreateDomainShader(lightingDomainShaderByteCode, lightingDomainShaderSize);
+    if (!this->lightingDomainShader) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to create lighting domain shader object!" << std::endl;
+        throw std::exception("Failed to create lighting domain shader!");
+        return;
+    }
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
     
     if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Lighting shaders initialized successfully" << std::endl;
 }
@@ -199,6 +240,7 @@ void MyAppWindow::ImGuiUpdate() {
             }
             ImGui::MenuItem("Free Mouse", nullptr, &this->freeMouse);
             ImGui::MenuItem("Use Lighting Shaders", nullptr, &this->useLightingShaders);
+            ImGui::MenuItem("Enable Tessellation", nullptr, &this->useTessellation);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("UI")) {
@@ -327,10 +369,18 @@ void MyAppWindow::UpdateObjects() {
 void MyAppWindow::UpdateConstantBuffer() {
     if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Updating constant buffer..." << std::endl;
     this->globalConstantBuffer->Update(MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext(), &this->globalConstantData);
+    
+    // Set constant buffer for standard shaders
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->vertexShader, this->globalConstantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->hullShader, this->globalConstantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->domainShader, this->globalConstantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->pixelShader, this->globalConstantBuffer);
+    
+    // ALSO set constant buffer for lighting shaders (they need transform matrices too!)
+    if (this->lightingVertexShader && this->lightingPixelShader) {
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->lightingVertexShader, this->globalConstantBuffer);
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->lightingPixelShader, this->globalConstantBuffer);
+    }
 }
 
 void MyAppWindow::UpdateShaders() {
@@ -359,9 +409,25 @@ void MyAppWindow::UpdateShaders() {
         MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->pixelShader);
     }
 
-    // Always set hull and domain shaders (they don't change)
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->hullShader);
-    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->domainShader);
+    // Set primitive topology based on tessellation setting
+    MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPrimitiveTopology(useTessellation);
+
+    // Set tessellation shaders based on mode and toggle
+    if (useTessellation) {
+        if (useLightingShaders) {
+            // Use lighting tessellation shaders (pass-through)
+            MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->lightingHullShader);
+            MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->lightingDomainShader);
+        } else {
+            // Use standard tessellation shaders
+            MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->hullShader);
+            MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->domainShader);
+        }
+    } else {
+        // Disable tessellation completely
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(nullptr);
+        MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(nullptr);
+    }
 }
 
 void MyAppWindow::DrawLoop() {
@@ -371,9 +437,22 @@ void MyAppWindow::DrawLoop() {
     MyVertexShaderPtr vertexShaderToUse = this->useLightingShaders ? this->lightingVertexShader : this->vertexShader;
     MyPixelShaderPtr pixelShaderToUse = this->useLightingShaders ? this->lightingPixelShader : this->pixelShader;
     
-    for (MyMeshPtr mesh : this->meshes)
+    for (MyMeshPtr mesh : this->meshes) {
         mesh->Draw(vertexShaderToUse, this->hullShader, this->domainShader, pixelShaderToUse,
             this->activeCamera->transform->worldMatrix, this->activeCamera->projectionMatrix, this->globalConstantData.time);
+        
+        // If using lighting shaders, set the lighting constant buffer after each mesh draw
+        // (since mesh->Draw() sets its own constant buffer which might override our lighting buffer)
+        if (this->useLightingShaders && MyLightManager::GetInstance()) {
+            auto deviceContext = MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext();
+            auto lightingBuffer = MyLightManager::GetInstance()->GetLightingConstantBuffer();
+            if (lightingBuffer) {
+                // Re-set lighting constant buffer to both vertex and pixel shaders
+                deviceContext->SetConstantBuffer(this->lightingVertexShader, lightingBuffer);
+                deviceContext->SetConstantBuffer(this->lightingPixelShader, lightingBuffer);
+            }
+        }
+    }
 }
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
@@ -458,6 +537,14 @@ void MyAppWindow::OnCreate() {
 void MyAppWindow::OnUpdate() {
     if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: MyAppWindow::OnUpdate called" << std::endl;
 
+    // Early exit if window is marked for closing to avoid updating systems unnecessarily
+    if (this->shouldCloseWindow) {
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: Window marked for closing, skipping frame updates" << std::endl;
+        // Still send the close message at the end
+        ::SendMessage(this->windowHandle, WM_CLOSE, 0, 0);
+        return;
+    }
+
     MyWindow::OnUpdate();
     MyInputSystem::GetInstance()->Update();
     this->UpdateObjects();
@@ -485,6 +572,12 @@ void MyAppWindow::OnUpdate() {
     }
 
     this->UpdateDeltaTime();
+
+    // Check if window should be closed at the end of the frame
+    if (this->shouldCloseWindow) {
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: Closing window at end of frame" << std::endl;
+        ::SendMessage(this->windowHandle, WM_CLOSE, 0, 0);
+    }
 }
 
 void MyAppWindow::OnDestroy() {
@@ -511,6 +604,8 @@ void MyAppWindow::OnDestroy() {
     this->pixelShader = nullptr;
     this->lightingVertexShader = nullptr;
     this->lightingPixelShader = nullptr;
+    this->lightingHullShader = nullptr;
+    this->lightingDomainShader = nullptr;
     this->swapChain = nullptr;
 }
 
@@ -531,6 +626,32 @@ void MyAppWindow::OnKeyDown(int keyCode) {
 
     // Handle key down events here
     switch (keyCode) {
+    case VK_ESCAPE:
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: ESC pressed, requesting window close at end of frame" << std::endl;
+        // Request window close at the end of the frame instead of immediately
+        this->RequestWindowClose();
+        break;
+    case '1':
+        this->useLightingShaders = !this->useLightingShaders;
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: 1 pressed, toggling shaders. Now using: " 
+                                      << (this->useLightingShaders ? "Lighting Shaders" : "Standard Shaders") << std::endl;
+        break;
+    case '2':
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: 2 pressed, debugging normals (check console for instructions)" << std::endl;
+        std::cout << "\n=== LIGHTING DEBUG INFO ===" << std::endl;
+        std::cout << "Press '1' to toggle between standard and lighting shaders" << std::endl;
+        std::cout << "Current mode: " << (this->useLightingShaders ? "Lighting Shaders" : "Standard Shaders") << std::endl;
+        std::cout << "You should see:" << std::endl;
+        std::cout << "- Standard mode: Just textured cubes" << std::endl;
+        std::cout << "- Lighting mode: Static light from right side, left sides should be BLACK" << std::endl;
+        std::cout << "If lighting mode looks the same as standard, normals might not be working!" << std::endl;
+        std::cout << "=========================\n" << std::endl;
+        break;
+    case '3':
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: 3 pressed, switching to debug normals shader temporarily" << std::endl;
+        // Temporarily use debug normals - we'll implement this if needed
+        std::cout << "Debug normals: Each face should show different colors (Red=+X, Green=+Y, Blue=+Z)" << std::endl;
+        break;
     case 'M':
         if (LOG_INFO_WINDOW) std::cout << "[INFO]: M pressed, wireframe mode enabled" << std::endl;
         MyGraphicsEngine::GetInstance()->GetRenderSystem()->ToggleWireframeMode(true);
