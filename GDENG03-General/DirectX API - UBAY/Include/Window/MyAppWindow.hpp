@@ -68,7 +68,7 @@ namespace DX3D {
         MyHullShaderPtr lightingHullShader{ nullptr };
         MyDomainShaderPtr lightingDomainShader{ nullptr };
         LightingMode currentLightingMode{ LightingMode::STANDARD };
-        bool useLightingShaders{ false };
+        bool useLightingShaders{ true };
         bool useTessellation{ false }; // Default to off for lighting compatibility
 
         //* ╔═══════════════════════════╗

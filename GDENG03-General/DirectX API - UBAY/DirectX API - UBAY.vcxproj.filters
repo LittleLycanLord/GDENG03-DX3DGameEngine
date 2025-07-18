@@ -278,5 +278,8 @@
     <ClInclude Include="Include\Game\Lighting\MySpotLight.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Math\MyLightData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 #include "Graphics/Buffers/MyConstantBuffer.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
 #include "Core/MyRenderSystem.hpp"
+#include "Math/MyLightData.hpp"
 #include <algorithm>
 
 namespace DX3D {
@@ -18,7 +19,7 @@ namespace DX3D {
         if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager initialized" << std::endl;
         
         // Initialize lighting data structure
-        memset(&lightingData, 0, sizeof(LightingData));
+        memset(&lightingData, 0, sizeof(MyLightingData));
         lightingData.ambientLight = ambientLight;
         lightingData.ambientIntensity = ambientIntensity;
     }
@@ -143,7 +144,7 @@ namespace DX3D {
         if (!needsUpdate) return;
 
         // Clear data
-        memset(&lightingData, 0, sizeof(LightingData));
+        memset(&lightingData, 0, sizeof(MyLightingData));
         
         // Set ambient lighting
         lightingData.ambientLight = ambientLight;
@@ -182,7 +183,7 @@ namespace DX3D {
     void MyLightManager::CreateLightingConstantBuffer() {
         if (!lightingConstantBuffer) {
             auto renderSystem = MyGraphicsEngine::GetInstance()->GetRenderSystem();
-            lightingConstantBuffer = renderSystem->CreateConstantBuffer(&lightingData, sizeof(LightingData));
+            lightingConstantBuffer = renderSystem->CreateConstantBuffer(&lightingData, sizeof(MyLightingData));
             if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::CreateLightingConstantBuffer - Lighting constant buffer created" << std::endl;
         }
     }

@@ -21,43 +21,14 @@ MyLight::MyLight(LightType type, const MyVector3& color, float intensity, float 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-MyLightData MyLight::GetLightData() const {
-    MyLightData data;
-    
-    // Clear all data first (important for GPU buffer)
-    memset(&data, 0, sizeof(MyLightData));
-    
-    // Fill common light data
-    data.position = this->transform->position;
-    data.type = static_cast<int>(this->lightType);
-    data.color = this->color;
-    data.intensity = this->intensity;
-    data.range = this->range;
-    
-    // Calculate direction from transform rotation
-    MyVector3 direction;
-    this->CalculateDirection(direction);
-    data.direction = direction;
-    
-    // Spot angle is 0 for non-spot lights
-    data.spotAngle = 0.0f;
-    
-    return data;
-}
-
 void MyLight::SetEnabled(bool enabled) {
     this->enabled = enabled;
-    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Light " << (enabled ? "enabled" : "disabled") << std::endl;
-}
-
-bool MyLight::IsEnabled() const {
-    return this->enabled;
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Light enabled state set to " << (enabled ? "true" : "false") << std::endl;
 }
 
 void MyLight::SetColor(const MyVector3& color) {
     this->color = color;
-    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Light color set to (" 
-                                     << color.x << ", " << color.y << ", " << color.z << ")" << std::endl;
+    if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Light color set to (" << color.x << ", " << color.y << ", " << color.z << ")" << std::endl;
 }
 
 void MyLight::SetIntensity(float intensity) {
@@ -68,22 +39,6 @@ void MyLight::SetIntensity(float intensity) {
 void MyLight::SetRange(float range) {
     this->range = range;
     if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Light range set to " << range << std::endl;
-}
-
-MyVector3 MyLight::GetColor() const {
-    return this->color;
-}
-
-float MyLight::GetIntensity() const {
-    return this->intensity;
-}
-
-float MyLight::GetRange() const {
-    return this->range;
-}
-
-LightType MyLight::GetType() const {
-    return this->lightType;
 }
 
 void MyLight::Update(float deltaTime) {
@@ -110,4 +65,48 @@ void MyLight::CalculateDirection(MyVector3& direction) const {
         direction.y /= length;
         direction.z /= length;
     }
+}
+
+//* ╔════════════════════════════════╗
+//* ║ Virtual / Overridden Functions ║
+//* ╚════════════════════════════════╝
+MyLightData MyLight::GetLightData() const {
+    MyLightData data;
+    
+    // Clear all data first (important for GPU buffer)
+    memset(&data, 0, sizeof(MyLightData));
+    
+    // Fill common light data
+    data.position = this->transform->position;
+    data.type = static_cast<int>(this->lightType);
+    data.color = this->color;
+    data.intensity = this->intensity;
+    data.range = this->range;
+    
+    // Calculate direction from transform rotation
+    MyVector3 direction;
+    this->CalculateDirection(direction);
+    data.direction = direction;
+    
+    return data;
+}
+
+MyVector3 MyLight::GetColor() const {
+    return this->color;
+}
+
+float MyLight::GetIntensity() const {
+    return this->intensity;
+}
+
+float MyLight::GetRange() const {
+    return this->range;
+}
+
+LightType MyLight::GetType() const {
+    return this->lightType;
+}
+
+bool MyLight::IsEnabled() const {
+    return this->enabled;
 }

@@ -17,6 +17,30 @@ cbuffer MyConstant: register(b0) {
     float padding;
 };
 
+struct LightData {
+    float3 position;
+    int type;
+    float3 direction;
+    float intensity;
+    float3 color;
+    float range;
+    float spotAngle;
+    float padding1;
+    float padding2;
+    float padding3;
+};
+
+cbuffer LightingData: register(b1) {
+    LightData lights[32];
+    int numDirectionalLights;
+    int numPointLights;
+    int numSpotLights;
+    int totalActiveLights;
+    float3 ambientLight;
+    float ambientIntensity;
+    float lightingPadding[8];
+};
+
 float4 main(VS_TEXTURED_OUTPUT input) : SV_TARGET {
     float4 textureColor = MyTexture.Sample(Sampler, input.textureCoordinate);
 
@@ -28,67 +52,54 @@ float4 main(VS_TEXTURED_OUTPUT input) : SV_TARGET {
 
     float shininess = 32.0f;
 
-    float3 directionalLightDirection = normalize(float3(
-            cos(time * 0.3f), 
-            -0.5f, 
-            sin(time * 0.3f)));
-    float3 directionalLightColor = float3(0.8f, 0.9f, 1.0f);
-    float directionalLightIntensity = 1.5f;
+    // Loop through all active lights
+    for (int i = 0; i < totalActiveLights; i++) {
+        LightData light = lights[i];
 
-    float directionalDiffuse = max(0.0f, dot(surfaceNormal, -directionalLightDirection));
-    float3 directionalReflection = reflect(directionalLightDirection, surfaceNormal);
-    float directionalSpecular = pow(max(0.0f, dot(viewDirection, directionalReflection)), shininess);
+        float3 lightDirection;
+        float attenuation = 1.0f;
 
-    totalDiffuse += directionalLightColor * directionalDiffuse * directionalLightIntensity;
-    totalSpecular += directionalLightColor * directionalSpecular * directionalLightIntensity * 0.5f;
+        if (light.type == 0) {
+            // Directional light
+            lightDirection = normalize(-light.direction);
+        }
+        else if (light.type == 1) {
+            // Point light
+            float3 lightVector = light.position - input.worldPosition;
+            float lightDistance = length(lightVector);
+            lightDirection = normalize(lightVector);
+            attenuation = 1.0f / (1.0f + 0.1f * lightDistance + 0.01f * lightDistance * lightDistance);
+        }
+        else if (light.type == 2) {
+            // Spot light
+            float3 lightVector = light.position - input.worldPosition;
+            float lightDistance = length(lightVector);
+            lightDirection = normalize(lightVector);
 
-    float3 pointLightPosition = float3(
-        sin(time * 1.5f) * 4.0f,
-        2.0f,
-        cos(time * 1.5f) * 2.0f);
-    float3 pointLightColor = float3(1.0f, 0.6f, 0.3f);
-    float pointLightIntensity = 6.0f;
+            float distanceAttenuation = 1.0f / (1.0f + 0.1f * lightDistance + 0.01f * lightDistance * lightDistance);
 
-    float3 pointLightVector = pointLightPosition - input.worldPosition;
-    float pointLightDistance = length(pointLightVector);
-    float3 pointLightDirection = normalize(pointLightVector);
-    float pointDistanceAttenuation = 1.0f / (1.0f + 0.1f * pointLightDistance + 0.01f * pointLightDistance * pointLightDistance);
+            float spotAngle = dot(-lightDirection, normalize(light.direction));
+            float innerConeAngle = cos(radians(light.spotAngle * 0.5f));
+            float outerConeAngle = cos(radians(light.spotAngle));
+            float spotFactor = smoothstep(outerConeAngle, innerConeAngle, spotAngle);
 
-    float pointDiffuse = max(0.0f, dot(surfaceNormal, pointLightDirection));
-    float3 pointReflection = reflect(-pointLightDirection, surfaceNormal);
-    float pointSpecular = pow(max(0.0f, dot(viewDirection, pointReflection)), shininess);
+            attenuation = distanceAttenuation * spotFactor;
+        }
 
-    totalDiffuse += pointLightColor * pointDiffuse * pointLightIntensity * pointDistanceAttenuation;
-    totalSpecular += pointLightColor * pointSpecular * pointLightIntensity * pointDistanceAttenuation * 0.8f;
+        // Calculate diffuse lighting
+        float diffuseFactor = max(0.0f, dot(surfaceNormal, lightDirection));
 
-    float3 spotLightPosition = float3(
-        sin(time * 1.0f) * 3.0f,
-        3.5f,
-        cos(time * 1.0f) * 3.0f);
-    float3 spotLightDirection = normalize(float3(0.0f, -1.0f, 0.0f));
-    float3 spotLightColor = float3(0.9f, 0.9f, 1.0f);
-    float spotLightIntensity = 8.0f;
+        // Calculate specular lighting
+        float3 reflectionDirection = reflect(-lightDirection, surfaceNormal);
+        float specularFactor = pow(max(0.0f, dot(viewDirection, reflectionDirection)), shininess);
 
-    float3 spotLightVector = spotLightPosition - input.worldPosition;
-    float spotLightDistance = length(spotLightVector);
-    float3 spotLightDirectionToPixel = normalize(spotLightVector);
-    float spotDistanceAttenuation = 1.0f / (1.0f + 0.05f * spotLightDistance + 0.01f * spotLightDistance * spotLightDistance);
+        // Accumulate lighting contributions
+        totalDiffuse += light.color * diffuseFactor * light.intensity * attenuation;
+        totalSpecular += light.color * specularFactor * light.intensity * attenuation * 0.5f;
+    }
 
-    float spotAngle = dot(-spotLightDirectionToPixel, spotLightDirection);
-    float innerConeAngle = cos(radians(12.0f));
-    float outerConeAngle = cos(radians(25.0f));
-    float spotFactor = smoothstep(outerConeAngle, innerConeAngle, spotAngle);
-
-    float spotDiffuse = max(0.0f, dot(surfaceNormal, spotLightDirectionToPixel));
-    float3 spotReflection = reflect(-spotLightDirectionToPixel, surfaceNormal);
-    float spotSpecular = pow(max(0.0f, dot(viewDirection, spotReflection)), shininess);
-
-    totalDiffuse += spotLightColor * spotDiffuse * spotLightIntensity * spotDistanceAttenuation * spotFactor;
-    totalSpecular += spotLightColor * spotSpecular * spotLightIntensity * spotDistanceAttenuation * spotFactor;
-
-    float3 ambientColor = float3(0.08f, 0.08f, 0.12f);
-
-    float3 finalColor = textureColor.rgb * (ambientColor + totalDiffuse) + totalSpecular;
+    // Apply ambient lighting and combine with diffuse and specular
+    float3 finalColor = textureColor.rgb * (ambientLight * ambientIntensity + totalDiffuse) + totalSpecular;
 
     return float4(finalColor, textureColor.a);
 }

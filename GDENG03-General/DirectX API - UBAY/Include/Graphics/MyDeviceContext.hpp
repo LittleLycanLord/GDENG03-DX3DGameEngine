@@ -46,6 +46,10 @@ namespace DX3D {
         void SetConstantBuffer(const MyDomainShaderPtr& domainShader, const MyConstantBufferPtr& constantBuffer);
         void SetConstantBuffer(const MyVertexShaderPtr& vertexShader, const MyConstantBufferPtr& constantBuffer);
         void SetConstantBuffer(const MyPixelShaderPtr& pixelShader, const MyConstantBufferPtr& constantBuffer);
+        
+        // Overloads with slot specification for multiple constant buffers
+        void SetConstantBuffer(const MyVertexShaderPtr& vertexShader, const MyConstantBufferPtr& constantBuffer, UINT slot);
+        void SetConstantBuffer(const MyPixelShaderPtr& pixelShader, const MyConstantBufferPtr& constantBuffer, UINT slot);
         void SetTexture(const MyVertexShaderPtr& vertexShader, const MyTexturePtr& texture);
         void SetTexture(const MyPixelShaderPtr& pixelShader, const MyTexturePtr& texture);
         void SetSamplerState();

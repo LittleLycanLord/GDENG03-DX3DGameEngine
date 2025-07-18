@@ -228,6 +228,23 @@ void MyDeviceContext::SetConstantBuffer(const MyPixelShaderPtr& pixelShader, con
     );
 }
 
+// Overloaded methods with slot specification
+void MyDeviceContext::SetConstantBuffer(const MyVertexShaderPtr& vertexShader, const MyConstantBufferPtr& constantBuffer, UINT slot) {
+    this->D3DDeviceContext->VSSetConstantBuffers(
+        slot,
+        1,
+        &constantBuffer->D3DConstantBuffer
+    );
+}
+
+void MyDeviceContext::SetConstantBuffer(const MyPixelShaderPtr& pixelShader, const MyConstantBufferPtr& constantBuffer, UINT slot) {
+    this->D3DDeviceContext->PSSetConstantBuffers(
+        slot,
+        1,
+        &constantBuffer->D3DConstantBuffer
+    );
+}
+
 void MyDeviceContext::DrawTriangles(UINT vertexCount, UINT startVertexIndex) {
     if (LOG_INFO_DEVICE_CONTEXT) std::cout << "[INFO]: MyDeviceContext::DrawTriangles called with vertexCount=" << vertexCount << ", startVertexIndex=" << startVertexIndex << std::endl;
     if (!this->D3DDeviceContext) {

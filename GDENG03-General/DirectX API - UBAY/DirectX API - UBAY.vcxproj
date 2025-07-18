@@ -223,6 +223,7 @@
     <ClInclude Include="Include\Libs\imgui-1.92.0\imstb_truetype.h" />
     <ClInclude Include="Include\Libs\tinyobjloader\include\tiny_obj_loader.h" />
     <ClInclude Include="Include\Math\MyConstant.hpp" />
+    <ClInclude Include="Include\Math\MyLightData.hpp" />
     <ClInclude Include="Include\Math\MyMatrix4x4.hpp" />
     <ClInclude Include="Include\Math\MyMeshVertex.hpp" />
     <ClInclude Include="Include\Math\MyScreenPoint.hpp" />

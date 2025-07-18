@@ -3,6 +3,13 @@
 
 namespace DX3D {
     class MyDirectionalLight : public MyLight {
+        //* ╔════════════╗
+        //* ║ Attributes ║
+        //* ╚════════════╝
+    private:
+        MyVector3 explicitDirection;
+        bool useExplicitDirection;
+
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
@@ -16,16 +23,21 @@ namespace DX3D {
         //* ║ Functions ║
         //* ╚═══════════╝
     public:
+
+        //* ╔════════════════════════════════╗
+        //* ║ Virtual / Overridden Functions ║
+        //* ╚════════════════════════════════╝
+    public:
         // Override to provide directional light specific data
         MyLightData GetLightData() const override;
-        
+
+        //* ╔═══════════════════╗
+        //* ║ Getters & Setters ║
+        //* ╚═══════════════════╝
+    public:
         // Set the direction directly (alternative to using transform rotation)
         void SetDirection(const MyVector3& direction);
         MyVector3 GetDirection() const;
-
-    private:
-        MyVector3 explicitDirection;
-        bool useExplicitDirection;
     };
 
 } // namespace DX3D
