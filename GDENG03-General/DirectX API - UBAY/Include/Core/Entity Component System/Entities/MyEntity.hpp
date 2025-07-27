@@ -1,4 +1,10 @@
 #pragma once
+#include <unordered_map>
+#include <typeindex>
+#include <memory>
+#include "Core/Entity Component System/Components/MyComponent.hpp"
+#include "Core/Entity Component System/Components/MyTransformComponent.hpp"
+#include "Core/Prerequisites.hpp"
 
 namespace DX3D {
     class MyEntity {
@@ -6,6 +12,8 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        int id;
+        std::unordered_map<std::type_index, MyComponentPtr> components;
     public:
 
         //* ╔════════════════════════════╗
@@ -13,13 +21,22 @@ namespace DX3D {
         //* ╚════════════════════════════╝
     public:
         MyEntity();
+        MyEntity(int id);
         ~MyEntity();
+
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     private:
+        void AddDefaultTransformComponent();
     public:
+        template<typename T, typename... Args>
+        std::shared_ptr<T> AddComponent(Args&&... args) {
+            auto comp = std::make_shared<T>(std::forward<Args>(args)...);
+            components[typeid(T)] = comp;
+            return comp;
+        }
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
@@ -31,6 +48,20 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
+        template<typename T>
+        std::shared_ptr<T> GetComponent() {
+            auto it = components.find(typeid(T));
+            if (it != components.end())
+                return std::static_pointer_cast<T>(it->second);
+            return nullptr;
+        }
+
+        template<typename T>
+        void RemoveComponent() {
+            components.erase(typeid(T));
+        }
+
+        int GetID() const { return id; }
     };
 } // namespace DX3D
 

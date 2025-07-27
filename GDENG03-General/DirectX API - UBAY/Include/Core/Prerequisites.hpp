@@ -27,6 +27,14 @@ namespace DX3D {
     class MyMesh;
     class MyMeshManager;
 
+    //* Entity Component System
+    class MyEntity;
+    class MyComponent;
+    class MyTransformComponent;
+    class MyMeshComponent;
+    class MySystem;
+    class MyMeshSystem;
+
     //* Core GameObjects
     class MyTransform;
     class MyCamera;
@@ -37,14 +45,14 @@ namespace DX3D {
     class MyPointLight;
     class MySpotLight;
     class MyLightManager;
-    
+
     //* Utilities
     class MyLogger;
 
     //* ImGui
     class MyImGuiPanel;
     class MyInspectorPanel;
-    
+
     //* ╔════════════════╗
     //* ║ Smart Pointers ║
     //* ╚════════════════╝
@@ -70,6 +78,14 @@ namespace DX3D {
     typedef std::shared_ptr<MyMesh> MyMeshPtr;
     typedef std::shared_ptr<MyMeshManager> MyMeshManagerPtr;
 
+    //* Entity Component System
+    typedef std::shared_ptr<MyEntity> MyEntityPtr;
+    typedef std::shared_ptr<MyComponent> MyComponentPtr;
+    typedef std::shared_ptr<MyTransformComponent> MyTransformComponentPtr;
+    typedef std::shared_ptr<MyMeshComponent> MyMeshComponentPtr;
+    typedef std::shared_ptr<MySystem> MySystemPtr;
+    typedef std::shared_ptr<MyMeshSystem> MyMeshSystemPtr;
+
     //* Core GameObjects
     typedef std::shared_ptr<MyTransform> MyTransformPtr;
     typedef std::shared_ptr<MyCamera> MyCameraPtr;
@@ -80,7 +96,7 @@ namespace DX3D {
     typedef std::shared_ptr<MyPointLight> MyPointLightPtr;
     typedef std::shared_ptr<MySpotLight> MySpotLightPtr;
     typedef std::shared_ptr<MyLightManager> MyLightManagerPtr;
-    
+
     //* Utilities
     typedef std::shared_ptr<MyLogger> MyLoggerPtr;
 

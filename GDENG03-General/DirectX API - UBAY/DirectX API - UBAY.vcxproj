@@ -150,6 +150,12 @@
     <ClCompile Include="Include\Libs\imgui-1.92.0\imgui_tables.cpp" />
     <ClCompile Include="Include\Libs\imgui-1.92.0\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Source\Core\Entity Component System\Components\MyComponent.cpp" />
+    <ClCompile Include="Source\Core\Entity Component System\Components\MyMeshComponent.cpp" />
+    <ClCompile Include="Source\Core\Entity Component System\Components\MyTransformComponent.cpp" />
+    <ClCompile Include="Source\Core\Entity Component System\Entities\MyEntity.cpp" />
+    <ClCompile Include="Source\Core\Entity Component System\Systems\MyMeshSystem.cpp" />
+    <ClCompile Include="Source\Core\Entity Component System\Systems\MySystem.cpp" />
     <ClCompile Include="Source\Core\ImGui\ImGuiPanels\MyInspectorPanel.cpp" />
     <ClCompile Include="Source\Core\ImGui\MyImGuiPanel.cpp" />
     <ClCompile Include="Source\Core\Input System\MyInputListener.cpp" />
@@ -185,6 +191,12 @@
     <ClCompile Include="tinyobjimplementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Core\Entity Component System\Components\MyComponent.hpp" />
+    <ClInclude Include="Include\Core\Entity Component System\Components\MyMeshComponent.hpp" />
+    <ClInclude Include="Include\Core\Entity Component System\Components\MyTransformComponent.hpp" />
+    <ClInclude Include="Include\Core\Entity Component System\Entities\MyEntity.hpp" />
+    <ClInclude Include="Include\Core\Entity Component System\Systems\MyMeshSystem.hpp" />
+    <ClInclude Include="Include\Core\Entity Component System\Systems\MySystem.hpp" />
     <ClInclude Include="Include\Core\ImGui\ImGuiPanels\MyInspectorPanel.hpp" />
     <ClInclude Include="Include\Core\ImGui\MyImGuiPanel.hpp" />
     <ClInclude Include="Include\Core\Input System\MyInputListener.hpp" />

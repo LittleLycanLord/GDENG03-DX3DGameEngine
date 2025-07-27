@@ -1,45 +1,37 @@
-
 #pragma once
-#include "Core/Prerequisites.hpp"
+#include "Core/Entity Component System/Components/MyComponent.hpp"
+#include "Game/MyTransform.hpp"
+
+using namespace DX3D;
 
 namespace DX3D {
-    class MyEntity;
-}
-
-namespace DX3D {
-    class MyComponent {
+    class MyTransformComponent : public MyComponent {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyEntity* owner = nullptr;
     public:
+        MyTransformPtr transform;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyComponent();
-        virtual ~MyComponent();
+        MyTransformComponent();
+        MyTransformComponent(MyTransformPtr t);
+        virtual ~MyTransformComponent();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
-    private:
     public:
+        void Update(float deltaTime);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
-    protected:
     public:
-
-        //* ╔═══════════════════╗
-        //* ║ Getters & Setters ║
-        //* ╚═══════════════════╝
-    public:
-        MyEntity* GetOwner() const { return owner; }
-        void SetOwner(MyEntity* entity) { owner = entity; }
+        MyTransformPtr GetTransform() { return transform; }
+        void SetTransform(MyTransformPtr newTransform) { transform = newTransform; }
     };
 } // namespace DX3D
-

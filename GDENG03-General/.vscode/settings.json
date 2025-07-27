@@ -71,6 +71,7 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "random": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "typeindex": "cpp"
     }
 }

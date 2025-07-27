@@ -1,24 +1,16 @@
-#include "Core/Entity Component System/Entities/MyEntity.hpp"
+#include "Core/Entity Component System/Components/MyMeshComponent.hpp"
 
 using namespace DX3D;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyEntity::MyEntity() : id(0) {
-    AddDefaultTransformComponent();
-}
-MyEntity::MyEntity(int id) : id(id) {
-    AddDefaultTransformComponent();
-}
-MyEntity::~MyEntity() {}
+MyMeshComponent::MyMeshComponent(const MyMeshPtr& mesh) : mesh(mesh) {}
+MyMeshComponent::~MyMeshComponent() {}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-void DX3D::MyEntity::AddDefaultTransformComponent() {
-    this->AddComponent<MyTransformComponent>();
-}
 
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║

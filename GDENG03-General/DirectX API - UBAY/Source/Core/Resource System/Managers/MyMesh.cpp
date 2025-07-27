@@ -29,7 +29,7 @@ indices() {
             if (LOG_INFO_MESH) std::cout << "[DEBUG]: Vertices count: " << this->attributes.vertices.size() / 3 << std::endl;
             if (LOG_INFO_MESH) std::cout << "[DEBUG]: Normals count: " << this->attributes.normals.size() / 3 << std::endl;
             if (LOG_INFO_MESH) std::cout << "[DEBUG]: Texcoords count: " << this->attributes.texcoords.size() / 2 << std::endl;
-            
+
             if (this->shapes.empty()) {
                 std::cerr << "[ERROR]: No shapes found in OBJ file" << std::endl;
                 throw std::runtime_error("No shapes found in OBJ file");
@@ -61,7 +61,7 @@ indices() {
                             std::cerr << "[ERROR]: Invalid vertex index: " << index.vertex_index << std::endl;
                             throw std::runtime_error("Invalid vertex index in OBJ file");
                         }
-                        
+
                         tinyobj::real_t x = (tinyobj::real_t)this->attributes.vertices[index.vertex_index * 3 + 0];
                         tinyobj::real_t y = (tinyobj::real_t)this->attributes.vertices[index.vertex_index * 3 + 1];
                         tinyobj::real_t z = (tinyobj::real_t)this->attributes.vertices[index.vertex_index * 3 + 2];
@@ -132,7 +132,7 @@ MyMesh::~MyMesh() {
 //* ╚═══════════╝
 void MyMesh::Update(float deltaTime) {
     this->lifetime += deltaTime;
-    
+
     //* Transform Unit Test - DISABLED for lighting testing
     // float radius = 3.0f;
     // this->transform->position.x = radius * cosf(this->lifetime);

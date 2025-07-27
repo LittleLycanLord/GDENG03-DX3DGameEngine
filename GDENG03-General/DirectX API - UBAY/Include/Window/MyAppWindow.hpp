@@ -32,6 +32,12 @@
 #include "Graphics/Shaders/MyVertexShader.hpp"
 #include "Graphics/Shaders/MyPixelShader.hpp"
 #include "Core/ImGui/ImGuiPanels/MyInspectorPanel.hpp"
+#include "Core/Entity Component System/Entities/MyEntity.hpp"
+#include "Core/Entity Component System/Components/MyComponent.hpp"
+#include "Core/Entity Component System/Components/MyMeshComponent.hpp"
+#include "Core/Entity Component System/Components/MyTransformComponent.hpp"
+#include "Core/Entity Component System/Systems/MySystem.hpp"
+#include "Core/Entity Component System/Systems/MyMeshSystem.hpp"
 
 namespace DX3D {
     class MyAppWindow : public MyWindow, public MyInputListener {
@@ -80,6 +86,11 @@ namespace DX3D {
         MyCameraPtr activeCamera{ nullptr };
         std::vector<MyCameraPtr> cameras;
         std::vector<MyMeshPtr> meshes;
+        // ECS mesh entities (for ECS migration)
+        std::vector<MyEntityPtr> entities;
+        std::vector<MySystemPtr> systems;
+        // ECS mesh system instance
+        MyMeshSystemPtr meshSystem{ nullptr };
 
         //* ╔══════════════════════╗
         //* ║ Timing & Performance ║

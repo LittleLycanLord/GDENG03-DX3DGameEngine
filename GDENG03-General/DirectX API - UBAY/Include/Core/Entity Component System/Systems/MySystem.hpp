@@ -1,11 +1,16 @@
 #pragma once
 
+#include <vector>
+#include "Core/Entity Component System/Entities/MyEntity.hpp"
+#include "Core/Prerequisites.hpp"
+
 namespace DX3D {
     class MySystem {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        std::vector<MyEntityPtr> entities;
     public:
 
         //* ╔════════════════════════════╗
@@ -13,7 +18,21 @@ namespace DX3D {
         //* ╚════════════════════════════╝
     public:
         MySystem();
-        ~MySystem();
+        virtual ~MySystem();
+        void AddEntity(MyEntityPtr entity) {
+            entities.push_back(entity);
+        }
+
+        void RemoveEntity(int id) {
+            entities.erase(
+                std::remove_if(entities.begin(), entities.end(),
+                    [id](const MyEntityPtr& e) { return e->GetID() == id; }),
+                entities.end()
+            );
+        }
+
+        // Override this in derived systems
+        virtual void Update(float deltaTime) {}
 
         //* ╔═══════════╗
         //* ║ Functions ║
@@ -31,6 +50,7 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
+        const std::vector<MyEntityPtr>& GetEntities() const { return entities; }
     };
 } // namespace DX3D
 

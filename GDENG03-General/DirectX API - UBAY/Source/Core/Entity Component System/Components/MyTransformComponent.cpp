@@ -1,24 +1,18 @@
-#include "Core/Entity Component System/Entities/MyEntity.hpp"
+#include "Core/Entity Component System/Components/MyTransformComponent.hpp"
 
 using namespace DX3D;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyEntity::MyEntity() : id(0) {
-    AddDefaultTransformComponent();
-}
-MyEntity::MyEntity(int id) : id(id) {
-    AddDefaultTransformComponent();
-}
-MyEntity::~MyEntity() {}
+MyTransformComponent::MyTransformComponent() : transform(std::make_shared<MyTransform>()) {}
+MyTransformComponent::MyTransformComponent(MyTransformPtr t) : transform(t) {}
+MyTransformComponent::~MyTransformComponent() {}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-void DX3D::MyEntity::AddDefaultTransformComponent() {
-    this->AddComponent<MyTransformComponent>();
-}
+void MyTransformComponent::Update(float deltaTime) { if (transform) transform->Update(deltaTime); }
 
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║

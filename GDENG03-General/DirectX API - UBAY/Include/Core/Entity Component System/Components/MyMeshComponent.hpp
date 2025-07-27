@@ -1,45 +1,35 @@
-
 #pragma once
-#include "Core/Prerequisites.hpp"
+#include "Core/Entity Component System/Components/MyComponent.hpp"
+#include "Core/Resource System/Managers/MyMesh.hpp"
+
+using namespace DX3D;
 
 namespace DX3D {
-    class MyEntity;
-}
-
-namespace DX3D {
-    class MyComponent {
+    class MyMeshComponent : public MyComponent {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyEntity* owner = nullptr;
+        MyMeshPtr mesh;
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
-    public:
-        MyComponent();
-        virtual ~MyComponent();
+public:
+        MyMeshComponent(const MyMeshPtr& mesh);
+        virtual ~MyMeshComponent();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
-    private:
     public:
+        MyMeshPtr GetMesh() const { return mesh; }
+        void SetMesh(const MyMeshPtr& newMesh) { mesh = newMesh; }
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
-    protected:
     public:
-
-        //* ╔═══════════════════╗
-        //* ║ Getters & Setters ║
-        //* ╚═══════════════════╝
-    public:
-        MyEntity* GetOwner() const { return owner; }
-        void SetOwner(MyEntity* entity) { owner = entity; }
     };
 } // namespace DX3D
-

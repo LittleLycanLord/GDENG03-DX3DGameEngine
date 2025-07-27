@@ -201,82 +201,76 @@ void MyAppWindow::InitializeConstantData() {
 
 void MyAppWindow::DebugLaunchFunction() {
     //!! Experimental
-    //* Texture Application
+    // Sample texture (still needed for pixel shader)
     this->sampleTexture = MyGraphicsEngine::GetInstance()->GetTextureManager()->CreateTextureFromFile(SAMPLE_TEXTURE_DIRECTORY.c_str());
-    //* Mesh Application
-    this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
-    this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
-    this->meshes.push_back(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
 
-    // this->meshes[0]->lifetime = 0.0f;
-    // this->meshes[1]->lifetime = 2.0f;
-    // this->meshes[2]->lifetime = 4.0f;
+    // Create mesh entities using ECS
+    std::vector<MyEntityPtr> meshEntities;
 
-    // Position meshes in a row for lighting testing
-    this->meshes[0]->transform->position = MyVector3(-3.0f, 0.0f, 0.0f);  // Left
-    this->meshes[1]->transform->position = MyVector3(0.0f, 0.0f, 0.0f);   // Center
-    this->meshes[2]->transform->position = MyVector3(3.0f, 0.0f, 0.0f);   // Right
-    this->panels.push_back(std::make_shared<MyInspectorPanel>(this->meshes[0]->transform));
+    for (int i = 0; i < 3; ++i) {
+        MyEntityPtr entity = std::make_shared<MyEntity>();
+        // Get the default transform component (added by MyEntity constructor)
+        MyTransformComponentPtr transformComp = entity->GetComponent<MyTransformComponent>();
+        // Attach mesh component, passing the transform pointer if needed
+        MyMeshPtr mesh = MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str());
+        if (mesh && transformComp) {
+            mesh->transform = transformComp->GetTransform();
+            LOG_DEBUG("ECS", "Created mesh component for entity " + std::to_string(i + 1));
+        }
+        entity->AddComponent<MyMeshComponent>(mesh);
+        // Position in a row
+        if (transformComp) {
+            float x = (float)(i - 1) * 3.0f; // -3, 0, 3
+            transformComp->transform->position = MyVector3(x, 0.0f, 0.0f);
+            transformComp->transform->scale = MyVector3(0.1f);
+        }
+        meshEntities.push_back(entity);
+    }
 
-    // Set uniform scale for all meshes
-    this->meshes[0]->transform->scale = MyVector3(0.1f);
-    this->meshes[1]->transform->scale = MyVector3(0.1f);
-    this->meshes[2]->transform->scale = MyVector3(0.1f);
+    // Add inspector panel for the first entity's transform
+    if (!meshEntities.empty()) {
+        MyTransformComponentPtr firstTransform = meshEntities[0]->GetComponent<MyTransformComponent>();
+        if (firstTransform) {
+            this->panels.push_back(std::make_shared<MyInspectorPanel>(firstTransform->GetTransform()));
+        }
+    }
 
-    // Add sample lights for testing the integrated lighting system
+    // Store mesh entities for later use (replace old meshes vector)
+    this->entities = meshEntities;
+
+    // Add mesh entities to meshSystem for ECS rendering
+    if (this->meshSystem) {
+        for (const auto& entity : meshEntities) {
+            this->meshSystem->AddEntity(entity);
+        }
+    }
+
+    // Sample lights using ECS (if your ECS supports lights as entities)
+    // Otherwise, keep using MyLightManager for now
     if (MyLightManager::GetInstance()) {
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Adding sample lights for testing..." << std::endl;
-
-        // Clear existing lights and reset the lighting system
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Adding sample lights for testing (ECS)..." << std::endl;
         MyLightManager::GetInstance()->RemoveAllLights();
-
-        // Set up ambient lighting
         MyLightManager::GetInstance()->SetAmbientLight(MyVector3(0.1f, 0.1f, 0.15f), 0.3f);
 
-        // Add a warm directional light (like sunset lighting)
         auto sunLight = MyLightManager::GetInstance()->AddDirectionalLight(
-            MyVector3(1.0f, 0.8f, 0.6f), // Warm orange-yellow color
-            1.2f // Intensity
-        );
-        sunLight->transform->rotation = MyVector3(-30.0f, 45.0f, 0.0f); // Angled from above-right
+            MyVector3(1.0f, 0.8f, 0.6f), 1.2f);
+        sunLight->transform->rotation = MyVector3(-30.0f, 45.0f, 0.0f);
 
-        // Add a bright point light that will move around (animated in UpdateObjects)
         auto movingPointLight = MyLightManager::GetInstance()->AddPointLight(
-            MyVector3(0.0f, 3.0f, 0.0f),  // Starting position above center mesh
-            MyVector3(0.3f, 0.8f, 1.0f),  // Cool blue color
-            4.0f,                         // High intensity
-            12.0f                         // Good range
-        );
+            MyVector3(0.0f, 3.0f, 0.0f), MyVector3(0.3f, 0.8f, 1.0f), 4.0f, 12.0f);
 
-        // Add a stationary red point light on the left
         auto leftPointLight = MyLightManager::GetInstance()->AddPointLight(
-            MyVector3(-5.0f, 1.5f, 2.0f), // Left side, elevated
-            MyVector3(1.0f, 0.2f, 0.2f),  // Red color
-            3.0f,                         // Moderate intensity
-            8.0f                          // Medium range
-        );
+            MyVector3(-5.0f, 1.5f, 2.0f), MyVector3(1.0f, 0.2f, 0.2f), 3.0f, 8.0f);
 
-        // Add a green spot light pointing down from above-right
         auto spotLight = MyLightManager::GetInstance()->AddSpotLight(
-            MyVector3(4.0f, 4.0f, 3.0f),  // Above and to the right
-            MyVector3(0.0f, -1.0f, 0.0f), // Direction pointing down
-            MyVector3(0.2f, 1.0f, 0.3f),  // Green color
-            2.5f,                         // Intensity
-            15.0f                         // Range
-        );
-        // Point the spot light down and slightly toward center
+            MyVector3(4.0f, 4.0f, 3.0f), MyVector3(0.0f, -1.0f, 0.0f), MyVector3(0.2f, 1.0f, 0.3f), 2.5f, 15.0f);
         spotLight->transform->rotation = MyVector3(-45.0f, -30.0f, 0.0f);
 
-        // Add a purple point light on the right
         auto rightPointLight = MyLightManager::GetInstance()->AddPointLight(
-            MyVector3(5.0f, 1.0f, -2.0f), // Right side
-            MyVector3(0.8f, 0.3f, 1.0f),  // Purple color
-            2.8f,                         // Intensity
-            10.0f                         // Range
-        );
+            MyVector3(5.0f, 1.0f, -2.0f), MyVector3(0.8f, 0.3f, 1.0f), 2.8f, 10.0f);
 
         if (LOG_INFO_LIGHTING) {
-            std::cout << "[INFO]: Added " << MyLightManager::GetInstance()->GetLightCount() << " sample lights:" << std::endl;
+            std::cout << "[INFO]: Added " << MyLightManager::GetInstance()->GetLightCount() << " sample lights (ECS):" << std::endl;
             std::cout << "  - 1 Directional light (warm sunset)" << std::endl;
             std::cout << "  - 3 Point lights (blue/moving, red/left, purple/right)" << std::endl;
             std::cout << "  - 1 Spot light (green, pointing down)" << std::endl;
@@ -724,8 +718,13 @@ void MyAppWindow::UpdateDeltaTime() {
 }
 
 void MyAppWindow::UpdateObjects() {
-    for (MyMeshPtr mesh : this->meshes)
-        mesh->Update(this->deltaTime);
+    // Update all ECS entity transforms
+    for (const auto& entity : this->entities) {
+        auto transformComp = entity->GetComponent<MyTransformComponent>();
+        if (transformComp) {
+            transformComp->Update(this->deltaTime);
+        }
+    }
 
     //* Update Active Camera
     this->activeCamera->Update(this->deltaTime);
@@ -858,21 +857,17 @@ void MyAppWindow::DrawLoop() {
     MyVertexShaderPtr vertexShaderToUse = this->useLightingShaders ? this->lightingVertexShader : this->vertexShader;
     MyPixelShaderPtr pixelShaderToUse = this->useLightingShaders ? this->lightingPixelShader : this->pixelShader;
 
-    for (MyMeshPtr mesh : this->meshes) {
-        mesh->Draw(vertexShaderToUse, this->hullShader, this->domainShader, pixelShaderToUse,
-            this->activeCamera->transform->worldMatrix, this->activeCamera->projectionMatrix, this->globalConstantData.time);
-
-        // If using lighting shaders, set the lighting constant buffer after each mesh draw
-        // (since mesh->Draw() sets its own constant buffer which might override our lighting buffer)
-        if (this->useLightingShaders && MyLightManager::GetInstance()) {
-            auto deviceContext = MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext();
-            auto lightingBuffer = MyLightManager::GetInstance()->GetLightingConstantBuffer();
-            if (lightingBuffer) {
-                // Re-set lighting constant buffer to slot 1 (register(b1))
-                deviceContext->SetConstantBuffer(this->lightingVertexShader, lightingBuffer, 1);
-                deviceContext->SetConstantBuffer(this->lightingPixelShader, lightingBuffer, 1);
-            }
-        }
+    // ECS mesh rendering via MyMeshSystem
+    if (this->meshSystem) {
+        this->meshSystem->RenderMeshes(
+            vertexShaderToUse,
+            this->hullShader,
+            this->domainShader,
+            pixelShaderToUse,
+            this->activeCamera->transform->worldMatrix,
+            this->activeCamera->projectionMatrix,
+            this->globalConstantData.time
+        );
     }
 }
 //* ╔════════════════════════════════╗
@@ -950,8 +945,12 @@ void MyAppWindow::OnCreate() {
     this->InitializeLightingSystem();
 
     LOG_INFO("WINDOW", "Running debug launch function");
-    this->DebugLaunchFunction();
 
+    // Create and register ECS mesh system
+    this->meshSystem = std::make_shared<MyMeshSystem>();
+    this->systems.push_back(this->meshSystem);
+
+    this->DebugLaunchFunction();
     LOG_INFO("WINDOW", "MyAppWindow::OnCreate completed successfully");
 }
 

@@ -1,45 +1,45 @@
-
 #pragma once
-#include "Core/Prerequisites.hpp"
+#include "Core/Entity Component System/Systems/MySystem.hpp"
+#include "Core/Entity Component System/Components/MyMeshComponent.hpp"
+#include "Core/Entity Component System/Components/MyTransformComponent.hpp"
 
 namespace DX3D {
-    class MyEntity;
-}
-
-namespace DX3D {
-    class MyComponent {
+    class MyMeshSystem : public MySystem {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        MyEntity* owner = nullptr;
+        // No extra attributes for now
     public:
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyComponent();
-        virtual ~MyComponent();
+        MyMeshSystem() = default;
+        virtual ~MyMeshSystem();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
-    private:
     public:
+        // Update all entities with a mesh and transform (ECS logic only)
+        virtual void Update(float deltaTime) override;
+
+        // Render all mesh entities (ECS rendering)
+        void RenderMeshes(
+            MyVertexShaderPtr vertexShader,
+            MyHullShaderPtr hullShader,
+            MyDomainShaderPtr domainShader,
+            MyPixelShaderPtr pixelShader,
+            const MyMatrix4x4& cameraWorldMatrix,
+            const MyMatrix4x4& cameraProjectionMatrix,
+            float time
+        );
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
-    protected:
     public:
-
-        //* ╔═══════════════════╗
-        //* ║ Getters & Setters ║
-        //* ╚═══════════════════╝
-    public:
-        MyEntity* GetOwner() const { return owner; }
-        void SetOwner(MyEntity* entity) { owner = entity; }
     };
 } // namespace DX3D
-
