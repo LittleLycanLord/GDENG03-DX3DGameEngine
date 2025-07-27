@@ -31,6 +31,7 @@
 #include "Graphics/Buffers/MyIndexBuffer.hpp"
 #include "Graphics/Shaders/MyVertexShader.hpp"
 #include "Graphics/Shaders/MyPixelShader.hpp"
+#include "Core/ImGui/ImGuiPanels/MyInspectorPanel.hpp"
 
 namespace DX3D {
     class MyAppWindow : public MyWindow, public MyInputListener {
@@ -38,9 +39,9 @@ namespace DX3D {
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
-        //* ╔═══════════════════════════╗
-        //* ║ Rendering Resources       ║
-        //* ╚═══════════════════════════╝
+        //* ╔═════════════════════╗
+        //* ║ Rendering Resources ║
+        //* ╚═════════════════════╝
         MySwapChainPtr swapChain{ nullptr };
         MyVertexBufferPtr vertexBuffer{ nullptr };
         MyConstant globalConstantData;
@@ -51,16 +52,16 @@ namespace DX3D {
         MyVertexShaderPtr vertexShader{ nullptr };
         MyPixelShaderPtr pixelShader{ nullptr };
 
-        //* ╔═══════════════════════════╗
-        //* ║ Lighting System           ║
-        //* ╚═══════════════════════════╝
+        //* ╔═════════════════╗
+        //* ║ Lighting System ║
+        //* ╚═════════════════╝
         enum class LightingMode {
             STANDARD = 0,
             BASIC_LIGHTING = 1,
             HIGH_CONTRAST = 2,
             DEBUG_NORMALS = 3
         };
-        
+
         MyVertexShaderPtr lightingVertexShader{ nullptr };
         MyPixelShaderPtr lightingPixelShader{ nullptr };
         MyPixelShaderPtr highContrastPixelShader{ nullptr };
@@ -71,28 +72,33 @@ namespace DX3D {
         bool useLightingShaders{ true };
         bool useTessellation{ false }; // Default to off for lighting compatibility
 
-        //* ╔═══════════════════════════╗
-        //* ║ Game Objects & Camera     ║
-        //* ╚═══════════════════════════╝
+        //* ╔═══════════════════════╗
+        //* ║ Game Objects & Camera ║
+        //* ╚═══════════════════════╝
         bool freeMouse{ false };
         bool shouldCloseWindow{ false }; // Flag to defer window closing until end of frame
         MyCameraPtr activeCamera{ nullptr };
         std::vector<MyCameraPtr> cameras;
         std::vector<MyMeshPtr> meshes;
 
-        //* ╔═══════════════════════════╗
-        //* ║ Timing & Performance      ║
-        //* ╚═══════════════════════════╝
+        //* ╔══════════════════════╗
+        //* ║ Timing & Performance ║
+        //* ╚══════════════════════╝
         ULONGLONG oldTime = 0;
         ULONGLONG newTime = 0;
         float deltaTime = 0;
         float experimentalDelta = 0;
 
-        //* ╔═══════════════════════════╗
-        //* ║ Sample Assets             ║
-        //* ╚═══════════════════════════╝
+        //* ╔═══════════════╗
+        //* ║ Sample Assets ║
+        //* ╚═══════════════╝
         MyTexturePtr sampleTexture{ nullptr };
         MyMeshPtr sampleMesh{ nullptr };
+
+        //* ╔════════════════════════╗
+        //* ║ Graphic User Interface ║
+        //* ╚════════════════════════╝
+        std::vector<MyImGuiPanelPtr> panels;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
@@ -114,6 +120,7 @@ namespace DX3D {
 
         //* Runtime
         void ImGuiUpdate();
+        void InitializeImGuiPanels();
 
         void UpdateDeltaTime();
         void UpdateObjects();
@@ -152,7 +159,7 @@ namespace DX3D {
     public:
         // Request window closure at the end of the current frame
         void RequestWindowClose() { shouldCloseWindow = true; }
-        
+
         // Check if window is marked for closing
         bool IsWindowClosing() const { return shouldCloseWindow; }
     };

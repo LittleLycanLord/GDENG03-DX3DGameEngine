@@ -150,6 +150,8 @@
     <ClCompile Include="Include\Libs\imgui-1.92.0\imgui_tables.cpp" />
     <ClCompile Include="Include\Libs\imgui-1.92.0\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Source\Core\ImGui\ImGuiPanels\MyInspectorPanel.cpp" />
+    <ClCompile Include="Source\Core\ImGui\MyImGuiPanel.cpp" />
     <ClCompile Include="Source\Core\Input System\MyInputListener.cpp" />
     <ClCompile Include="Source\Core\Input System\MyInputSystem.cpp" />
     <ClCompile Include="Source\Core\MyLogger.cpp" />
@@ -183,6 +185,8 @@
     <ClCompile Include="tinyobjimplementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Core\ImGui\ImGuiPanels\MyInspectorPanel.hpp" />
+    <ClInclude Include="Include\Core\ImGui\MyImGuiPanel.hpp" />
     <ClInclude Include="Include\Core\Input System\MyInputListener.hpp" />
     <ClInclude Include="Include\Core\Input System\MyInputSystem.hpp" />
     <ClInclude Include="Include\Core\MyLogger.hpp" />

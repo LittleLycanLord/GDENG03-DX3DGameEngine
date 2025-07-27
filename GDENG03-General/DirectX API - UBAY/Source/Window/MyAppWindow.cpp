@@ -180,7 +180,7 @@ void MyAppWindow::InitializeLightingShaders() {
         return;
     }
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->ReleaseCompiledShader();
-    
+
     if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Lighting shaders initialized successfully" << std::endl;
 }
 
@@ -216,7 +216,8 @@ void MyAppWindow::DebugLaunchFunction() {
     this->meshes[0]->transform->position = MyVector3(-3.0f, 0.0f, 0.0f);  // Left
     this->meshes[1]->transform->position = MyVector3(0.0f, 0.0f, 0.0f);   // Center
     this->meshes[2]->transform->position = MyVector3(3.0f, 0.0f, 0.0f);   // Right
-    
+    this->panels.push_back(std::make_shared<MyInspectorPanel>(this->meshes[0]->transform));
+
     // Set uniform scale for all meshes
     this->meshes[0]->transform->scale = MyVector3(0.1f);
     this->meshes[1]->transform->scale = MyVector3(0.1f);
@@ -401,43 +402,43 @@ void MyAppWindow::ImGuiUpdate() {
     // Lighting Controls Window
     if (showLightingControls) {
         ImGui::Begin("Lighting System Controls", &showLightingControls, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-        
+
         if (MyLightManager::GetInstance()) {
             // Header information
             ImGui::Text("Lighting System Status: Active");
             ImGui::Text("Total Lights: %d", (int)MyLightManager::GetInstance()->GetLightCount());
             ImGui::Text("Lighting Mode: %s", useLightingShaders ? "Enabled" : "Disabled");
-            
+
             // Quick toggle for lighting mode
             if (ImGui::Button(useLightingShaders ? "Disable Lighting" : "Enable Lighting")) {
                 useLightingShaders = !useLightingShaders;
             }
-            
+
             ImGui::Separator();
-            
+
             // Global lighting controls
             if (ImGui::CollapsingHeader("Global Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
                 // Ambient light controls
-                float ambientColor[3] = { 
+                float ambientColor[3] = {
                     MyLightManager::GetInstance()->GetAmbientLight().x,
                     MyLightManager::GetInstance()->GetAmbientLight().y,
                     MyLightManager::GetInstance()->GetAmbientLight().z
                 };
                 float ambientIntensity = MyLightManager::GetInstance()->GetAmbientIntensity();
-                
+
                 if (ImGui::ColorEdit3("Ambient Color", ambientColor)) {
                     MyLightManager::GetInstance()->SetAmbientLight(
-                        MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]), 
+                        MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]),
                         ambientIntensity
                     );
                 }
                 if (ImGui::SliderFloat("Ambient Intensity", &ambientIntensity, 0.0f, 2.0f)) {
                     MyLightManager::GetInstance()->SetAmbientLight(
-                        MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]), 
+                        MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]),
                         ambientIntensity
                     );
                 }
-                
+
                 // Global controls
                 ImGui::Spacing();
                 if (ImGui::Button("Enable All Lights")) {
@@ -452,36 +453,36 @@ void MyAppWindow::ImGuiUpdate() {
                     MyLightManager::GetInstance()->RemoveAllLights();
                 }
             }
-            
+
             ImGui::Separator();
-            
+
             // Light creation controls
             if (ImGui::CollapsingHeader("Add New Lights")) {
                 static int lightTypeToAdd = 0;
                 const char* lightTypes[] = { "Directional Light", "Point Light", "Spot Light" };
-                
+
                 ImGui::Combo("Light Type", &lightTypeToAdd, lightTypes, IM_ARRAYSIZE(lightTypes));
-                
+
                 if (ImGui::Button("Add Light")) {
                     MyVector3 defaultColor(1.0f, 1.0f, 1.0f);
                     float defaultIntensity = 1.0f;
-                    
+
                     switch (lightTypeToAdd) {
-                        case 0: // Directional Light
-                            MyLightManager::GetInstance()->AddDirectionalLight(defaultColor, defaultIntensity);
-                            break;
-                        case 1: // Point Light
-                            MyLightManager::GetInstance()->AddPointLight(MyVector3(0.0f, 2.0f, 0.0f), defaultColor, defaultIntensity, 10.0f);
-                            break;
-                        case 2: // Spot Light
-                            MyLightManager::GetInstance()->AddSpotLight(MyVector3(0.0f, 3.0f, 0.0f), MyVector3(0.0f, -1.0f, 0.0f), defaultColor, defaultIntensity, 15.0f);
-                            break;
+                    case 0: // Directional Light
+                        MyLightManager::GetInstance()->AddDirectionalLight(defaultColor, defaultIntensity);
+                        break;
+                    case 1: // Point Light
+                        MyLightManager::GetInstance()->AddPointLight(MyVector3(0.0f, 2.0f, 0.0f), defaultColor, defaultIntensity, 10.0f);
+                        break;
+                    case 2: // Spot Light
+                        MyLightManager::GetInstance()->AddSpotLight(MyVector3(0.0f, 3.0f, 0.0f), MyVector3(0.0f, -1.0f, 0.0f), defaultColor, defaultIntensity, 15.0f);
+                        break;
                     }
                 }
             }
-            
+
             ImGui::Separator();
-            
+
             // Individual light controls
             if (ImGui::CollapsingHeader("Individual Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
                 // Light statistics
@@ -492,49 +493,52 @@ void MyAppWindow::ImGuiUpdate() {
                     else if (std::dynamic_pointer_cast<MyPointLight>(light)) pointCount++;
                     else if (std::dynamic_pointer_cast<MySpotLight>(light)) spotCount++;
                 }
-                
+
                 ImGui::Text("Directional: %d | Point: %d | Spot: %d", directionalCount, pointCount, spotCount);
                 ImGui::Spacing();
-                
+
                 // Individual light controls
                 for (size_t i = 0; i < MyLightManager::GetInstance()->GetLightCount(); i++) {
                     auto light = MyLightManager::GetInstance()->GetLight(i);
                     if (!light) continue;
-                    
+
                     ImGui::PushID((int)i);
-                    
+
                     // Determine light type and create appropriate name
                     std::string lightName;
                     std::string lightTypeIcon;
-                    
+
                     if (auto dirLight = std::dynamic_pointer_cast<MyDirectionalLight>(light)) {
                         lightName = "☀️ Directional Light " + std::to_string(i);
                         lightTypeIcon = "☀️";
-                    } else if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
+                    }
+                    else if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
                         lightName = "💡 Point Light " + std::to_string(i);
                         lightTypeIcon = "💡";
-                    } else if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
+                    }
+                    else if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
                         lightName = "🔦 Spot Light " + std::to_string(i);
                         lightTypeIcon = "🔦";
-                    } else {
+                    }
+                    else {
                         lightName = "❓ Unknown Light " + std::to_string(i);
                         lightTypeIcon = "❓";
                     }
-                    
+
                     // Add enabled/disabled indicator to name
                     if (!light->IsEnabled()) {
                         lightName += " (DISABLED)";
                     }
-                    
+
                     bool headerOpen = ImGui::CollapsingHeader(lightName.c_str());
-                    
+
                     // Quick enable/disable button on same line
                     ImGui::SameLine();
                     bool isEnabled = light->IsEnabled();
                     if (ImGui::Checkbox(("##enabled" + std::to_string(i)).c_str(), &isEnabled)) {
                         light->SetEnabled(isEnabled);
                     }
-                    
+
                     // Quick delete button
                     ImGui::SameLine();
                     if (ImGui::Button(("Delete##" + std::to_string(i)).c_str())) {
@@ -542,41 +546,42 @@ void MyAppWindow::ImGuiUpdate() {
                         ImGui::PopID();
                         continue; // Skip the rest of this light since it's deleted
                     }
-                    
+
                     if (headerOpen) {
                         ImGui::Indent();
-                        
+
                         // Light type info
                         ImGui::Text("Type: %s", lightTypeIcon.c_str());
                         ImGui::SameLine();
                         ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Index: %d", (int)i);
-                        
+
                         // Color control with preview
                         float color[3] = { light->GetColor().x, light->GetColor().y, light->GetColor().z };
                         if (ImGui::ColorEdit3("Color", color)) {
                             light->SetColor(MyVector3(color[0], color[1], color[2]));
                         }
-                        
+
                         // Intensity control with dynamic range
                         float intensity = light->GetIntensity();
                         float maxIntensity = 20.0f; // Adjust based on light type
                         if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
                             maxIntensity = 15.0f;
-                        } else if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
+                        }
+                        else if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
                             maxIntensity = 10.0f;
                         }
-                        
+
                         if (ImGui::SliderFloat("Intensity", &intensity, 0.0f, maxIntensity)) {
                             light->SetIntensity(intensity);
                         }
-                        
+
                         // Type-specific controls
                         if (auto dirLight = std::dynamic_pointer_cast<MyDirectionalLight>(light)) {
                             ImGui::Separator();
                             ImGui::Text("Directional Light Properties:");
-                            
+
                             // Direction control via rotation
-                            float rotation[3] = { 
+                            float rotation[3] = {
                                 dirLight->transform->rotation.x,
                                 dirLight->transform->rotation.y,
                                 dirLight->transform->rotation.z
@@ -584,20 +589,20 @@ void MyAppWindow::ImGuiUpdate() {
                             if (ImGui::SliderFloat3("Rotation", rotation, -180.0f, 180.0f)) {
                                 dirLight->transform->rotation = MyVector3(rotation[0], rotation[1], rotation[2]);
                             }
-                            
+
                             // Display calculated direction
-                            ImGui::Text("Direction: (%.2f, %.2f, %.2f)", 
-                                dirLight->GetDirection().x, 
-                                dirLight->GetDirection().y, 
+                            ImGui::Text("Direction: (%.2f, %.2f, %.2f)",
+                                dirLight->GetDirection().x,
+                                dirLight->GetDirection().y,
                                 dirLight->GetDirection().z);
                         }
-                        
+
                         if (auto pointLight = std::dynamic_pointer_cast<MyPointLight>(light)) {
                             ImGui::Separator();
                             ImGui::Text("Point Light Properties:");
-                            
+
                             // Position control
-                            float position[3] = { 
+                            float position[3] = {
                                 pointLight->transform->position.x,
                                 pointLight->transform->position.y,
                                 pointLight->transform->position.z
@@ -605,20 +610,20 @@ void MyAppWindow::ImGuiUpdate() {
                             if (ImGui::SliderFloat3("Position", position, -20.0f, 20.0f)) {
                                 pointLight->transform->position = MyVector3(position[0], position[1], position[2]);
                             }
-                            
+
                             // Range control
                             float range = pointLight->GetRange();
                             if (ImGui::SliderFloat("Range", &range, 0.1f, 50.0f)) {
                                 pointLight->SetRange(range);
                             }
                         }
-                        
+
                         if (auto spotLight = std::dynamic_pointer_cast<MySpotLight>(light)) {
                             ImGui::Separator();
                             ImGui::Text("Spot Light Properties:");
-                            
+
                             // Position control
-                            float position[3] = { 
+                            float position[3] = {
                                 spotLight->transform->position.x,
                                 spotLight->transform->position.y,
                                 spotLight->transform->position.z
@@ -626,9 +631,9 @@ void MyAppWindow::ImGuiUpdate() {
                             if (ImGui::SliderFloat3("Position", position, -20.0f, 20.0f)) {
                                 spotLight->transform->position = MyVector3(position[0], position[1], position[2]);
                             }
-                            
+
                             // Direction control via rotation
-                            float rotation[3] = { 
+                            float rotation[3] = {
                                 spotLight->transform->rotation.x,
                                 spotLight->transform->rotation.y,
                                 spotLight->transform->rotation.z
@@ -636,17 +641,17 @@ void MyAppWindow::ImGuiUpdate() {
                             if (ImGui::SliderFloat3("Rotation", rotation, -180.0f, 180.0f)) {
                                 spotLight->transform->rotation = MyVector3(rotation[0], rotation[1], rotation[2]);
                             }
-                            
+
                             // Range control
                             float range = spotLight->GetRange();
                             if (ImGui::SliderFloat("Range", &range, 0.1f, 50.0f)) {
                                 spotLight->SetRange(range);
                             }
-                            
+
                             // Cone angle controls
                             float innerAngle = spotLight->GetInnerConeAngle();
                             float outerAngle = spotLight->GetOuterConeAngle();
-                            
+
                             if (ImGui::SliderFloat("Inner Cone Angle", &innerAngle, 1.0f, 89.0f)) {
                                 // Ensure inner angle is less than outer angle
                                 if (innerAngle >= outerAngle) {
@@ -655,7 +660,7 @@ void MyAppWindow::ImGuiUpdate() {
                                 }
                                 spotLight->SetInnerConeAngle(innerAngle);
                             }
-                            
+
                             if (ImGui::SliderFloat("Outer Cone Angle", &outerAngle, 2.0f, 90.0f)) {
                                 // Ensure outer angle is greater than inner angle
                                 if (outerAngle <= innerAngle) {
@@ -664,38 +669,45 @@ void MyAppWindow::ImGuiUpdate() {
                                 }
                                 spotLight->SetOuterConeAngle(outerAngle);
                             }
-                            
+
                             // Display calculated direction
-                            ImGui::Text("Direction: (%.2f, %.2f, %.2f)", 
-                                spotLight->GetDirection().x, 
-                                spotLight->GetDirection().y, 
+                            ImGui::Text("Direction: (%.2f, %.2f, %.2f)",
+                                spotLight->GetDirection().x,
+                                spotLight->GetDirection().y,
                                 spotLight->GetDirection().z);
                         }
-                        
+
                         // Animation controls
                         ImGui::Separator();
                         if (ImGui::CollapsingHeader(("Animation##" + std::to_string(i)).c_str())) {
                             ImGui::Text("Animation controls could be added here");
                             ImGui::Text("(e.g., oscillate position, rotate, pulse intensity)");
                         }
-                        
+
                         ImGui::Unindent();
                     }
-                    
+
                     ImGui::PopID();
                 }
-                
+
                 if (MyLightManager::GetInstance()->GetLightCount() == 0) {
                     ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No lights in the scene. Add some lights above!");
                 }
             }
-            
-        } else {
+
+        }
+        else {
             ImGui::Text("Lighting System: Not Initialized");
             ImGui::Text("The lighting system failed to initialize properly.");
         }
-        
+
         ImGui::End();
+    }
+
+    // Render panels
+    for (const auto& panel : this->panels) {
+        if (panel)
+            panel->Render();
     }
 
     // Render ImGui
@@ -734,7 +746,7 @@ void MyAppWindow::UpdateObjects() {
                 movingPointLight->transform->position.x = cos(lightTime * 0.8f) * radius; // Slower but more visible
                 movingPointLight->transform->position.z = sin(lightTime * 0.8f) * radius;
                 movingPointLight->transform->position.y = 3.0f + sin(lightTime * 1.5f) * 2.0f; // Higher and more dramatic
-                
+
                 // Also animate the color for more visual feedback
                 float colorPhase = sin(lightTime * 2.0f) * 0.3f + 0.7f; // Pulsating between 0.4 and 1.0
                 movingPointLight->SetColor(MyVector3(0.3f * colorPhase, 0.8f * colorPhase, 1.0f * colorPhase));
@@ -748,7 +760,7 @@ void MyAppWindow::UpdateObjects() {
                 // More dramatic rotation and also move the position
                 spotLight->transform->rotation.y = sin(lightTime * 0.7f) * 90.0f; // Wider swing
                 spotLight->transform->rotation.x = -45.0f + sin(lightTime * 0.5f) * 20.0f; // Vertical swing too
-                
+
                 // Move the spot light position slightly
                 spotLight->transform->position.x = 4.0f + cos(lightTime * 0.6f) * 1.5f;
                 spotLight->transform->position.z = 3.0f + sin(lightTime * 0.6f) * 1.5f;
@@ -768,7 +780,7 @@ void MyAppWindow::UpdateObjects() {
         // Update lighting data for GPU
         MyLightManager::GetInstance()->SetNeedsUpdate(true);
         MyLightManager::GetInstance()->UpdateLightingData();
-        
+
         // Update the GPU constant buffer every frame for animations
         MyLightManager::GetInstance()->UpdateLightingConstantBuffer();
     }
@@ -777,13 +789,13 @@ void MyAppWindow::UpdateObjects() {
 void MyAppWindow::UpdateConstantBuffer() {
     if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Updating constant buffer..." << std::endl;
     this->globalConstantBuffer->Update(MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext(), &this->globalConstantData);
-    
+
     // Set constant buffer for standard shaders
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->vertexShader, this->globalConstantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->hullShader, this->globalConstantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->domainShader, this->globalConstantBuffer);
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->pixelShader, this->globalConstantBuffer);
-    
+
     // ALSO set constant buffer for lighting shaders (they need transform matrices too!)
     if (this->lightingVertexShader && this->lightingPixelShader) {
         MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetConstantBuffer(this->lightingVertexShader, this->globalConstantBuffer);
@@ -825,12 +837,14 @@ void MyAppWindow::UpdateShaders() {
             // Use lighting tessellation shaders (pass-through)
             MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->lightingHullShader);
             MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->lightingDomainShader);
-        } else {
+        }
+        else {
             // Use standard tessellation shaders
             MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(this->hullShader);
             MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(this->domainShader);
         }
-    } else {
+    }
+    else {
         // Disable tessellation completely
         MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetHullShader(nullptr);
         MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetDomainShader(nullptr);
@@ -839,15 +853,15 @@ void MyAppWindow::UpdateShaders() {
 
 void MyAppWindow::DrawLoop() {
     if (LOG_INFO_WINDOW_UPDATE) std::cout << "[INFO]: Drawing meshes..." << std::endl;
-    
+
     // Use lighting shaders if enabled, otherwise use standard shaders
     MyVertexShaderPtr vertexShaderToUse = this->useLightingShaders ? this->lightingVertexShader : this->vertexShader;
     MyPixelShaderPtr pixelShaderToUse = this->useLightingShaders ? this->lightingPixelShader : this->pixelShader;
-    
+
     for (MyMeshPtr mesh : this->meshes) {
         mesh->Draw(vertexShaderToUse, this->hullShader, this->domainShader, pixelShaderToUse,
             this->activeCamera->transform->worldMatrix, this->activeCamera->projectionMatrix, this->globalConstantData.time);
-        
+
         // If using lighting shaders, set the lighting constant buffer after each mesh draw
         // (since mesh->Draw() sets its own constant buffer which might override our lighting buffer)
         if (this->useLightingShaders && MyLightManager::GetInstance()) {
@@ -1040,8 +1054,8 @@ void MyAppWindow::OnKeyDown(int keyCode) {
         break;
     case '1':
         this->useLightingShaders = !this->useLightingShaders;
-        if (LOG_INFO_WINDOW) std::cout << "[INFO]: 1 pressed, toggling shaders. Now using: " 
-                                      << (this->useLightingShaders ? "Lighting Shaders" : "Standard Shaders") << std::endl;
+        if (LOG_INFO_WINDOW) std::cout << "[INFO]: 1 pressed, toggling shaders. Now using: "
+            << (this->useLightingShaders ? "Lighting Shaders" : "Standard Shaders") << std::endl;
         break;
     case '2':
         if (LOG_INFO_WINDOW) std::cout << "[INFO]: 2 pressed, debugging normals (check console for instructions)" << std::endl;
