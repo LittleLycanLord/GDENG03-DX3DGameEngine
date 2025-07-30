@@ -204,80 +204,61 @@ void MyAppWindow::DebugLaunchFunction() {
     // Sample texture (still needed for pixel shader)
     this->sampleTexture = MyGraphicsEngine::GetInstance()->GetTextureManager()->CreateTextureFromFile(SAMPLE_TEXTURE_DIRECTORY.c_str());
 
-    // Create mesh entities using ECS
-    std::vector<MyEntityPtr> meshEntities;
-
     for (int i = 0; i < 3; ++i) {
         MyEntityPtr entity = std::make_shared<MyEntity>();
-        // Get the default transform component (added by MyEntity constructor)
-        MyTransformComponentPtr transformComp = entity->GetComponent<MyTransformComponent>();
-        // Attach mesh component, passing the transform pointer if needed
-        MyMeshPtr mesh = MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str());
-        if (mesh && transformComp) {
-            mesh->transform = transformComp->GetTransform();
-        }
-        entity->AddComponent<MyMeshComponent>(mesh);
-        // Position in a row
-        if (transformComp) {
-            float x = (float)(i - 1) * 3.0f; // -3, 0, 3
-            transformComp->transform->position = MyVector3(x, 0.0f, 0.0f);
-            transformComp->transform->scale = MyVector3(0.1f);
-        }
-        meshEntities.push_back(entity);
+        entity->AddComponent<MyMeshComponent>(MyGraphicsEngine::GetInstance()->GetMeshManager()->CreateUniqueMeshFromFile(SAMPLE_MESH_DIRECTORY.c_str()));
+
+        float x = (float)(i - 1) * 3.0f; // -3, 0, 3
+        entity->GetTransform()->position = MyVector3(x, 0.0f, 0.0f);
+        entity->GetTransform()->scale = MyVector3(0.1f);
+
+        if (MyMeshRenderingSystem::GetInstance())
+            MyMeshRenderingSystem::GetInstance()->AddEntity(entity);
+        this->entities.push_back(entity);
     }
 
-    // Add inspector panel for the first entity's transform
-    if (!meshEntities.empty()) {
-        MyTransformComponentPtr firstTransform = meshEntities[0]->GetComponent<MyTransformComponent>();
-        if (firstTransform) {
-            this->panels.push_back(std::make_shared<MyInspectorPanel>(firstTransform->GetTransform()));
-        }
-    }
-
-    // Store mesh entities for later use (replace old meshes vector)
-    this->entities = meshEntities;
-
-    // Add mesh entities to meshSystem for ECS rendering
-    if (this->meshSystem) {
-        for (const auto& entity : meshEntities) {
-            this->meshSystem->AddEntity(entity);
-        }
-    }
+    this->panels.push_back(std::make_shared<MyInspectorPanel>(this->entities[0]->GetTransform()));
 
     // Sample lights using ECS (if your ECS supports lights as entities)
-    // Otherwise, keep using MyLightSystem for now
-    if (MyLightSystem::GetInstance()) {
+    // Otherwise, keep using MyLightingSystem for now
+    if (MyLightingSystem::GetInstance()) {
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Adding sample lights for testing (ECS)..." << std::endl;
+        MyLightingSystem::GetInstance()->RemoveAllLights();
+        MyLightingSystem::GetInstance()->SetAmbientLight(MyVector3(0.1f, 0.1f, 0.15f), 0.3f);
+
         for (int i = 0; i < 5; ++i) {
             MyEntityPtr entity = std::make_shared<MyEntity>();
-        }
-
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Adding sample lights for testing (ECS)..." << std::endl;
-        MyLightSystem::GetInstance()->RemoveAllLights();
-        MyLightSystem::GetInstance()->SetAmbientLight(MyVector3(0.1f, 0.1f, 0.15f), 0.3f);
-
-        auto sunLight = MyLightSystem::GetInstance()->AddDirectionalLight(
-            MyVector3(1.0f, 0.8f, 0.6f), 1.2f);
-        sunLight->transform->rotation = MyVector3(-30.0f, 45.0f, 0.0f);
-
-        auto movingPointLight = MyLightSystem::GetInstance()->AddPointLight(
-            MyVector3(0.0f, 3.0f, 0.0f), MyVector3(0.3f, 0.8f, 1.0f), 4.0f, 12.0f);
-
-        auto leftPointLight = MyLightSystem::GetInstance()->AddPointLight(
-            MyVector3(-5.0f, 1.5f, 2.0f), MyVector3(1.0f, 0.2f, 0.2f), 3.0f, 8.0f);
-
-        auto spotLight = MyLightSystem::GetInstance()->AddSpotLight(
-            MyVector3(4.0f, 4.0f, 3.0f), MyVector3(0.0f, -1.0f, 0.0f), MyVector3(0.2f, 1.0f, 0.3f), 2.5f, 15.0f);
-        spotLight->transform->rotation = MyVector3(-45.0f, -30.0f, 0.0f);
-
-        auto rightPointLight = MyLightSystem::GetInstance()->AddPointLight(
-            MyVector3(5.0f, 1.0f, -2.0f), MyVector3(0.8f, 0.3f, 1.0f), 2.8f, 10.0f);
-
-        if (LOG_INFO_LIGHTING) {
-            std::cout << "[INFO]: Added " << MyLightSystem::GetInstance()->GetLightCount() << " sample lights (ECS):" << std::endl;
-            std::cout << "  - 1 Directional light (warm sunset)" << std::endl;
-            std::cout << "  - 3 Point lights (blue/moving, red/left, purple/right)" << std::endl;
-            std::cout << "  - 1 Spot light (green, pointing down)" << std::endl;
-            std::cout << "[INFO]: Use '1' key to toggle between standard and lighting shaders" << std::endl;
+            switch (i) {
+            case 0:
+                entity->AddComponent<MyDirectionalLightComponent>(MyLightingSystem::GetInstance()->AddDirectionalLight(
+                    MyVector3(1.0f, 0.8f, 0.6f), 1.2f));
+                entity->GetTransform()->rotation = MyVector3(-30.0f, 45.0f, 0.0f);
+                break;
+            case 1:
+                entity->AddComponent<MyPointLightComponent>(MyLightingSystem::GetInstance()->AddPointLight(
+                    MyVector3(0.3f, 0.8f, 1.0f), 4.0f, 12.0f));
+                entity->GetTransform()->position = MyVector3(0.0f, 3.0f, 0.0f);
+                break;
+            case 2:
+                entity->AddComponent<MyPointLightComponent>(MyLightingSystem::GetInstance()->AddPointLight(
+                    MyVector3(1.0f, 0.2f, 0.2f), 3.0f, 8.0f));
+                entity->GetTransform()->position = MyVector3(-5.0f, 1.5f, 2.0f);
+                break;
+            case 3:
+                entity->AddComponent<MyPointLightComponent>(MyLightingSystem::GetInstance()->AddPointLight(
+                    MyVector3(0.8f, 0.3f, 1.0f), 2.8f, 10.0f));
+                entity->GetTransform()->position = MyVector3(5.0f, 1.0f, -2.0f);
+                break;
+            case 4:
+                entity->AddComponent<MySpotLightComponent>(MyLightingSystem::GetInstance()->AddSpotLight(
+                    MyVector3(0.2f, 1.0f, 0.3f), 2.5f, 15.0f));
+                entity->GetTransform()->position = MyVector3(0.0f, -1.0f, 0.0f);
+                entity->GetTransform()->rotation = MyVector3(-45.0f, -30.0f, 0.0f);
+                break;
+            }
+            if (this->lightingSystem)
+                this->lightingSystem->AddEntity(entity);
+            this->entities.push_back(entity);
         }
     }
 }
@@ -400,10 +381,10 @@ void MyAppWindow::ImGuiUpdate() {
     if (showLightingControls) {
         ImGui::Begin("Lighting System Controls", &showLightingControls, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
-        if (MyLightSystem::GetInstance()) {
+        if (MyLightingSystem::GetInstance()) {
             // Header information
             ImGui::Text("Lighting System Status: Active");
-            ImGui::Text("Total Lights: %d", (int)MyLightSystem::GetInstance()->GetLightCount());
+            ImGui::Text("Total Lights: %d", (int)MyLightingSystem::GetInstance()->GetLightCount());
             ImGui::Text("Lighting Mode: %s", useLightingShaders ? "Enabled" : "Disabled");
 
             // Quick toggle for lighting mode
@@ -417,20 +398,20 @@ void MyAppWindow::ImGuiUpdate() {
             if (ImGui::CollapsingHeader("Global Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
                 // Ambient light controls
                 float ambientColor[3] = {
-                    MyLightSystem::GetInstance()->GetAmbientLight().x,
-                    MyLightSystem::GetInstance()->GetAmbientLight().y,
-                    MyLightSystem::GetInstance()->GetAmbientLight().z
+                    MyLightingSystem::GetInstance()->GetAmbientLight().x,
+                    MyLightingSystem::GetInstance()->GetAmbientLight().y,
+                    MyLightingSystem::GetInstance()->GetAmbientLight().z
                 };
-                float ambientIntensity = MyLightSystem::GetInstance()->GetAmbientIntensity();
+                float ambientIntensity = MyLightingSystem::GetInstance()->GetAmbientIntensity();
 
                 if (ImGui::ColorEdit3("Ambient Color", ambientColor)) {
-                    MyLightSystem::GetInstance()->SetAmbientLight(
+                    MyLightingSystem::GetInstance()->SetAmbientLight(
                         MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]),
                         ambientIntensity
                     );
                 }
                 if (ImGui::SliderFloat("Ambient Intensity", &ambientIntensity, 0.0f, 2.0f)) {
-                    MyLightSystem::GetInstance()->SetAmbientLight(
+                    MyLightingSystem::GetInstance()->SetAmbientLight(
                         MyVector3(ambientColor[0], ambientColor[1], ambientColor[2]),
                         ambientIntensity
                     );
@@ -439,15 +420,15 @@ void MyAppWindow::ImGuiUpdate() {
                 // Global controls
                 ImGui::Spacing();
                 if (ImGui::Button("Enable All Lights")) {
-                    MyLightSystem::GetInstance()->EnableAllLights();
+                    MyLightingSystem::GetInstance()->EnableAllLights();
                 }
                 ImGui::SameLine();
                 if (ImGui::Button("Disable All Lights")) {
-                    MyLightSystem::GetInstance()->DisableAllLights();
+                    MyLightingSystem::GetInstance()->DisableAllLights();
                 }
                 ImGui::SameLine();
                 if (ImGui::Button("Remove All Lights")) {
-                    MyLightSystem::GetInstance()->RemoveAllLights();
+                    MyLightingSystem::GetInstance()->RemoveAllLights();
                 }
             }
 
@@ -466,13 +447,13 @@ void MyAppWindow::ImGuiUpdate() {
 
                     switch (lightTypeToAdd) {
                     case 0: // Directional Light
-                        MyLightSystem::GetInstance()->AddDirectionalLight(defaultColor, defaultIntensity);
+                        // MyLightingSystem::GetInstance()->AddDirectionalLight(defaultColor, defaultIntensity);
                         break;
                     case 1: // Point Light
-                        MyLightSystem::GetInstance()->AddPointLight(MyVector3(0.0f, 2.0f, 0.0f), defaultColor, defaultIntensity, 10.0f);
+                        // MyLightingSystem::GetInstance()->AddPointLight(MyVector3(0.0f, 2.0f, 0.0f), defaultColor, defaultIntensity, 10.0f);
                         break;
                     case 2: // Spot Light
-                        MyLightSystem::GetInstance()->AddSpotLight(MyVector3(0.0f, 3.0f, 0.0f), MyVector3(0.0f, -1.0f, 0.0f), defaultColor, defaultIntensity, 15.0f);
+                        // MyLightingSystem::GetInstance()->AddSpotLight(MyVector3(0.0f, 3.0f, 0.0f), MyVector3(0.0f, -1.0f, 0.0f), defaultColor, defaultIntensity, 15.0f);
                         break;
                     }
                 }
@@ -484,8 +465,8 @@ void MyAppWindow::ImGuiUpdate() {
             if (ImGui::CollapsingHeader("Individual Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
                 // Light statistics
                 int directionalCount = 0, pointCount = 0, spotCount = 0;
-                for (size_t i = 0; i < MyLightSystem::GetInstance()->GetLightCount(); i++) {
-                    auto light = MyLightSystem::GetInstance()->GetLight(i);
+                for (size_t i = 0; i < MyLightingSystem::GetInstance()->GetLightCount(); i++) {
+                    auto light = MyLightingSystem::GetInstance()->GetLight(i);
                     if (std::dynamic_pointer_cast<MyDirectionalLight>(light)) directionalCount++;
                     else if (std::dynamic_pointer_cast<MyPointLight>(light)) pointCount++;
                     else if (std::dynamic_pointer_cast<MySpotLight>(light)) spotCount++;
@@ -495,8 +476,8 @@ void MyAppWindow::ImGuiUpdate() {
                 ImGui::Spacing();
 
                 // Individual light controls
-                for (size_t i = 0; i < MyLightSystem::GetInstance()->GetLightCount(); i++) {
-                    auto light = MyLightSystem::GetInstance()->GetLight(i);
+                for (size_t i = 0; i < MyLightingSystem::GetInstance()->GetLightCount(); i++) {
+                    auto light = MyLightingSystem::GetInstance()->GetLight(i);
                     if (!light) continue;
 
                     ImGui::PushID((int)i);
@@ -539,7 +520,7 @@ void MyAppWindow::ImGuiUpdate() {
                     // Quick delete button
                     ImGui::SameLine();
                     if (ImGui::Button(("Delete##" + std::to_string(i)).c_str())) {
-                        MyLightSystem::GetInstance()->RemoveLight(light);
+                        MyLightingSystem::GetInstance()->RemoveLight(light);
                         ImGui::PopID();
                         continue; // Skip the rest of this light since it's deleted
                     }
@@ -687,7 +668,7 @@ void MyAppWindow::ImGuiUpdate() {
                     ImGui::PopID();
                 }
 
-                if (MyLightSystem::GetInstance()->GetLightCount() == 0) {
+                if (MyLightingSystem::GetInstance()->GetLightCount() == 0) {
                     ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No lights in the scene. Add some lights above!");
                 }
             }
@@ -734,14 +715,14 @@ void MyAppWindow::UpdateObjects() {
     this->globalConstantData.view = this->activeCamera->transform->worldMatrix;
     this->globalConstantData.cameraPosition = this->activeCamera->transform->position;
 
-    //* Update Lighting System
-    if (MyLightSystem::GetInstance()) {
+    //: Update Lighting System Debug
+    if (MyLightingSystem::GetInstance()) {
         // Animate the moving point light (second light, index 1)
         static float lightTime = 0.0f;
         lightTime += this->deltaTime;
 
-        if (MyLightSystem::GetInstance()->GetLightCount() > 1) {
-            auto movingPointLight = std::dynamic_pointer_cast<MyPointLight>(MyLightSystem::GetInstance()->GetLight(1));
+        if (MyLightingSystem::GetInstance()->GetLightCount() > 1) {
+            auto movingPointLight = std::dynamic_pointer_cast<MyPointLight>(MyLightingSystem::GetInstance()->GetLight(1));
             if (movingPointLight) {
                 // More dramatic circular motion around the center, varying height
                 float radius = 6.0f; // Increased radius
@@ -756,8 +737,8 @@ void MyAppWindow::UpdateObjects() {
         }
 
         // Animate the spot light rotation (if it exists - should be index 3)
-        if (MyLightSystem::GetInstance()->GetLightCount() > 3) {
-            auto spotLight = std::dynamic_pointer_cast<MySpotLight>(MyLightSystem::GetInstance()->GetLight(3));
+        if (MyLightingSystem::GetInstance()->GetLightCount() > 3) {
+            auto spotLight = std::dynamic_pointer_cast<MySpotLight>(MyLightingSystem::GetInstance()->GetLight(3));
             if (spotLight) {
                 // More dramatic rotation and also move the position
                 spotLight->transform->rotation.y = sin(lightTime * 0.7f) * 90.0f; // Wider swing
@@ -770,21 +751,15 @@ void MyAppWindow::UpdateObjects() {
         }
 
         // Animate directional light (index 0) rotation for dramatic effect
-        if (MyLightSystem::GetInstance()->GetLightCount() > 0) {
-            auto dirLight = std::dynamic_pointer_cast<MyDirectionalLight>(MyLightSystem::GetInstance()->GetLight(0));
+        if (MyLightingSystem::GetInstance()->GetLightCount() > 0) {
+            auto dirLight = std::dynamic_pointer_cast<MyDirectionalLight>(MyLightingSystem::GetInstance()->GetLight(0));
             if (dirLight) {
                 // Slow rotation like the sun moving across the sky
                 dirLight->transform->rotation.y = 45.0f + sin(lightTime * 0.3f) * 30.0f;
                 dirLight->transform->rotation.x = -30.0f + cos(lightTime * 0.2f) * 15.0f;
             }
         }
-
-        // Update lighting data for GPU
-        MyLightSystem::GetInstance()->SetNeedsUpdate(true);
-        MyLightSystem::GetInstance()->UpdateLightingData();
-
-        // Update the GPU constant buffer every frame for animations
-        MyLightSystem::GetInstance()->UpdateLightingConstantBuffer();
+        MyLightingSystem::GetInstance()->SetNeedsUpdate(true);
     }
 }
 
@@ -814,9 +789,9 @@ void MyAppWindow::UpdateShaders() {
         MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->SetPixelShader(this->lightingPixelShader);
 
         // Update lighting constant buffer
-        if (MyLightSystem::GetInstance()) {
+        if (MyLightingSystem::GetInstance()) {
             auto deviceContext = MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext();
-            auto lightingBuffer = MyLightSystem::GetInstance()->GetLightingConstantBuffer();
+            auto lightingBuffer = MyLightingSystem::GetInstance()->GetLightingConstantBuffer();
             if (lightingBuffer) {
                 // Set lighting constant buffer to slot 1 (register(b1))
                 deviceContext->SetConstantBuffer(this->lightingVertexShader, lightingBuffer, 1);
@@ -860,9 +835,10 @@ void MyAppWindow::DrawLoop() {
     MyVertexShaderPtr vertexShaderToUse = this->useLightingShaders ? this->lightingVertexShader : this->vertexShader;
     MyPixelShaderPtr pixelShaderToUse = this->useLightingShaders ? this->lightingPixelShader : this->pixelShader;
 
-    // ECS mesh rendering via MyMeshSystem
-    if (this->meshSystem) {
-        this->meshSystem->RenderMeshes(
+    // ECS mesh rendering via MyMeshRenderingSystem
+    if (MyMeshRenderingSystem::GetInstance()) {
+        std::cout << "[INFO]: Rendering meshes using MyMeshRenderingSystem" << std::endl;
+        MyMeshRenderingSystem::GetInstance()->RenderMeshes(
             vertexShaderToUse,
             this->hullShader,
             this->domainShader,
@@ -949,9 +925,13 @@ void MyAppWindow::OnCreate() {
 
     LOG_INFO("WINDOW", "Running debug launch function");
 
-    // Create and register ECS mesh system
-    this->meshSystem = std::make_shared<MyMeshSystem>();
-    this->systems.push_back(this->meshSystem);
+    MyMeshRenderingSystem::Create();
+    this->meshRenderingSystem = MyMeshRenderingSystem::GetInstance();
+    this->systems.push_back(this->meshRenderingSystem);
+
+    MyLightingSystem::Create();
+    this->lightingSystem = MyLightingSystem::GetInstance();
+    this->systems.push_back(this->lightingSystem);
 
     this->DebugLaunchFunction();
     LOG_INFO("WINDOW", "MyAppWindow::OnCreate completed successfully");
@@ -970,6 +950,11 @@ void MyAppWindow::OnUpdate() {
 
     MyWindow::OnUpdate();
     MyInputSystem::GetInstance()->Update();
+    for (const MySystemPtr& system : this->systems) {
+        if (system)
+            system->Update(this->deltaTime);
+    }/*
+    MyMeshRenderingSystem::GetInstance()->Update(this->deltaTime);*/
     this->UpdateObjects();
 
     MyGraphicsEngine::GetInstance()->GetRenderSystem()->GetImmediateDeviceContext()->ClearRenderTargetColor(this->swapChain, MyVector4(0.3f, 0.3f, 0.3f, 1.0f));
@@ -1010,7 +995,7 @@ void MyAppWindow::OnDestroy() {
     MyInputSystem::GetInstance()->RemoveListener(this);
 
     // Clean up lighting system
-    MyLightSystem::Release();
+    MyLightingSystem::Release();
 
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
@@ -1175,15 +1160,15 @@ void MyAppWindow::InitializeLightingSystem() {
     if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Initializing lighting system" << std::endl;
 
     // Create lighting manager
-    MyLightSystem::Create();
-    if (!MyLightSystem::GetInstance()) {
-        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to create MyLightSystem" << std::endl;
-        throw std::exception("Failed to create MyLightSystem");
+    MyLightingSystem::Create();
+    if (!MyLightingSystem::GetInstance()) {
+        if (LOG_INFO_LIGHTING) std::cout << "[ERROR]: Failed to create MyLightingSystem" << std::endl;
+        throw std::exception("Failed to create MyLightingSystem");
         return;
     }
 
     // Create lighting constant buffer (lights will be added in DebugLaunchFunction)
-    MyLightSystem::GetInstance()->CreateLightingConstantBuffer();
+    MyLightingSystem::GetInstance()->CreateLightingConstantBuffer();
 
     if (LOG_INFO_LIGHTING) std::cout << "[INFO]: Lighting system core initialized" << std::endl;
 }

@@ -68,8 +68,12 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-
         int GetID() const { return id; }
+        MyTransformPtr GetTransform() {
+            if (!transformComponent)
+                this->AddDefaultTransformComponent();
+            return transformComponent->GetTransform();
+        }
     };
 } // namespace DX3D
 

@@ -47,8 +47,8 @@ namespace DX3D {
     class MyPointLightComponent;
     class MySpotLightComponent;
     class MySystem;
-    class MyMeshSystem;
-    class MyLightSystem;
+    class MyMeshRenderingSystem;
+    class MyLightingSystem;
 
     //* Utilities
     class MyLogger;
@@ -102,8 +102,8 @@ namespace DX3D {
     typedef std::shared_ptr<MyPointLightComponent> MyPointLightComponentPtr;
     typedef std::shared_ptr<MySpotLightComponent> MySpotLightComponentPtr;
     typedef std::shared_ptr<MySystem> MySystemPtr;
-    typedef std::shared_ptr<MyMeshSystem> MyMeshSystemPtr;
-    typedef std::shared_ptr<MyLightSystem> MyLightSystemPtr;
+    typedef std::shared_ptr<MyMeshRenderingSystem> MyMeshRenderingSystemPtr;
+    typedef std::shared_ptr<MyLightingSystem> MyLightingSystemPtr;
 
     //* Utilities
     typedef std::shared_ptr<MyLogger> MyLoggerPtr;

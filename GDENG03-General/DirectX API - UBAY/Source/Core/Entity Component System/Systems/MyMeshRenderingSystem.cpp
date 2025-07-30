@@ -1,17 +1,37 @@
-#include "Core/Entity Component System/Systems/MyMeshSystem.hpp"
+#include "Core/Entity Component System/Systems/MyMeshRenderingSystem.hpp"
 
 using namespace DX3D;
+
+MyMeshRenderingSystemPtr MyMeshRenderingSystem::instance = nullptr;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyMeshSystem::~MyMeshSystem() {}
+MyMeshRenderingSystem::MyMeshRenderingSystem() {}
+MyMeshRenderingSystem::~MyMeshRenderingSystem() {}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-void MyMeshSystem::Update(float deltaTime) {}
-void MyMeshSystem::RenderMeshes(
+void MyMeshRenderingSystem::Create() {
+    if (!instance) {
+        instance = std::make_shared<MyMeshRenderingSystem>();
+        if (LOG_INFO_MESH_SYSTEM) std::cout << "[INFO]: MyMeshRenderingSystem singleton created" << std::endl;
+    }
+}
+
+void MyMeshRenderingSystem::Release() {
+    if (instance) {
+        instance.reset();
+        if (LOG_INFO_MESH_SYSTEM) std::cout << "[INFO]: MyMeshRenderingSystem singleton released" << std::endl;
+    }
+}
+
+MyMeshRenderingSystemPtr MyMeshRenderingSystem::GetInstance() {
+    return instance;
+}
+
+void MyMeshRenderingSystem::RenderMeshes(
     MyVertexShaderPtr vertexShader,
     MyHullShaderPtr hullShader,
     MyDomainShaderPtr domainShader,
@@ -39,7 +59,7 @@ void MyMeshSystem::RenderMeshes(
     }
 }
 
-
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
+void MyMeshRenderingSystem::Update(float deltaTime) {}

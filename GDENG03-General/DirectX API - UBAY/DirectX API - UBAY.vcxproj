@@ -157,8 +157,8 @@
     <ClCompile Include="Source\Core\Entity Component System\Components\MySpotLightComponent.cpp" />
     <ClCompile Include="Source\Core\Entity Component System\Components\MyTransformComponent.cpp" />
     <ClCompile Include="Source\Core\Entity Component System\Entities\MyEntity.cpp" />
-    <ClCompile Include="Source\Core\Entity Component System\Systems\MyLightSystem.cpp" />
-    <ClCompile Include="Source\Core\Entity Component System\Systems\MyMeshSystem.cpp" />
+    <ClCompile Include="Source\Core\Entity Component System\Systems\MyLightingSystem.cpp" />
+    <ClCompile Include="Source\Core\Entity Component System\Systems\MyMeshRenderingSystem.cpp" />
     <ClCompile Include="Source\Core\Entity Component System\Systems\MySystem.cpp" />
     <ClCompile Include="Source\Core\ImGui\ImGuiPanels\MyInspectorPanel.cpp" />
     <ClCompile Include="Source\Core\ImGui\MyImGuiPanel.cpp" />
@@ -202,8 +202,8 @@
     <ClInclude Include="Include\Core\Entity Component System\Components\MySpotLightComponent.hpp" />
     <ClInclude Include="Include\Core\Entity Component System\Components\MyTransformComponent.hpp" />
     <ClInclude Include="Include\Core\Entity Component System\Entities\MyEntity.hpp" />
-    <ClInclude Include="Include\Core\Entity Component System\Systems\MyLightSystem.hpp" />
-    <ClInclude Include="Include\Core\Entity Component System\Systems\MyMeshSystem.hpp" />
+    <ClInclude Include="Include\Core\Entity Component System\Systems\MyLightingSystem.hpp" />
+    <ClInclude Include="Include\Core\Entity Component System\Systems\MyMeshRenderingSystem.hpp" />
     <ClInclude Include="Include\Core\Entity Component System\Systems\MySystem.hpp" />
     <ClInclude Include="Include\Core\ImGui\ImGuiPanels\MyInspectorPanel.hpp" />
     <ClInclude Include="Include\Core\ImGui\MyImGuiPanel.hpp" />

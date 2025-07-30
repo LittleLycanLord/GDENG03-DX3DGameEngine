@@ -7,10 +7,10 @@ using namespace DX3D;
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 MyMeshManager::MyMeshManager() {
-    if (LOG_INFO_MESH_MANAGER) std::cout << "[INFO]: MyMeshManager constructed" << std::endl;
+    if (LOG_INFO_MESH_SYSTEM) std::cout << "[INFO]: MyMeshManager constructed" << std::endl;
 }
 MyMeshManager::~MyMeshManager() {
-    if (LOG_INFO_MESH_MANAGER) std::cout << "[INFO]: MyMeshManager destructed" << std::endl;
+    if (LOG_INFO_MESH_SYSTEM) std::cout << "[INFO]: MyMeshManager destructed" << std::endl;
 }
 
 //* ╔═══════════╗
@@ -29,7 +29,7 @@ MyResource* MyMeshManager::CreateResourceFromFileConcrete(const wchar_t* resourc
         throw std::invalid_argument("Resource path cannot be empty");
         return nullptr;
     }
-    if (LOG_INFO_MESH_MANAGER) std::wcout << L"[INFO]: Loading mesh from file: " << resourcePath << std::endl;
+    if (LOG_INFO_MESH_SYSTEM) std::wcout << L"[INFO]: Loading mesh from file: " << resourcePath << std::endl;
     MyMesh* newMesh = nullptr;
     try {
         newMesh = new MyMesh(resourcePath);
@@ -39,6 +39,6 @@ MyResource* MyMeshManager::CreateResourceFromFileConcrete(const wchar_t* resourc
         throw std::runtime_error("Failed to create MyMesh from file");
         return nullptr;
     }
-    if (LOG_INFO_MESH_MANAGER) std::wcout << L"[INFO]: Mesh loaded successfully: " << resourcePath << std::endl;
+    if (LOG_INFO_MESH_SYSTEM) std::wcout << L"[INFO]: Mesh loaded successfully: " << resourcePath << std::endl;
     return newMesh;
 }

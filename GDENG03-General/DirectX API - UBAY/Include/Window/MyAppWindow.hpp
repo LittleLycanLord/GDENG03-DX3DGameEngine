@@ -40,8 +40,8 @@
 #include "Core/Entity Component System/Components/MySpotLightComponent.hpp"
 #include "Core/Entity Component System/Components/MyTransformComponent.hpp"
 #include "Core/Entity Component System/Systems/MySystem.hpp"
-#include "Core/Entity Component System/Systems/MyMeshSystem.hpp"
-#include "Core/Entity Component System/Systems/MyLightSystem.hpp"
+#include "Core/Entity Component System/Systems/MyMeshRenderingSystem.hpp"
+#include "Core/Entity Component System/Systems/MyLightingSystem.hpp"
 
 namespace DX3D {
     class MyAppWindow : public MyWindow, public MyInputListener {
@@ -94,8 +94,8 @@ namespace DX3D {
         std::vector<MyEntityPtr> entities;
         std::vector<MySystemPtr> systems;
         // ECS mesh system instance
-        MyMeshSystemPtr meshSystem{ nullptr };
-        MyLightSystemPtr lightSystem{ nullptr };
+        MyMeshRenderingSystemPtr meshRenderingSystem{ nullptr };
+        MyLightingSystemPtr lightingSystem{ nullptr };
 
         //* ╔══════════════════════╗
         //* ║ Timing & Performance ║
