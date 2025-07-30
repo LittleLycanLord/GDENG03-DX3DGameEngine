@@ -1,29 +1,21 @@
-#include "Core/Entity Component System/Entities/MyEntity.hpp"
+#include "Core/Entity Component System/Components/MyDirectionalLightComponent.hpp"
 
 using namespace DX3D;
 
 //* ╔════════════════════════════╗
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
-MyEntity::MyEntity() : id(0) {
-    AddDefaultTransformComponent();
-}
-MyEntity::MyEntity(int id) : id(id) {
-    AddDefaultTransformComponent();
-}
-MyEntity::~MyEntity() {}
+MyDirectionalLightComponent::MyDirectionalLightComponent(const MyDirectionalLightPtr& directionalLight) : directionalLight(directionalLight) {}
+MyDirectionalLightComponent::~MyDirectionalLightComponent() {}
 
 //* ╔═══════════╗
 //* ║ Functions ║
 //* ╚═══════════╝
-void MyEntity::AddDefaultTransformComponent() {
-    auto newTransformComponent = std::make_shared<MyTransformComponent>();
-    newTransformComponent->SetOwner(this);
-    this->components[typeid(MyTransformComponent)] = newTransformComponent;
-    newTransformComponent->OnAdd();
-    this->transformComponent = newTransformComponent;
-}
 
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
+void MyDirectionalLightComponent::OnAdd() {
+    this->directionalLight->transform = this->GetOwner()->GetComponent<MyTransformComponent>()->GetTransform();
+}
+void MyDirectionalLightComponent::OnRemove() {}

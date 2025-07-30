@@ -1,4 +1,3 @@
-
 #pragma once
 #include "Core/Prerequisites.hpp"
 
@@ -15,6 +14,7 @@ namespace DX3D {
         MyEntity* owner = nullptr;
     public:
 
+
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
@@ -27,6 +27,8 @@ namespace DX3D {
         //* ╚═══════════╝
     private:
     public:
+        virtual void OnAdd() = 0;
+        virtual void OnRemove() = 0;
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║

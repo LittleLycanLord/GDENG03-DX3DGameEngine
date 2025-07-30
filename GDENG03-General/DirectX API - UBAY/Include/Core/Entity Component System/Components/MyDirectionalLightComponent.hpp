@@ -1,33 +1,32 @@
 #pragma once
 #include "Core/Entity Component System/Components/MyComponent.hpp"
-#include "Game/MyTransform.hpp"
+#include "Core/Entity Component System/Entities/MyEntity.hpp"
+#include "Game/Lighting/MyDirectionalLight.hpp"
 #include "Core/Prerequisites.hpp"
 
 using namespace DX3D;
 
 namespace DX3D {
-    class MyTransformComponent : public MyComponent {
+    class MyDirectionalLightComponent : public MyComponent {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        MyDirectionalLightPtr directionalLight;
     public:
-        MyTransformPtr transform;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyTransformComponent();
-        MyTransformComponent(MyTransformPtr transform);
-        virtual ~MyTransformComponent();
+        MyDirectionalLightComponent(const MyDirectionalLightPtr& directionalLight);
+        virtual ~MyDirectionalLightComponent();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     public:
-        void Update(float deltaTime);
-
+        
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
         //* ╚════════════════════════════════╝
@@ -39,7 +38,8 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyTransformPtr GetTransform() { return transform; }
-        void SetTransform(MyTransformPtr newTransform) { transform = newTransform; }
+        MyDirectionalLightPtr GetDirectionalLight() const { return directionalLight; }
+        void SetDirectionalLight(const MyDirectionalLightPtr& newDirectionalLight) { directionalLight = newDirectionalLight; }
+
     };
 } // namespace DX3D

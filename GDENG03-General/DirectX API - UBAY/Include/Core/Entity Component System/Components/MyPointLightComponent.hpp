@@ -1,32 +1,31 @@
 #pragma once
 #include "Core/Entity Component System/Components/MyComponent.hpp"
-#include "Game/MyTransform.hpp"
+#include "Game/Lighting/MyPointLight.hpp"
+#include "Core/Entity Component System/Entities/MyEntity.hpp"
 #include "Core/Prerequisites.hpp"
 
 using namespace DX3D;
 
 namespace DX3D {
-    class MyTransformComponent : public MyComponent {
+    class MyPointLightComponent : public MyComponent {
         //* ╔════════════╗
         //* ║ Attributes ║
         //* ╚════════════╝
     private:
+        MyPointLightPtr pointLight;
     public:
-        MyTransformPtr transform;
 
         //* ╔════════════════════════════╗
         //* ║ Constructors & Destructors ║
         //* ╚════════════════════════════╝
     public:
-        MyTransformComponent();
-        MyTransformComponent(MyTransformPtr transform);
-        virtual ~MyTransformComponent();
+        MyPointLightComponent(const MyPointLightPtr& pointLight);
+        virtual ~MyPointLightComponent();
 
         //* ╔═══════════╗
         //* ║ Functions ║
         //* ╚═══════════╝
     public:
-        void Update(float deltaTime);
 
         //* ╔════════════════════════════════╗
         //* ║ Virtual / Overridden Functions ║
@@ -39,7 +38,7 @@ namespace DX3D {
         //* ║ Getters & Setters ║
         //* ╚═══════════════════╝
     public:
-        MyTransformPtr GetTransform() { return transform; }
-        void SetTransform(MyTransformPtr newTransform) { transform = newTransform; }
+        MyPointLightPtr GetPointLight() const { return pointLight; }
+        void SetPointLight(const MyPointLightPtr& newPointLight) { pointLight = newPointLight; }
     };
 } // namespace DX3D

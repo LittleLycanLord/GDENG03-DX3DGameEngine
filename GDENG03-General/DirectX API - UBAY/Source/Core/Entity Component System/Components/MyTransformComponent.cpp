@@ -6,7 +6,7 @@ using namespace DX3D;
 //* ║ Constructors & Destructors ║
 //* ╚════════════════════════════╝
 MyTransformComponent::MyTransformComponent() : transform(std::make_shared<MyTransform>()) {}
-MyTransformComponent::MyTransformComponent(MyTransformPtr t) : transform(t) {}
+MyTransformComponent::MyTransformComponent(MyTransformPtr transform) : transform(transform) {}
 MyTransformComponent::~MyTransformComponent() {}
 
 //* ╔═══════════╗
@@ -17,3 +17,5 @@ void MyTransformComponent::Update(float deltaTime) { if (transform) transform->U
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
+void MyTransformComponent::OnAdd() {}
+void MyTransformComponent::OnRemove() {}

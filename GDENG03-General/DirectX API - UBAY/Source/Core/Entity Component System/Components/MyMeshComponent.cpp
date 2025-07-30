@@ -15,3 +15,8 @@ MyMeshComponent::~MyMeshComponent() {}
 //* ╔════════════════════════════════╗
 //* ║ Virtual / Overridden Functions ║
 //* ╚════════════════════════════════╝
+void MyMeshComponent::OnAdd() {
+    this->mesh->transform = this->GetOwner()->GetComponent<MyTransformComponent>()->GetTransform();
+}
+
+void MyMeshComponent::OnRemove() {}

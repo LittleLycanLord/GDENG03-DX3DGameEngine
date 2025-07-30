@@ -1,4 +1,4 @@
-#include "Game/Lighting/MyLightManager.hpp"
+#include "Core/Entity Component System/Systems/MyLightSystem.hpp"
 #include "Core/MyLogger.hpp"
 #include "Graphics/Buffers/MyConstantBuffer.hpp"
 #include "Graphics/MyGraphicsEngine.hpp"
@@ -7,15 +7,14 @@
 #include <algorithm>
 
 namespace DX3D {
+    MyLightSystem* MyLightSystem::instance = nullptr;
 
-    MyLightManager* MyLightManager::instance = nullptr;
-
-    MyLightManager::MyLightManager()
+    MyLightSystem::MyLightSystem()
         : lightingConstantBuffer(nullptr)
         , ambientLight(MyVector3(0.2f, 0.2f, 0.2f))
         , ambientIntensity(0.1f)
         , needsUpdate(true) {
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager initialized" << std::endl;
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem initialized" << std::endl;
 
         // Initialize lighting data structure
         memset(&lightingData, 0, sizeof(MyLightingData));
@@ -23,80 +22,80 @@ namespace DX3D {
         lightingData.ambientIntensity = ambientIntensity;
     }
 
-    MyLightManager::~MyLightManager() {
+    MyLightSystem::~MyLightSystem() {
         RemoveAllLights();
         lightingConstantBuffer = nullptr; // Smart pointer will auto-cleanup
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager destroyed" << std::endl;
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem destroyed" << std::endl;
     }
 
-    void MyLightManager::Create() {
+    void MyLightSystem::Create() {
         if (!instance) {
-            instance = new MyLightManager();
-            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager singleton created" << std::endl;
+            instance = new MyLightSystem();
+            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem singleton created" << std::endl;
         }
     }
 
-    void MyLightManager::Release() {
+    void MyLightSystem::Release() {
         if (instance) {
             delete instance;
             instance = nullptr;
-            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager singleton released" << std::endl;
+            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem singleton released" << std::endl;
         }
     }
 
-    MyLightManager* MyLightManager::GetInstance() {
+    MyLightSystem* MyLightSystem::GetInstance() {
         return instance;
     }
 
-    void MyLightManager::AddLight(std::shared_ptr<MyLight> light) {
+    void MyLightSystem::AddLight(std::shared_ptr<MyLight> light) {
         if (!light) {
-            if (LOG_ERROR_GENERAL) std::cout << "[ERROR]: MyLightManager::AddLight - Cannot add null light" << std::endl;
+            if (LOG_ERROR_GENERAL) std::cout << "[ERROR]: MyLightSystem::AddLight - Cannot add null light" << std::endl;
             return;
         }
 
         if (lights.size() >= MAX_LIGHTS) {
-            if (LOG_ERROR_GENERAL) std::cout << "[ERROR]: MyLightManager::AddLight - Maximum light count (" << MAX_LIGHTS << ") exceeded" << std::endl;
+            if (LOG_ERROR_GENERAL) std::cout << "[ERROR]: MyLightSystem::AddLight - Maximum light count (" << MAX_LIGHTS << ") exceeded" << std::endl;
             return;
         }
 
         lights.push_back(light);
         needsUpdate = true;
 
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::AddLight - Light added, total count: " << lights.size() << "/" << MAX_LIGHTS << std::endl;
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::AddLight - Light added, total count: " << lights.size() << "/" << MAX_LIGHTS << std::endl;
     }
 
-    void MyLightManager::RemoveLight(std::shared_ptr<MyLight> light) {
+    void MyLightSystem::RemoveLight(std::shared_ptr<MyLight> light) {
         auto it = std::find(lights.begin(), lights.end(), light);
         if (it != lights.end()) {
             lights.erase(it);
             needsUpdate = true;
-            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::RemoveLight - Light removed, total count: " << lights.size() << "/" << MAX_LIGHTS << std::endl;
+            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::RemoveLight - Light removed, total count: " << lights.size() << "/" << MAX_LIGHTS << std::endl;
         }
         else {
-            if (LOG_WARNING_GENERAL) std::cout << "[WARNING]: MyLightManager::RemoveLight - Light not found in manager" << std::endl;
+            if (LOG_WARNING_GENERAL) std::cout << "[WARNING]: MyLightSystem::RemoveLight - Light not found in manager" << std::endl;
         }
     }
 
-    void MyLightManager::RemoveAllLights() {
+    void MyLightSystem::RemoveAllLights() {
         lights.clear();
         needsUpdate = true;
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::RemoveAllLights - All lights removed" << std::endl;
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::RemoveAllLights - All lights removed" << std::endl;
     }
 
-    std::shared_ptr<MyDirectionalLight> MyLightManager::AddDirectionalLight(const MyVector3& color, float intensity) {
+    std::shared_ptr<MyDirectionalLight> MyLightSystem::AddDirectionalLight(const MyVector3& color, float intensity) {
         auto light = std::make_shared<MyDirectionalLight>(color, intensity);
         AddLight(light);
         return light;
     }
 
-    std::shared_ptr<MyPointLight> MyLightManager::AddPointLight(const MyVector3& position, const MyVector3& color, float intensity, float range) {
+    std::shared_ptr<MyPointLight> MyLightSystem::AddPointLight(const MyVector3& position, const MyVector3& color, float intensity, float range) {
         auto light = std::make_shared<MyPointLight>(color, intensity, range);
         light->transform->position = position;
         AddLight(light);
         return light;
     }
 
-    std::shared_ptr<MySpotLight> MyLightManager::AddSpotLight(const MyVector3& position, const MyVector3& direction, const MyVector3& color, float intensity, float range) {
+    std::shared_ptr<MySpotLight> MyLightSystem::AddSpotLight(const MyVector3& position, const MyVector3& direction, const MyVector3& color, float intensity, float range) {
         auto light = std::make_shared<MySpotLight>(color, intensity, range);
         light->transform->position = position;
         light->SetDirection(direction);
@@ -104,43 +103,43 @@ namespace DX3D {
         return light;
     }
 
-    std::shared_ptr<MyLight> MyLightManager::GetLight(size_t index) const {
+    std::shared_ptr<MyLight> MyLightSystem::GetLight(size_t index) const {
         if (index < lights.size()) {
             return lights[index];
         }
         return nullptr;
     }
 
-    int MyLightManager::GetDirectionalLightCount() const {
+    int MyLightSystem::GetDirectionalLightCount() const {
         return std::count_if(lights.begin(), lights.end(),
             [](const std::shared_ptr<MyLight>& light) {
                 return light->GetType() == LightType::DIRECTIONAL;
             });
     }
 
-    int MyLightManager::GetPointLightCount() const {
+    int MyLightSystem::GetPointLightCount() const {
         return std::count_if(lights.begin(), lights.end(),
             [](const std::shared_ptr<MyLight>& light) {
                 return light->GetType() == LightType::POINT;
             });
     }
 
-    int MyLightManager::GetSpotLightCount() const {
+    int MyLightSystem::GetSpotLightCount() const {
         return std::count_if(lights.begin(), lights.end(),
             [](const std::shared_ptr<MyLight>& light) {
                 return light->GetType() == LightType::SPOT;
             });
     }
 
-    void MyLightManager::SetAmbientLight(const MyVector3& color, float intensity) {
+    void MyLightSystem::SetAmbientLight(const MyVector3& color, float intensity) {
         ambientLight = color;
         ambientIntensity = intensity;
         needsUpdate = true;
 
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::SetAmbientLight - Color(" << color.x << ", " << color.y << ", " << color.z << "), Intensity(" << intensity << ")" << std::endl;
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::SetAmbientLight - Color(" << color.x << ", " << color.y << ", " << color.z << "), Intensity(" << intensity << ")" << std::endl;
     }
 
-    void MyLightManager::UpdateLightingData() {
+    void MyLightSystem::UpdateLightingData() {
         if (!needsUpdate) return;
 
         // Clear data
@@ -177,30 +176,30 @@ namespace DX3D {
 
         needsUpdate = false;
 
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::UpdateLightingData - Total: " << lightIndex << ", Dir: " << directionalCount << ", Point: " << pointCount << ", Spot: " << spotCount << std::endl;
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::UpdateLightingData - Total: " << lightIndex << ", Dir: " << directionalCount << ", Point: " << pointCount << ", Spot: " << spotCount << std::endl;
     }
 
-    void MyLightManager::CreateLightingConstantBuffer() {
+    void MyLightSystem::CreateLightingConstantBuffer() {
         if (!lightingConstantBuffer) {
             auto renderSystem = MyGraphicsEngine::GetInstance()->GetRenderSystem();
             lightingConstantBuffer = renderSystem->CreateConstantBuffer(&lightingData, sizeof(MyLightingData));
-            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::CreateLightingConstantBuffer - Lighting constant buffer created" << std::endl;
+            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::CreateLightingConstantBuffer - Lighting constant buffer created" << std::endl;
         }
     }
 
-    void MyLightManager::UpdateLightingConstantBuffer() {
+    void MyLightSystem::UpdateLightingConstantBuffer() {
         if (lightingConstantBuffer) {
             UpdateLightingData();
             auto renderSystem = MyGraphicsEngine::GetInstance()->GetRenderSystem();
             auto deviceContext = renderSystem->GetImmediateDeviceContext();
             lightingConstantBuffer->Update(deviceContext, &lightingData);
-            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::UpdateLightingConstantBuffer - Lighting constant buffer updated" << std::endl;
+            if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::UpdateLightingConstantBuffer - Lighting constant buffer updated" << std::endl;
         }
     }
 
-    void MyLightManager::LogLightingSummary() const {
+    void MyLightSystem::LogLightingSummary() const {
         if (LOG_INFO_LIGHTING) {
-            std::cout << "[INFO]: === MyLightManager Summary ===" << std::endl;
+            std::cout << "[INFO]: === MyLightSystem Summary ===" << std::endl;
             std::cout << "[INFO]: Total Lights: " << lights.size() << "/" << MAX_LIGHTS << std::endl;
             std::cout << "[INFO]: Directional: " << GetDirectionalLightCount() << std::endl;
             std::cout << "[INFO]: Point: " << GetPointLightCount() << std::endl;
@@ -210,20 +209,20 @@ namespace DX3D {
         }
     }
 
-    void MyLightManager::EnableAllLights() {
+    void MyLightSystem::EnableAllLights() {
         for (auto& light : lights) {
             if (light) light->SetEnabled(true);
         }
         needsUpdate = true;
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::EnableAllLights - All lights enabled" << std::endl;
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::EnableAllLights - All lights enabled" << std::endl;
     }
 
-    void MyLightManager::DisableAllLights() {
+    void MyLightSystem::DisableAllLights() {
         for (auto& light : lights) {
             if (light) light->SetEnabled(false);
         }
         needsUpdate = true;
-        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightManager::DisableAllLights - All lights disabled" << std::endl;
+        if (LOG_INFO_LIGHTING) std::cout << "[INFO]: MyLightSystem::DisableAllLights - All lights disabled" << std::endl;
     }
 
 } // namespace DX3D
